@@ -53,6 +53,8 @@ a {
   color: inherit; }
 
 div.embed-internal-carousel {
+  border: 2px solid tomato;
+  width: 50%;
   margin: 0;
   padding: 0;
   overflow-x: scroll; }
@@ -64,12 +66,12 @@ div.embed-internal-carousel {
     display: flex; }
     div.embed-internal-carousel div p {
       display: inline-block; }
+      div.embed-internal-carousel div p:not(:last-child) {
+        padding-right: 1.8rem; }
       div.embed-internal-carousel div p img {
         width: 45rem;
         height: 60rem;
         object-fit: cover; }
-      div.embed-internal-carousel div p:not(:last-child) {
-        padding-right: 1.8rem; }
 
 header {
   flex-shrink: 0; }
