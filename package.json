@@ -1,0 +1,22 @@
+{
+  "name": "normal-redesign",
+  "version": "1.0.0",
+  "description": "Test environment for the new Normal.",
+  "main": "fstab.yaml",
+  "scripts": {
+    "compile:sass": "node-sass assets/sass/main.scss assets/style.css -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fkakatie/normal-redesign.git"
+  },
+  "author": "fkakatie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fkakatie/normal-redesign/issues"
+  },
+  "homepage": "https://github.com/fkakatie/normal-redesign#readme",
+  "devDependencies": {
+    "node-sass": "^5.0.0"
+  }
+}
