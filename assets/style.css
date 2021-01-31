@@ -54,7 +54,12 @@ a {
 
 div.embed-internal-carousel {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  overflow-x: scroll; }
+  div.embed-internal-carousel::-webkit-scrollbar {
+    width: 1rem; }
+  div.embed-internal-carousel::-webkit-scrollbar-track, div.embed-internal-carousel::-webkit-scrollbar-thumb {
+    background: #FFFCF3; }
   div.embed-internal-carousel div {
     display: flex; }
     div.embed-internal-carousel div p {
