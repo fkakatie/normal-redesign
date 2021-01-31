@@ -52,6 +52,17 @@ sup, sub {
 a {
   color: inherit; }
 
+div.embed-internal-carousel {
+  display: flex; }
+  div.embed-internal-carousel div {
+    display: inline-block; }
+    div.embed-internal-carousel div p {
+      display: inline-block; }
+      div.embed-internal-carousel div p img {
+        width: 300px;
+        height: 400px;
+        object-fit: cover; }
+
 header {
   flex-shrink: 0; }
   header div {

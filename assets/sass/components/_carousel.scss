@@ -1,0 +1,19 @@
+div.embed-internal-carousel {
+    display: flex;
+
+    & div {
+        display: inline-block;
+
+        p {
+            display: inline-block;
+
+            img {
+                width: 300px;
+                height: 400px;
+                object-fit: cover;
+            }
+            
+        } 
+    } 
+
+}
