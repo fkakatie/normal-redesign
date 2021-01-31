@@ -1,0 +1,53 @@
+h1#normal {
+    display: inline-block;
+    font-size: 10rem;
+    transform: scale(1, 1.2);
+    position: relative;
+
+    & sup {
+        font-size: 20%;
+        top: 24%;
+        right: -1.5rem;
+        position: absolute;
+    }
+}
+
+div#nav {
+    width: 50%;
+    // border: 2px solid tomato;
+    font-family: $font-thin;
+    font-size: 5.8rem;
+    line-height: 5.8rem;
+    
+    & ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        
+        & li {
+            position: relative;
+            border-bottom: 1.5px solid currentColor;
+            padding: 1.5rem 0 1.5rem 0;
+            transition: 0.2s;
+
+            &:hover, &:target {
+                padding-bottom: calc(1.5rem - 1.5px);
+                border-width: 3px;
+                letter-spacing: 1.5px;
+                cursor: pointer;
+            }
+
+            & a {
+                width: 100%;
+                text-decoration: none;
+
+                &::after {
+                    content: "⟶";
+                    position: absolute;
+                    right: 0rem;
+                }
+            }
+
+        }
+    }
+}

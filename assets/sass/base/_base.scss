@@ -7,3 +7,27 @@
 html {
     font-size: 62.5%;
 }
+
+body {
+    min-height: 100vh;
+    display: flex;
+    background: $color-white;
+    color: $color-blue;
+    flex-direction: column;
+}
+
+del {
+    display: none;
+}
+
+ol {
+    margin-left: 2.6rem;
+}
+
+ol li::marker {
+    font-family: $font-mono;
+}
+
+ul {
+    margin-left: 1.8rem;
+}

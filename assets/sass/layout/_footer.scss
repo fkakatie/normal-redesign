@@ -1,0 +1,9 @@
+footer {
+    flex-shrink: 0;
+
+    & div {
+        text-align: center;
+        text-transform: lowercase;
+        @include container
+    }
+}

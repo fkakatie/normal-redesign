@@ -1,11 +1,14 @@
-// @import "abstracts/mixins";
-// @import "abstracts/variables";
+@import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap');
+
+@import "abstracts/mixins";
+@import "abstracts/variables";
 
 @import "base/base";
-// @import "base/typography";
+@import "base/typography";
 
 // @import "components/"
 
-// @import "layout/header";
-// @import "layout/main";
-// @import "layout/footer";
+@import "layout/header";
+@import "layout/main";
+@import "layout/footer";
+@import "layout/index";

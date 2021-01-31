@@ -1,3 +1,5 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap");
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -5,3 +7,113 @@
 
 html {
   font-size: 62.5%; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  background: #FFFCF3;
+  color: #0D26F9;
+  flex-direction: column; }
+
+del {
+  display: none; }
+
+ol {
+  margin-left: 2.6rem; }
+
+ol li::marker {
+  font-family: monospace; }
+
+ul {
+  margin-left: 1.8rem; }
+
+body {
+  font-family: "Pragati Narrow", sans-serif;
+  font-size: 1.8rem;
+  line-height: 1.8; }
+
+strong {
+  font-weight: 700; }
+
+em {
+  font-style: italic; }
+
+u {
+  text-decoration: underline wavy currentColor; }
+
+h1, h2, h3 {
+  font-family: sans-serif;
+  font-weight: 400;
+  text-transform: lowercase; }
+
+sup, sub {
+  font-family: sans-serif; }
+
+a {
+  color: inherit; }
+
+header {
+  flex-shrink: 0; }
+  header div {
+    display: flex;
+    justify-content: space-between;
+    width: 1200px;
+    max-width: 92%;
+    margin: 0 auto;
+    padding: 1.8rem 0; }
+
+main {
+  flex-grow: 1; }
+  main div:not(.nav) {
+    width: 1200px;
+    max-width: 92%;
+    margin: 0 auto;
+    padding: 1.8rem 0; }
+
+footer {
+  flex-shrink: 0; }
+  footer div {
+    text-align: center;
+    text-transform: lowercase;
+    width: 1200px;
+    max-width: 92%;
+    margin: 0 auto;
+    padding: 1.8rem 0; }
+
+h1#normal {
+  display: inline-block;
+  font-size: 10rem;
+  transform: scale(1, 1.2);
+  position: relative; }
+  h1#normal sup {
+    font-size: 20%;
+    top: 24%;
+    right: -1.5rem;
+    position: absolute; }
+
+div#nav {
+  width: 50%;
+  font-family: "Pragati Narrow", sans-serif;
+  font-size: 5.8rem;
+  line-height: 5.8rem; }
+  div#nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+    div#nav ul li {
+      position: relative;
+      border-bottom: 1.5px solid currentColor;
+      padding: 1.5rem 0 1.5rem 0;
+      transition: 0.2s; }
+      div#nav ul li:hover, div#nav ul li:target {
+        padding-bottom: calc(1.5rem - 1.5px);
+        border-width: 3px;
+        letter-spacing: 1.5px;
+        cursor: pointer; }
+      div#nav ul li a {
+        width: 100%;
+        text-decoration: none; }
+        div#nav ul li a::after {
+          content: "⟶";
+          position: absolute;
+          right: 0rem; }
