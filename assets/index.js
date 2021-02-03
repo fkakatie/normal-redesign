@@ -66,11 +66,13 @@ const updateCopyright = () => {
 
 const horizontalScroll = () => {
   const $carousel = document.querySelector(".embed-internal-carousel");
-  console.log(`horizontalScroll -> $carousel`, $carousel);
-  $carousel.onwheel = (e) => {
-    console.log(`horizontalScroll -> $carousel.onwheel`);
-    e.preventDefault();
-    this.scrollLeft -= (e.wheelDelta);
+  if ($carousel) {
+    console.log(`horizontalScroll -> $carousel`, $carousel);
+    $carousel.onwheel = (e) => {
+      console.log(`horizontalScroll -> $carousel.onwheel`);
+      e.preventDefault();
+      this.scrollLeft -= (e.wheelDelta);
+    }
   }
 }
 
