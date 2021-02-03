@@ -5,6 +5,9 @@
   padding: 0;
   box-sizing: border-box; }
 
+*:focus {
+  outline: 0; }
+
 html {
   font-size: 62.5%; }
 
@@ -26,6 +29,20 @@ ol li::marker {
 
 ul {
   margin-left: 1.8rem; }
+
+svg {
+  fill: currentColor;
+  stroke: currentColor;
+  vertical-align: baseline; }
+
+main svg {
+  height: 0.8em;
+  width: 0.8em;
+  display: inline-block;
+  text-transform: none; }
+
+main svg + svg {
+  margin-left: -0.3em; }
 
 body {
   font-family: "Pragati Narrow", sans-serif;
@@ -52,44 +69,59 @@ sup, sub {
 a {
   color: inherit; }
 
-div.embed-internal-carousel {
-  border: 2px solid tomato;
-  width: 50%;
-  margin: 0;
-  padding: 0;
-  overflow-x: scroll; }
-  div.embed-internal-carousel::-webkit-scrollbar {
-    width: 1rem; }
-  div.embed-internal-carousel::-webkit-scrollbar-track, div.embed-internal-carousel::-webkit-scrollbar-thumb {
-    background: #FFFCF3; }
-  div.embed-internal-carousel div {
-    display: flex; }
-    div.embed-internal-carousel div p {
-      display: inline-block; }
-      div.embed-internal-carousel div p:not(:last-child) {
-        padding-right: 1.8rem; }
-      div.embed-internal-carousel div p img {
-        width: 45rem;
-        height: 60rem;
-        object-fit: cover; }
+div#carousel {
+  border: 2px solid orange; }
+  div#carousel div.embed-internal-carousel {
+    width: 50%;
+    margin: 0;
+    padding: 0;
+    overflow-x: scroll; }
+    div#carousel div.embed-internal-carousel::-webkit-scrollbar {
+      width: 1rem; }
+    div#carousel div.embed-internal-carousel::-webkit-scrollbar-track, div#carousel div.embed-internal-carousel::-webkit-scrollbar-thumb {
+      background: #FFFCF3; }
+    div#carousel div.embed-internal-carousel div {
+      display: flex; }
+      div#carousel div.embed-internal-carousel div p {
+        display: inline-block; }
+        div#carousel div.embed-internal-carousel div p:not(:last-child) {
+          padding-right: 1.8rem; }
+        div#carousel div.embed-internal-carousel div p img {
+          width: 45rem;
+          height: 60rem;
+          object-fit: cover; }
+  div#carousel a {
+    font-family: "Pragati Narrow", sans-serif;
+    font-size: 2.9rem;
+    line-height: 2.9rem;
+    text-decoration: none;
+    transition: 0.1s; }
+    div#carousel a:hover, div#carousel a:focus {
+      letter-spacing: 1.5px; }
 
 header {
   flex-shrink: 0; }
   header div {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     width: 1200px;
     max-width: 92%;
     margin: 0 auto;
     padding: 1.8rem 0; }
+  header a {
+    line-height: 1;
+    transition: 0.2s linear; }
+    header a:hover svg.icon-normal, header a:focus svg.icon-normal {
+      transform: rotate(30deg); }
+  header svg.icon-normal {
+    height: 7rem;
+    width: 7rem;
+    stroke-width: 0;
+    transition: 0.2s linear; }
 
 main {
   flex-grow: 1; }
-  main div:not(.nav) {
-    width: 1200px;
-    max-width: 92%;
-    margin: 0 auto;
-    padding: 1.8rem 0; }
 
 footer {
   flex-shrink: 0; }
@@ -101,19 +133,19 @@ footer {
     margin: 0 auto;
     padding: 1.8rem 0; }
 
-h1#normal {
+h1#normalreg {
   display: inline-block;
   font-size: 10rem;
   transform: scale(1, 1.2);
   position: relative; }
-  h1#normal sup {
-    font-size: 20%;
-    top: 24%;
-    right: -1.5rem;
-    position: absolute; }
+  h1#normalreg svg {
+    top: 27.5%;
+    font-size: 50%;
+    right: -10%;
+    position: absolute;
+    transition: 0.2s linear; }
 
 div#nav {
-  width: 50%;
   font-family: "Pragati Narrow", sans-serif;
   font-size: 5.8rem;
   line-height: 5.8rem; }
@@ -125,16 +157,32 @@ div#nav {
       position: relative;
       border-bottom: 1.5px solid currentColor;
       padding: 1.5rem 0 1.5rem 0;
-      transition: 0.2s; }
-      div#nav ul li:hover, div#nav ul li:target {
+      transition: 0.1s; }
+      div#nav ul li:hover, div#nav ul li:focus {
         padding-bottom: calc(1.5rem - 1.5px);
         border-width: 3px;
         letter-spacing: 1.5px;
         cursor: pointer; }
       div#nav ul li a {
         width: 100%;
-        text-decoration: none; }
+        text-decoration: none;
+        transition: 0.1s; }
+        div#nav ul li a:focus {
+          padding-bottom: calc(1.5rem - 1.5px);
+          border-width: 3px;
+          letter-spacing: 1.5px; }
         div#nav ul li a::after {
           content: "⟶";
           position: absolute;
-          right: 0rem; }
+          right: 0; }
+
+.flex {
+  display: flex;
+  flex-flow: column wrap;
+  max-height: 60rem;
+  width: 1200px;
+  max-width: 92%;
+  margin: 0 auto;
+  padding: 1.8rem 0; }
+  .flex > * {
+    width: 50%; }

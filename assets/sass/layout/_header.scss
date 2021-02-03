@@ -1,9 +1,29 @@
 header {
     flex-shrink: 0;
+    // border: 2px solid tomato;
 
     & div {
         display: flex;
+        align-items: center;
         justify-content: space-between;
         @include container
+    }
+
+    & a {
+        line-height: 1;
+        transition: 0.2s linear;
+
+        &:hover svg.icon-normal, &:focus svg.icon-normal {
+            transform: rotate(30deg);
+        }
+    }
+
+    & svg {
+        &.icon-normal {
+            height: 7rem;
+            width: 7rem;
+            stroke-width: 0;
+            transition: 0.2s linear;
+        }
     }
 }

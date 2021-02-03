@@ -4,43 +4,37 @@ let storeLocation;
 const setPage = () => {
   const path = window.location.pathname;
   if (path.includes("lab")) {
-    console.log("lab");
+    // console.log("lab");
   } else if (path.includes("delivery")) {
-    console.log("delivery");
-  } else if (path.includes("merch")) {
-    console.log("merch");
+    // console.log("delivery");
   } else if (path.includes("pint-club")) {
-    console.log("pint-club");
+    // console.log("merch");
+  } else if (path.includes("merch")) {
+    // console.log("pint-club");
   } else { // default location is store
-    console.log("store");
+    // console.log("store");
+    buildIndexGrid();
+    horizontalScroll();
   }
 }
 
 const classify = () => {
+  // add classes/ids based on inner text of headings
   const $h1s = document.querySelectorAll("h1");
   const $h2s = document.querySelectorAll("h2");
   const $h3s = document.querySelectorAll("h3");
-  if ($h1s) {
-    $h1s.forEach((h1) => {
-      let text = cleanName(h1.textContent);
-      h1.setAttribute("class", text);
-      h1.parentNode.setAttribute("id", text);
-    })
-  }
-  if ($h2s) {
-    $h2s.forEach((h2) => {
-      let text = cleanName(h2.textContent);
-      h2.setAttribute("class", text);
-      h2.parentNode.setAttribute("id", text);
-    })
-  }
-  if ($h3s) {
-    $h3s.forEach((h3) => {
-      let text = cleanName(h3.textContent);
-      h3.setAttribute("class", text);
-      h3.parentNode.setAttribute("id", text);
-    })
-  }
+  const $headings = [ $h1s, $h2s, $h3s ];
+
+  $headings.forEach((headings) => {
+    if (headings) {
+      // console.log(`$headings.forEach -> headings`, headings);
+      headings.forEach((h) => {
+        const text = cleanName(h.textContent);
+        h.setAttribute("class", text); // attach class to heading
+        h.parentNode.setAttribute("id", text); // attach id to parrent
+      })
+    }
+  })
   
 }
 
@@ -51,14 +45,32 @@ const cleanName = (str) => {
   return clean;
 }
 
-updateCopyright = () => {
+const buildIndexGrid = () => {
+  // console.log(`\nbuild index grid running`);
+  const indexPaths = [ "/", "/index", "/index.html" ];
+  if (indexPaths.includes(window.location.pathname)) {
+    const $main = document.querySelector("main");
+    $main.classList.add("flex");
+  }
+}
+
+const updateCopyright = () => {
   // update copyright year in footer
   const date = new Date; 
   const year = date.getFullYear();
   const $footer = document.querySelector("footer > div");
   if (year > 2021) {
-    console.log(year);
     $footer.textContent += ` - ${year}`;
+  }
+}
+
+const horizontalScroll = () => {
+  const $carousel = document.querySelector(".embed-internal-carousel");
+  console.log(`horizontalScroll -> $carousel`, $carousel);
+  $carousel.onwheel = (e) => {
+    console.log(`horizontalScroll -> $carousel.onwheel`);
+    e.preventDefault();
+    this.scrollLeft -= (e.wheelDelta);
   }
 }
 

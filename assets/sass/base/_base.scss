@@ -4,8 +4,12 @@
     box-sizing: border-box;
 }
 
+*:focus {
+    outline: 0;
+}
+
 html {
-    font-size: 62.5%;
+    font-size: 62.5%; // setting 1rem to 10px
 }
 
 body {
@@ -30,4 +34,21 @@ ol li::marker {
 
 ul {
     margin-left: 1.8rem;
+}
+
+svg {
+    fill: currentColor;
+    stroke: currentColor;
+    vertical-align: baseline;
+}
+
+main svg {
+    height: 0.8em;
+    width: 0.8em;
+    display: inline-block;
+    text-transform: none;
+}
+
+main svg + svg {
+    margin-left: -0.3em;
 }

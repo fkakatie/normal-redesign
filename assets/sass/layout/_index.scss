@@ -1,19 +1,21 @@
-h1#normal {
+h1#normalreg {
     display: inline-block;
     font-size: 10rem;
     transform: scale(1, 1.2);
     position: relative;
 
-    & sup {
-        font-size: 20%;
-        top: 24%;
-        right: -1.5rem;
+    & svg {
+        top: 27.5%;
+        font-size: 50%;
+        right: -10%;
         position: absolute;
+        transition: 0.2s linear;
     }
 }
 
 div#nav {
-    width: 50%;
+    // width: 50%;
+    // float: left;
     // border: 2px solid tomato;
     font-family: $font-thin;
     font-size: 5.8rem;
@@ -28,9 +30,9 @@ div#nav {
             position: relative;
             border-bottom: 1.5px solid currentColor;
             padding: 1.5rem 0 1.5rem 0;
-            transition: 0.2s;
+            transition: 0.1s;
 
-            &:hover, &:target {
+            &:hover, &:focus {
                 padding-bottom: calc(1.5rem - 1.5px);
                 border-width: 3px;
                 letter-spacing: 1.5px;
@@ -40,14 +42,32 @@ div#nav {
             & a {
                 width: 100%;
                 text-decoration: none;
+                transition: 0.1s;
+
+                &:focus {
+                    padding-bottom: calc(1.5rem - 1.5px);
+                    border-width: 3px;
+                    letter-spacing: 1.5px;
+                }
 
                 &::after {
                     content: "⟶";
                     position: absolute;
-                    right: 0rem;
+                    right: 0;
                 }
             }
-
         }
+    }
+}
+
+.flex {
+    display: flex;
+    flex-flow: column wrap;
+    max-height: 60rem;
+
+    @include container
+
+    & > * {
+        width: 50%;
     }
 }
