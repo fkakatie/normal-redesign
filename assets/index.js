@@ -31,7 +31,7 @@ const classify = () => {
       headings.forEach((h) => {
         const text = cleanName(h.textContent);
         h.setAttribute("class", text); // attach class to heading
-        h.parentNode.setAttribute("id", text); // attach id to parrent
+        h.parentNode.setAttribute("id", text); // attach id to parent
       })
     }
   })
@@ -50,9 +50,9 @@ const buildIndexGrid = () => {
   const indexPaths = [ "/", "/index", "/index.html" ];
   if (indexPaths.includes(window.location.pathname)) {
     const $main = document.querySelector("main");
-    const carouselHeight = document.querySelector("#carousel").offsetHeight;
+    const carouselHeight = parseInt(document.querySelector("#carousel").offsetHeight);
     $main.classList.add("flex");
-    $main.style.minHeight = `${carouselHeight > 0 ? carouselHeight : 600}px`;
+    $main.style.minHeight = `${carouselHeight > 0 ? carouselHeight + 32 : 697}px`;
   }
 }
 
