@@ -14,7 +14,7 @@ const setPage = () => {
   } else { // default location is store
     // console.log("store");
     buildIndexGrid();
-    horizontalScroll();
+    // horizontalScroll();
   }
 }
 
@@ -64,17 +64,17 @@ const updateCopyright = () => {
   }
 }
 
-const horizontalScroll = () => {
-  const $carousel = document.querySelector(".embed-internal-carousel");
-  if ($carousel) {
-    console.log(`horizontalScroll -> $carousel`, $carousel);
-    $carousel.onwheel = (e) => {
-      console.log(`horizontalScroll -> $carousel.onwheel`);
-      e.preventDefault();
-      this.scrollLeft -= (e.wheelDelta);
-    }
-  }
-}
+// const horizontalScroll = () => {
+//   const $carousel = document.querySelector(".embed-internal-carousel");
+//   if ($carousel) {
+//     console.log(`horizontalScroll -> $carousel`, $carousel);
+//     $carousel.onwheel = (e) => {
+//       console.log(`horizontalScroll -> $carousel.onwheel`);
+//       e.preventDefault();
+//       this.scrollLeft -= (e.wheelDelta);
+//     }
+//   }
+// }
 
 window.onload = (event) => {
   console.log("page is fully loaded");

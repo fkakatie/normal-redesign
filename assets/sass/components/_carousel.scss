@@ -1,5 +1,8 @@
 div#carousel {
     border: 2px solid orange;
+    // min-height: 700px;
+    position: absolute;
+    right: 0;
 
     & div.embed-internal-carousel {
         width: 50%;

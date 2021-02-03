@@ -70,7 +70,9 @@ a {
   color: inherit; }
 
 div#carousel {
-  border: 2px solid orange; }
+  border: 2px solid orange;
+  position: absolute;
+  right: 0; }
   div#carousel div.embed-internal-carousel {
     width: 50%;
     margin: 0;
@@ -179,10 +181,10 @@ div#nav {
 .flex {
   display: flex;
   flex-flow: column wrap;
-  max-height: 60rem;
   width: 1200px;
   max-width: 92%;
   margin: 0 auto;
   padding: 1.8rem 0; }
   .flex > * {
-    width: 50%; }
+    flex-basis: calc(50% - 1.8rem);
+    width: calc(50% - 1.8rem); }

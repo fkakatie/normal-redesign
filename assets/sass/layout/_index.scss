@@ -63,11 +63,12 @@ div#nav {
 .flex {
     display: flex;
     flex-flow: column wrap;
-    max-height: 60rem;
+    // max-height: 60rem;
 
     @include container
 
     & > * {
-        width: 50%;
+        flex-basis: calc(50% - 1.8rem);
+        width: calc(50% - 1.8rem);
     }
 }
