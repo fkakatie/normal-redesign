@@ -52,7 +52,7 @@ const buildIndexGrid = () => {
     const $main = document.querySelector("main");
     const carouselHeight = document.querySelector("#carousel").offsetHeight;
     $main.classList.add("flex");
-    $main.style.minHeight = `${carouselHeight}px`;
+    $main.style.minHeight = `${carouselHeight > 0 ? carouselHeight : 600}px`;
   }
 }
 
