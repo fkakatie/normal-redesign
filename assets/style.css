@@ -74,7 +74,6 @@ div#carousel {
   position: absolute;
   right: 0; }
   div#carousel div.embed-internal-carousel {
-    width: 50%;
     margin: 0;
     padding: 0;
     overflow-x: scroll; }
