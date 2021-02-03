@@ -50,7 +50,9 @@ const buildIndexGrid = () => {
   const indexPaths = [ "/", "/index", "/index.html" ];
   if (indexPaths.includes(window.location.pathname)) {
     const $main = document.querySelector("main");
+    const carouselHeight = document.querySelector("#carousel").offsetHeight;
     $main.classList.add("flex");
+    $main.style.minHeight = `${carouselHeight}px`;
   }
 }
 
