@@ -26,4 +26,10 @@ header {
             transition: 0.2s linear;
         }
     }
+
+    & .header-cart {
+        font-family: $font-hand;
+        font-size: 200%;
+        transform: scale(1.2, 1);
+    }
 }

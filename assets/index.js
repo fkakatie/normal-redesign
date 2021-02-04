@@ -15,7 +15,6 @@ const setPage = () => {
     // default location is store
     // console.log("store");
     buildIndexGrid();
-    // horizontalScroll();
   }
 };
 
@@ -47,6 +46,10 @@ const cleanName = (str) => {
   return clean;
 };
 
+const randomNum = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+
 const buildIndexGrid = () => {
   // console.log(`\nbuild index grid running`);
   const indexPaths = ["/", "/index", "/index.html"];
@@ -72,6 +75,11 @@ const buildIndexGrid = () => {
   }
 };
 
+const testCart = () => {
+  const $headerCart = document.querySelector(".header-cart");
+  $headerCart.textContent = randomNum(0, 9);
+}
+
 const updateCopyright = () => {
   // update copyright year in footer
   const date = new Date();
@@ -82,22 +90,11 @@ const updateCopyright = () => {
   }
 };
 
-// const horizontalScroll = () => {
-//   const $carousel = document.querySelector(".embed-internal-carousel");
-//   if ($carousel) {
-//     console.log(`horizontalScroll -> $carousel`, $carousel);
-//     $carousel.onwheel = (e) => {
-//       console.log(`horizontalScroll -> $carousel.onwheel`);
-//       e.preventDefault();
-//       this.scrollLeft -= (e.wheelDelta);
-//     }
-//   }
-// }
-
 window.onload = (event) => {
   console.log("page is fully loaded");
 
-  setPage();
   classify();
+  testCart();
+  setPage();
   updateCopyright();
 };
