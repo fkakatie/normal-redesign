@@ -90,6 +90,7 @@ div#carousel {
           padding-right: 1.8rem; }
         div#carousel div.embed-internal-carousel div p img {
           width: 45rem;
+          max-width: 100%;
           height: 60rem;
           object-fit: cover; }
   div#carousel a {
@@ -112,8 +113,8 @@ div#carousel {
     margin-top: 1.8rem; }
     div#carousel div.embed-internal-carousel div {
       flex-direction: column; }
-      div#carousel div.embed-internal-carousel div p img {
-        width: 100%; } }
+      div#carousel div.embed-internal-carousel div p {
+        padding: 0; } }
 
 header {
   flex-shrink: 0; }

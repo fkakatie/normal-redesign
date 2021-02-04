@@ -31,6 +31,7 @@ div#carousel {
 
                 img {
                     width: 45rem;
+                    max-width: 100%;
                     height: 60rem;
                     object-fit: cover;
                 }
@@ -67,9 +68,7 @@ div#carousel {
             & div {
                 flex-direction: column;
                 p {
-                    img {
-                        width: 100%;
-                    }
+                    padding: 0;
                 }
             }
         }
