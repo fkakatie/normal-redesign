@@ -113,7 +113,8 @@ div#carousel {
     div#carousel div.embed-internal-carousel div {
       flex-direction: column; }
       div#carousel div.embed-internal-carousel div p {
-        padding-right: 1.8rem; }
+        padding-right: 0;
+        padding-bottom: 0.9rem; }
         div#carousel div.embed-internal-carousel div p img {
           max-width: 100%; } }
 
