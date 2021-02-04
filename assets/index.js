@@ -19,6 +19,12 @@ const setPage = () => {
 };
 
 const classify = () => {
+  // set path as main element's id
+  const path = window.location.pathname.includes(".") ? 
+    cleanName(window.location.pathname.split(".")[0]) : 
+    cleanName(window.location.pathname) || "index";
+  const $main = document.querySelector("main");
+  $main.setAttribute("id", path);
   // add classes/ids based on inner text of headings
   const $h1s = document.querySelectorAll("h1");
   const $h2s = document.querySelectorAll("h2");
@@ -58,7 +64,6 @@ const buildIndexGrid = () => {
     const carouselHeight = parseInt(
       document.querySelector("#carousel").offsetHeight
     );
-    $main.classList.add("flex");
     $main.style.minHeight = `${
       carouselHeight > 0 ? carouselHeight + 32 : 697
     }px`;

@@ -198,7 +198,7 @@ div#nav {
           position: absolute;
           right: 0; }
 
-.flex {
+#index {
   display: flex;
   flex-flow: column wrap;
   width: 1200px;
