@@ -76,7 +76,8 @@ div#carousel {
   div#carousel div.embed-internal-carousel {
     margin: 0;
     padding: 0;
-    overflow-x: scroll; }
+    overflow-x: scroll;
+    scroll-behavior: smooth; }
     div#carousel div.embed-internal-carousel::-webkit-scrollbar {
       width: 1rem; }
     div#carousel div.embed-internal-carousel::-webkit-scrollbar-track, div#carousel div.embed-internal-carousel::-webkit-scrollbar-thumb {
@@ -110,7 +111,9 @@ div#carousel {
     width: 100%;
     margin-top: 1.8rem; }
     div#carousel div.embed-internal-carousel div {
-      flex-direction: column; } }
+      flex-direction: column; }
+      div#carousel div.embed-internal-carousel div p img {
+        width: 100%; } }
 
 header {
   flex-shrink: 0; }
