@@ -71,7 +71,8 @@ a {
 
 div#carousel {
   position: absolute;
-  right: 0; }
+  right: 0;
+  width: 60%; }
   div#carousel div.embed-internal-carousel {
     margin: 0;
     padding: 0;
@@ -98,6 +99,18 @@ div#carousel {
     transition: 0.1s; }
     div#carousel a:hover, div#carousel a:focus {
       letter-spacing: 1.5px; }
+
+@media only screen and (max-width: 76.8rem) {
+  div#carousel {
+    width: 45%; } }
+
+@media only screen and (max-width: 41.1rem) {
+  div#carousel {
+    position: static;
+    width: 100%;
+    margin-top: 1.8rem; }
+    div#carousel div.embed-internal-carousel div {
+      flex-direction: column; } }
 
 header {
   flex-shrink: 0; }
@@ -135,17 +148,15 @@ footer {
 
 h1#normalreg {
   display: inline-block;
-  font-size: 10rem;
+  font-size: 8.4rem;
   transform: scale(1, 1.2);
   position: relative; }
   h1#normalreg svg {
-    top: 27.5%;
-    font-size: 50%;
-    right: -10%;
-    position: absolute;
-    transition: 0.2s linear; }
+    vertical-align: super;
+    font-size: 50%; }
 
 div#nav {
+  width: 33%;
   font-family: "Pragati Narrow", sans-serif;
   font-size: 5.8rem;
   line-height: 5.8rem; }
@@ -183,6 +194,11 @@ div#nav {
   max-width: 92%;
   margin: 0 auto;
   padding: 1.8rem 0; }
-  .flex > * {
-    flex-basis: calc(50% - 1.8rem);
-    width: calc(50% - 1.8rem); }
+
+@media only screen and (max-width: 76.8rem) {
+  div#nav {
+    width: 50%; } }
+
+@media only screen and (max-width: 41.1rem) {
+  div#nav {
+    width: 100%; } }

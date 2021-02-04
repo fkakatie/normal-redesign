@@ -2,6 +2,7 @@ div#carousel {
     // border: 2px solid orange;
     position: absolute;
     right: 0;
+    width: 60%;
 
     & div.embed-internal-carousel {
         margin: 0;
@@ -45,6 +46,26 @@ div#carousel {
 
         &:hover, &:focus {
             letter-spacing: 1.5px;
+        }
+    }
+}
+
+@media only screen and (max-width: 76.8rem) {
+    div#carousel {
+        width: 45%;
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    div#carousel {
+        position: static;
+        width: 100%;
+        margin-top: 1.8rem;
+
+        & div.embed-internal-carousel {
+            & div {
+                flex-direction: column;
+            }
         }
     }
 }

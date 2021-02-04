@@ -1,20 +1,17 @@
 h1#normalreg {
     display: inline-block;
-    font-size: 10rem;
+    font-size: 8.4rem;
     transform: scale(1, 1.2);
     position: relative;
 
     & svg {
-        top: 27.5%;
+        vertical-align: super;
         font-size: 50%;
-        right: -10%;
-        position: absolute;
-        transition: 0.2s linear;
     }
 }
 
 div#nav {
-    // width: 50%;
+    width: 33%;
     // float: left;
     // border: 2px solid tomato;
     font-family: $font-thin;
@@ -66,9 +63,16 @@ div#nav {
     // max-height: 60rem;
 
     @include container
+}
 
-    & > * {
-        flex-basis: calc(50% - 1.8rem);
-        width: calc(50% - 1.8rem);
+@media only screen and (max-width: 76.8rem) {
+    div#nav {
+        width: 50%;
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    div#nav {
+        width: 100%;
     }
 }
