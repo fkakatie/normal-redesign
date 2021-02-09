@@ -1,3 +1,12 @@
+:root {
+    --white: #{$color-white};
+    --red: #{$color-red};
+    --yellow: #{$color-yellow};
+    --green: #{$color-green};
+    --blue: #{$color-blue};
+    --pink: #{$color-pink};
+}
+
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -39,7 +48,7 @@ ul {
 svg {
     fill: currentColor;
     stroke: currentColor;
-    vertical-align: baseline;
+    vertical-align: middle;
 }
 
 main svg {
@@ -49,6 +58,7 @@ main svg {
     text-transform: none;
 }
 
-main svg + svg {
-    margin-left: -0.3em;
+//code blocks
+table thead tr th code { 
+    display: none;
 }

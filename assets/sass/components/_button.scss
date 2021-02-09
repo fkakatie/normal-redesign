@@ -1,0 +1,23 @@
+.btn {
+    display: inline-block;
+    margin: 2.7rem 0 1.8rem;
+    padding: 0.5rem 1rem;
+    background: $color-white;
+    color: $color-blue;
+    font-family: $font-thin;
+    font-weight: $weight-bold;
+    font-size: 80%;
+    transition: 0.2s;
+    @include bfv;
+    @include stretchY;
+
+    &:hover, &:focus {
+        letter-spacing: 3px;
+        cursor: pointer;
+        filter: brightness(1.2);
+    }
+
+    // & .btn-invert {
+    //     // 
+    // }
+}

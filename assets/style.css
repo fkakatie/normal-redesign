@@ -1,6 +1,14 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap");
+:root {
+  --white: #FFFCF3;
+  --red: #F94F0D;
+  --yellow: #FFFFA9;
+  --green: #04AFA6;
+  --blue: #0D26F9;
+  --pink: #FFD4CC; }
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -34,7 +42,7 @@ ul {
 svg {
   fill: currentColor;
   stroke: currentColor;
-  vertical-align: baseline; }
+  vertical-align: middle; }
 
 main svg {
   height: 0.8em;
@@ -42,16 +50,18 @@ main svg {
   display: inline-block;
   text-transform: none; }
 
-main svg + svg {
-  margin-left: -0.3em; }
+table thead tr th code {
+  display: none; }
 
 body {
   font-family: "Pragati Narrow", sans-serif;
-  font-size: 1.8rem;
+  font-size: 2rem;
   line-height: 1.8; }
 
 strong {
-  font-weight: 700; }
+  font-family: "Pragati Narrow", sans-serif;
+  font-weight: 700;
+  -webkit-text-stroke: 0.5px #0D26F9; }
 
 em {
   font-style: italic; }
@@ -61,8 +71,23 @@ u {
 
 h1, h2, h3 {
   font-family: sans-serif;
+  text-transform: lowercase;
+  transform: scale(1, 1.2); }
+  h1 svg, h2 svg, h3 svg {
+    font-weight: 400; }
+
+h1 {
   font-weight: 400;
-  text-transform: lowercase; }
+  font-size: 8.4rem; }
+
+h2 {
+  font-family: "Pragati Narrow", sans-serif;
+  font-weight: 700;
+  font-size: 4.2rem; }
+
+h3 {
+  font-family: "Pragati Narrow", sans-serif;
+  font-weight: 700; }
 
 sup, sub {
   font-family: sans-serif; }
@@ -70,54 +95,55 @@ sup, sub {
 a {
   color: inherit; }
 
-div#carousel {
+.btn {
+  display: inline-block;
+  margin: 2.7rem 0 1.8rem;
+  padding: 0.5rem 1rem;
+  background: #FFFCF3;
+  color: #0D26F9;
+  font-family: "Pragati Narrow", sans-serif;
+  font-weight: 700;
+  font-size: 80%;
+  transition: 0.2s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: scale(1, 1.2); }
+  .btn:hover, .btn:focus {
+    letter-spacing: 3px;
+    cursor: pointer;
+    filter: brightness(1.2); }
+
+svg.icon-store, svg.icon-lab {
+  height: 120px;
+  width: 200px;
+  stroke-width: 0; }
+
+svg.icon-v, svg.icon-gf {
+  margin: 0 -0.2rem;
+  font-size: 120%;
+  font-family: "Pragati Narrow", sans-serif;
+  transform: scale(1.2, 1); }
+
+.starburst {
   position: absolute;
-  right: 0;
-  width: 60%; }
-  div#carousel div.embed-internal-carousel {
-    margin: 0;
-    padding: 0;
-    overflow-x: scroll;
-    scroll-behavior: smooth; }
-    div#carousel div.embed-internal-carousel::-webkit-scrollbar {
-      width: 1rem; }
-    div#carousel div.embed-internal-carousel::-webkit-scrollbar-track, div#carousel div.embed-internal-carousel::-webkit-scrollbar-thumb {
-      background: #FFFCF3; }
-    div#carousel div.embed-internal-carousel div {
-      display: flex; }
-      div#carousel div.embed-internal-carousel div p {
-        display: inline-block; }
-        div#carousel div.embed-internal-carousel div p:not(:last-child) {
-          padding-right: 1.8rem; }
-        div#carousel div.embed-internal-carousel div p img {
-          width: 45rem;
-          height: 60rem;
-          object-fit: cover; }
-  div#carousel a {
-    font-family: "Pragati Narrow", sans-serif;
-    font-size: 2.9rem;
-    line-height: 2.9rem;
-    text-decoration: none;
-    transition: 0.1s; }
-    div#carousel a:hover, div#carousel a:focus {
-      letter-spacing: 1.5px; }
-
-@media only screen and (max-width: 76.8rem) {
-  div#carousel {
-    width: 45%; } }
-
-@media only screen and (max-width: 41.1rem) {
-  div#carousel {
-    position: static;
-    width: 100%;
-    margin-top: 1.8rem; }
-    div#carousel div.embed-internal-carousel div {
-      flex-direction: column; }
-      div#carousel div.embed-internal-carousel div p {
-        padding-right: 0;
-        padding-bottom: 0.9rem; }
-        div#carousel div.embed-internal-carousel div p img {
-          max-width: 100%; } }
+  top: -1rem;
+  left: -1rem;
+  height: 10rem;
+  width: 10rem;
+  background: #0D26F9;
+  color: #FFD4CC;
+  z-index: 2; }
+  .starburst p {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 1.8rem;
+    line-height: 1;
+    font-weight: 700;
+    z-index: 3; }
 
 header {
   flex-shrink: 0; }
@@ -126,7 +152,7 @@ header {
     align-items: center;
     justify-content: space-between;
     width: 1200px;
-    max-width: 92%;
+    max-width: 80%;
     margin: 0 auto;
     padding: 1.8rem 0; }
   header a {
@@ -142,10 +168,17 @@ header {
   header .header-cart {
     font-family: "Amatic SC", sans-serif;
     font-size: 200%;
+    letter-spacing: -1.5px;
     transform: scale(1.2, 1); }
 
 main {
-  flex-grow: 1; }
+  flex-grow: 1;
+  width: 1200px;
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 1.8rem 0; }
+  main div {
+    text-align: center; }
 
 footer {
   flex-shrink: 0; }
@@ -153,63 +186,166 @@ footer {
     text-align: center;
     text-transform: lowercase;
     width: 1200px;
-    max-width: 92%;
+    max-width: 80%;
     margin: 0 auto;
     padding: 1.8rem 0; }
 
 h1#normalreg {
-  display: inline-block;
-  font-size: 8.4rem;
-  transform: scale(1, 1.2);
+  display: block;
   position: relative; }
   h1#normalreg svg {
     vertical-align: super;
     font-size: 50%; }
 
-div#nav {
-  width: 33%;
+h2#nav + ul {
   font-family: "Pragati Narrow", sans-serif;
   font-size: 5.8rem;
-  line-height: 5.8rem; }
-  div#nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0; }
-    div#nav ul li {
-      position: relative;
-      border-bottom: 1.5px solid currentColor;
-      padding: 1.5rem 0 1.5rem 0;
-      transition: 0.1s; }
-      div#nav ul li:hover, div#nav ul li:focus {
+  line-height: 5.8rem;
+  list-style-type: none;
+  text-align: left;
+  margin: 1.8rem 0;
+  padding: 0; }
+  h2#nav + ul li {
+    position: relative;
+    border-bottom: 1.5px solid currentColor;
+    padding: 1.5rem 0 1.5rem 0;
+    transition: 0.1s; }
+    h2#nav + ul li:hover, h2#nav + ul li:focus {
+      padding-bottom: calc(1.5rem - 1.5px);
+      border-width: 3px;
+      letter-spacing: 1.5px;
+      cursor: pointer; }
+    h2#nav + ul li a {
+      width: 100%;
+      text-decoration: none;
+      transition: 0.1s;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden; }
+      h2#nav + ul li a:focus {
         padding-bottom: calc(1.5rem - 1.5px);
         border-width: 3px;
-        letter-spacing: 1.5px;
-        cursor: pointer; }
-      div#nav ul li a {
-        width: 100%;
-        text-decoration: none;
-        transition: 0.1s; }
-        div#nav ul li a:focus {
-          padding-bottom: calc(1.5rem - 1.5px);
-          border-width: 3px;
-          letter-spacing: 1.5px; }
-        div#nav ul li a::after {
-          content: "⟶";
-          position: absolute;
-          right: 0; }
+        letter-spacing: 1.5px; }
+      h2#nav + ul li a::after {
+        content: "⟶";
+        position: absolute;
+        right: 0; }
+
+div.p-nav {
+  width: 33%; }
+
+@media only screen and (max-width: 76.8rem) {
+  div.p-nav {
+    width: 50%; } }
+
+@media only screen and (max-width: 41.1rem) {
+  div.p-nav {
+    width: 100%; } }
+
+h2#carousel + div.embed {
+  margin: 0;
+  padding: 0;
+  overflow-x: scroll;
+  scroll-behavior: smooth; }
+  h2#carousel + div.embed::-webkit-scrollbar {
+    width: 1rem; }
+  h2#carousel + div.embed::-webkit-scrollbar-track, h2#carousel + div.embed::-webkit-scrollbar-thumb {
+    background: #FFFCF3; }
+  h2#carousel + div.embed div {
+    display: flex; }
+    h2#carousel + div.embed div p {
+      display: inline-block;
+      padding-right: 1.8rem; }
+      h2#carousel + div.embed div p:last-child {
+        padding-right: 0; }
+      h2#carousel + div.embed div p img {
+        width: 45rem;
+        height: 60rem;
+        object-fit: cover; }
+
+@media only screen and (max-width: 41.1rem) {
+  h2#carousel + div.embed div {
+    flex-direction: column; }
+    h2#carousel + div.embed div p {
+      padding-right: 0;
+      padding-bottom: 0.9rem; }
+      h2#carousel + div.embed div p img {
+        height: 30rem;
+        max-width: 100%; } }
+
+div.embed-internal-carousel + p {
+  position: relative;
+  text-align: left; }
+  div.embed-internal-carousel + p a {
+    display: block;
+    font-family: "Pragati Narrow", sans-serif;
+    font-size: 2.9rem;
+    line-height: 2.9rem;
+    text-decoration: none;
+    transition: 0.1s;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden; }
+    div.embed-internal-carousel + p a:hover, div.embed-internal-carousel + p a:focus {
+      letter-spacing: 1.5px; }
+    div.embed-internal-carousel + p a::after {
+      content: "⟶";
+      position: absolute;
+      right: 1.8rem; }
+
+div.p-carousel {
+  position: absolute;
+  right: 0;
+  width: 60%; }
+
+@media only screen and (max-width: 76.8rem) {
+  div.p-carousel {
+    width: 45%; } }
+
+@media only screen and (max-width: 41.1rem) {
+  div.p-carousel {
+    position: static;
+    width: 100%;
+    margin-top: 1.8rem; } }
 
 #index {
   display: flex;
   flex-flow: column wrap;
   width: 1200px;
-  max-width: 92%;
+  max-width: 80%;
   margin: 0 auto;
   padding: 1.8rem 0; }
+  #index h1 {
+    text-align: left; }
 
-@media only screen and (max-width: 76.8rem) {
-  div#nav {
-    width: 50%; } }
+h1#normalreg + p {
+  margin-bottom: 1.8rem; }
 
-@media only screen and (max-width: 41.1rem) {
-  div#nav {
-    width: 100%; } }
+#store, #lab {
+  text-align: center; }
+  #store > *, #lab > * {
+    min-width: 28rem;
+    margin: 0 auto; }
+  #store div[class^="p-"], #lab div[class^="p-"] {
+    margin: 4.6rem 0;
+    padding: 1.8rem 0 3.6rem 0; }
+    #store div[class^="p-"] p, #lab div[class^="p-"] p {
+      line-height: 1.2;
+      width: 50%;
+      min-width: 32rem;
+      margin: 0 auto; }
+    #store div[class^="p-"] .btn, #lab div[class^="p-"] .btn {
+      line-height: 1.8; }
+  #store div.filled, #lab div.filled {
+    border: 1px solid #0D26F9;
+    background: #0D26F9;
+    color: #FFFCF3; }
+  #store div.outline, #lab div.outline {
+    border: 1px solid currentColor; }
+    #store div.outline h2, #lab div.outline h2 {
+      margin-bottom: 4rem;
+      border-bottom: 1px solid currentColor;
+      width: 100%; }
+    #store div.outline .btn, #lab div.outline .btn {
+      background-color: #0D26F9;
+      color: #FFFCF3; }
+  #store strong, #lab strong {
+    font-size: 120%; }

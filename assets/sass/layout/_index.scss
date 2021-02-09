@@ -1,7 +1,5 @@
 h1#normalreg {
-    display: inline-block;
-    font-size: 8.4rem;
-    transform: scale(1, 1.2);
+    display: block;
     position: relative;
 
     & svg {
@@ -10,50 +8,162 @@ h1#normalreg {
     }
 }
 
-div#nav {
-    width: 33%;
-    // float: left;
-    // border: 2px solid tomato;
+h2#nav + ul {
     font-family: $font-thin;
     font-size: 5.8rem;
     line-height: 5.8rem;
-    
-    & ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        
-        & li {
-            position: relative;
-            border-bottom: 1.5px solid currentColor;
-            padding: 1.5rem 0 1.5rem 0;
-            transition: 0.1s;
+    list-style-type: none;
+    text-align: left;
+    margin: 1.8rem 0;
+    padding: 0;
 
-            &:hover, &:focus {
+    & li {
+        position: relative;
+        border-bottom: 1.5px solid currentColor;
+        padding: 1.5rem 0 1.5rem 0;
+        transition: 0.1s;
+
+        &:hover, &:focus {
+            padding-bottom: calc(1.5rem - 1.5px);
+            border-width: 3px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+        }
+
+        & a {
+            width: 100%;
+            text-decoration: none;
+            transition: 0.1s;
+            @include bfv;
+
+            &:focus {
                 padding-bottom: calc(1.5rem - 1.5px);
                 border-width: 3px;
                 letter-spacing: 1.5px;
-                cursor: pointer;
             }
 
-            & a {
-                width: 100%;
-                text-decoration: none;
-                transition: 0.1s;
+            &::after {
+                content: "⟶";
+                position: absolute;
+                right: 0;
+            }
+        }
+    }
+} 
 
-                &:focus {
-                    padding-bottom: calc(1.5rem - 1.5px);
-                    border-width: 3px;
-                    letter-spacing: 1.5px;
-                }
+div.p-nav {
+    width: 33%;
+}
 
-                &::after {
-                    content: "⟶";
-                    position: absolute;
-                    right: 0;
+@media only screen and (max-width: 76.8rem) {
+    div.p-nav {
+        width: 50%;
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    div.p-nav {
+        width: 100%;
+    }
+}
+
+h2#carousel + div.embed {
+    margin: 0;
+    padding: 0;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+
+    &::-webkit-scrollbar {
+        width: 1rem;
+    }
+
+    &::-webkit-scrollbar-track,
+    &::-webkit-scrollbar-thumb {
+        background: $color-white;
+    }
+
+    & div {
+        display: flex;
+
+        p {
+            display: inline-block;
+            padding-right: 1.8rem;
+
+            &:last-child {
+                padding-right: 0;
+            }
+
+            img {
+                width: 45rem;
+                height: 60rem;
+                object-fit: cover;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    h2#carousel + div.embed  {
+        & div {
+            flex-direction: column;
+            
+            p {
+                padding-right: 0;
+                padding-bottom: 0.9rem;
+
+                img {
+                    height: 30rem;
+                    max-width: 100%;
                 }
             }
         }
+    }
+}
+
+div.embed-internal-carousel + p {
+    // border: 2px solid green;
+    position: relative;
+    text-align: left;
+    
+    & a {
+        // border: 2px solid orange;
+        display: block;
+        font-family: $font-thin;
+        font-size: 2.9rem;
+        line-height: 2.9rem;
+        text-decoration: none;
+        transition: 0.1s;
+        @include bfv;
+    
+        &:hover, &:focus {
+            letter-spacing: 1.5px;
+        }
+
+        &::after {
+            content: "⟶";
+            position: absolute;
+            right: 1.8rem;
+        }
+    }
+}
+
+div.p-carousel {
+    position: absolute;
+    right: 0;
+    width: 60%;
+}
+
+@media only screen and (max-width: 76.8rem) {
+    div.p-carousel {
+        width: 45%;
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    div.p-carousel {
+        position: static;
+        width: 100%;
+        margin-top: 1.8rem;
     }
 }
 
@@ -61,18 +171,8 @@ div#nav {
     display: flex;
     flex-flow: column wrap;
     // max-height: 60rem;
-
-    @include container
-}
-
-@media only screen and (max-width: 76.8rem) {
-    div#nav {
-        width: 50%;
-    }
-}
-
-@media only screen and (max-width: 41.1rem) {
-    div#nav {
-        width: 100%;
+    @include container;
+    & h1 {
+        text-align: left;
     }
 }

@@ -1,6 +1,19 @@
 @mixin container {
     width: 1200px;
-    max-width: 92%;
+    max-width: 80%;
     margin: 0 auto;
     padding: 1.8rem 0;
+}
+
+@mixin bfv {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+@mixin stretchX {
+    transform: scale(1.2, 1);
+}
+
+@mixin stretchY {
+    transform: scale(1, 1.2);
 }

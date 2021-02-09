@@ -30,6 +30,7 @@ header {
     & .header-cart {
         font-family: $font-hand;
         font-size: 200%;
-        transform: scale(1.2, 1);
+        letter-spacing: -1.5px;
+        @include stretchX
     }
 }

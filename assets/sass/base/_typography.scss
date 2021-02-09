@@ -1,11 +1,13 @@
 body {
     font-family: $font-thin;
-    font-size: 1.8rem;
+    font-size: 2rem;
     line-height: 1.8;
 }
 
 strong {
+    font-family: $font-thin;
     font-weight: $weight-bold;
+    -webkit-text-stroke: 0.5px $color-blue;
 }
 
 em {
@@ -18,8 +20,28 @@ u {
 
 h1, h2, h3 {
     font-family: $font-main;
-    font-weight: $weight-normal;
     text-transform: lowercase;
+    @include stretchY;
+
+    & svg {
+        font-weight: $weight-normal;
+    }
+}
+
+h1 {
+    font-weight: $weight-normal;
+    font-size: 8.4rem;
+}
+
+h2 {
+    font-family: $font-thin;
+    font-weight: $weight-bold;
+    font-size: 4.2rem;
+}
+
+h3 {
+    font-family: $font-thin;
+    font-weight: $weight-bold;
 }
 
 sup, sub {

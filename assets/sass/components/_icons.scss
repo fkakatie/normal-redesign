@@ -1,0 +1,14 @@
+svg {
+    &.icon-store, &.icon-lab {
+        height: 120px;
+        width: 200px;
+        stroke-width: 0;
+    }
+
+    &.icon-v, &.icon-gf {
+        margin: 0 -0.2rem;
+        font-size: 120%;
+        font-family: $font-thin;
+        @include stretchX
+    }
+}
