@@ -1,6 +1,6 @@
 .btn {
     display: inline-block;
-    margin: 2.7rem 0 1.8rem;
+    margin: 1rem 0;
     padding: 0.5rem 1rem;
     background: $color-white;
     color: $color-blue;
@@ -12,12 +12,45 @@
     @include stretchY;
 
     &:hover, &:focus {
-        letter-spacing: 3px;
+        letter-spacing: 1px;
         cursor: pointer;
         filter: brightness(1.2);
+        @include bfv;
     }
 
-    // & .btn-invert {
+    &-carousel {
+        position: absolute;
+        top: 50%;
+        width: auto;
+        min-width: 0 !important;
+        width: 5rem !important;
+        height: 5rem;
+        line-height: 5rem;
+        font-size: 150%;
+        background: transparent;
+        color: $color-blue;
+        border-radius: 50%;
+        border: 0 !important;
+        z-index: 3;
+        transform: translateY(-50%);
+        transition: 0.2s;
+        cursor: pointer;
+
+        &-prev {
+            left: 0.5rem;
+        }
+
+        &-next {
+            right: 0.5rem;
+        }
+
+        &:hover {
+            background: $color-blue;
+            color: $color-white;
+        }
+    }
+
+    // &-invert {
     //     // 
     // }
 }

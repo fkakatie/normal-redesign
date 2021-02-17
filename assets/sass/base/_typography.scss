@@ -21,6 +21,8 @@ u {
 h1, h2, h3 {
     font-family: $font-main;
     text-transform: lowercase;
+    line-height: 1;
+    margin-bottom: 1rem;
     @include stretchY;
 
     & svg {

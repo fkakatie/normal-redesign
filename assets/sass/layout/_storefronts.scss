@@ -18,7 +18,7 @@ h1#normalreg + p {
 
         &[class^="p-"] {
             margin: 4.6rem 0;
-            padding: 1.8rem 0 3.6rem 0;
+            padding: 1.8rem 0;
 
             & p {
                 line-height: 1.2;
@@ -42,9 +42,13 @@ h1#normalreg + p {
             border: 1px solid currentColor;
 
             & h2 {
-                margin-bottom: 4rem;
-                border-bottom: 1px solid currentColor;
+                margin-bottom: 1.5rem;
                 width: 100%;
+                
+                & + table {
+                    border-bottom: 1px solid currentColor;
+                    width: 100%;
+                }
             }
 
             & .btn {

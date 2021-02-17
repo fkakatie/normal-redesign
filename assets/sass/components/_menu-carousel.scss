@@ -1,5 +1,73 @@
 #store, #lab {
     & div.embed-internal {
-        // border: 1px solid orange;
+        // border: 2px solid orange;
+        position: relative;
+        display: flex;
+        flex-wrap: row;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+
+        &.carousel-odd {
+            justify-content: flex-start;
+        }
+
+        &.carousel-even {
+            justify-content: center;
+        }
+
+        & div.carousel-slide {
+            // border: 2px solid blue;
+            min-width: calc(100% / 3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 1.6rem;
+            padding: 0 6rem;
+            // animation-name: fade;
+            // animation-duration: 1.5s;
+
+            & p {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 76.8rem) {
+    #store, #lab {
+        & div.embed-internal {
+            & div.carousel-slide {
+                min-width: calc(100% / 2);
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    #store, #lab {
+        & div.embed-internal {
+            &.carousel-odd {
+                justify-content: center;
+            }
+    
+            &.carousel-even {
+                justify-content: flex-start;
+            }
+
+            & div.carousel-slide {
+                min-width: 100%;
+            }
+        }
+    }
+}
+
+@keyframes fade {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
     }
 }

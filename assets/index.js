@@ -7,7 +7,8 @@ const setPage = () => {
   if (path.includes("store")) {
     // console.log("store");
     shopify();
-    starburst();
+    // starburst();
+    setupSlides();
   } else if (path.includes("lab")) {
     // console.log("lab");
   } else if (path.includes("delivery")) {
@@ -111,16 +112,18 @@ const buildIndexGrid = () => {
 const shopify = () => {
   const squarePrefix = "https://squareup.com/dashboard/items/library/";
   const $as = document.querySelectorAll("main a");
-  $as.forEach((a) => {
-    const href = a.getAttribute("href");
-    if (href.includes(squarePrefix)) {
-      const id = href.substr(squarePrefix.length);
-      a.setAttribute("data-id", id);
-      a.setAttribute("onclick", "addToCart(this)");
-      a.removeAttribute("href");
-      a.classList.add("btn");
-    }
-  });
+  if ($as) {
+    $as.forEach((a) => {
+      const href = a.getAttribute("href");
+      if (href.includes(squarePrefix)) {
+        const id = href.substr(squarePrefix.length);
+        a.setAttribute("data-id", id);
+        a.setAttribute("onclick", "addToCart(this)");
+        a.removeAttribute("href");
+        a.classList.add("btn");
+      }
+    });
+  }
 };
 
 const addToCart = (item) => {
@@ -143,6 +146,89 @@ const starburst = () => {
     $starText.textContent = "need a drink?";
   $starburst.append($starText);
   $el.prepend($starburst);
+}
+
+// STOREFRONT CAROUSELS
+const setupSlides = ($el) => {  
+  const $carousels = document.querySelectorAll("div.embed-internal");
+  // console.log(`showSlides -> $carousels`, $carousels);
+
+  if ($carousels) {
+    // setup carousels
+    $carousels.forEach((c) => {
+      const title = [ ...c.classList ].filter((name) => {
+        return name !== "embed" && name !== "embed-internal" && name !== "embed-internal-";
+      })[0].split("-").slice(-1).pop();
+      c.setAttribute("data-title", title);
+      const $prevBtn = document.createElement("button");
+        $prevBtn.classList.add("btn-carousel", "btn-carousel-prev");
+        $prevBtn.setAttribute("data-title", title);
+        $prevBtn.textContent = "⟵";
+        $prevBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // console.log(e.target.getAttribute("data-title"));
+          shiftSlides(e.target.getAttribute("data-title"), "prev");
+        }
+      
+      const $nextBtn = document.createElement("button");
+        $nextBtn.classList.add("btn-carousel", "btn-carousel-next");
+        $nextBtn.setAttribute("data-title", title);
+        $nextBtn.textContent = "⟶";
+        $nextBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // console.log(e.target.getAttribute("data-title"));
+          shiftSlides(e.target.getAttribute("data-title"), "next");
+        }
+
+      c.prepend($prevBtn);
+      c.prepend($nextBtn);
+
+      // get title of carousel by extrapolating classes
+      const $slides = c.querySelectorAll("div");
+      console.log($slides.length);
+
+      if ($slides.length % 2 === 0) {
+        c.classList.add("carousel-even");
+      } else {
+        c.classList.add("carousel-odd");
+      }
+
+      // setup slides inside carousels
+      if ($slides) {
+        $slides.forEach((s, i) => {
+          s.setAttribute("data-index", i + 1);
+          s.setAttribute("data-title", title);
+          s.classList.add("carousel-slide");
+        })
+      }
+    })
+  }
+
+}
+
+const shiftSlides = (title, direction) => {
+  const $thisCarousel = document.querySelector(`div.embed-internal-${title}`);
+  const $theseSlides = [ ...$thisCarousel.querySelectorAll("div") ];
+  while ($thisCarousel.lastChild.nodeName === "div") {
+    $thisCarousel.removeChild($thisCarousel.lastChild);
+  }
+  if ($theseSlides) {
+    const $first = $theseSlides[0];
+    const $last = $theseSlides[$theseSlides.length - 1];
+    if (direction === "prev") {
+      $theseSlides.splice(-1, 1);
+      $theseSlides.unshift($last);
+      
+    } else if (direction === "next") {
+      $theseSlides.splice(1, 1);
+      $theseSlides.push($first);
+    }
+  }
+  $theseSlides.forEach((s) => {
+    $thisCarousel.append(s);
+  })
 }
 
 // HEADER
