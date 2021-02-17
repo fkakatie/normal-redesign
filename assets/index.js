@@ -7,12 +7,18 @@ const setPage = () => {
   if (path.includes("store")) {
     // console.log("store");
     shopify();
-    // starburst();
-    setupSlides();
+    drinksStarburst();
+    setupCarousels();
   } else if (path.includes("lab")) {
     // console.log("lab");
+    shopify();
+    drinksStarburst();
+    setupCarousels();
   } else if (path.includes("delivery")) {
     // console.log("delivery");
+    shopify();
+    drinksStarburst();
+    setupCarousels();
   } else if (path.includes("pint-club")) {
     // console.log("merch");
   } else if (path.includes("merch")) {
@@ -135,21 +141,41 @@ const addToCart = (item) => {
   $headerCart.textContent = currentVal + 1;
 }
 
-const starburst = () => {
-  console.log(`\nstarburst is running`);
+const drinksStarburst = () => {
   const $el = document.querySelector(".p-drinksdrinksdrinks");
-  $el.style.position = "relative";
-  const $starburst = document.createElement("div");
-    $starburst.classList.add("starburst");
-    console.log(`starburst -> $el`, $el);
-  const $starText = document.createElement("p");
-    $starText.textContent = "need a drink?";
-  $starburst.append($starText);
-  $el.prepend($starburst);
+  if ($el) {
+    $el.style.position = "relative";
+    const $starburst = document.createElement("div");
+      $starburst.classList.add("starburst", "starburst-unclicked");
+    const $starSpin = document.createElement("div");
+      $starSpin.classList.add("starburst-spin")
+    const $starText = document.createElement("p");
+      $starText.classList.add("starburst-text")
+      $starText.textContent = "need a drink?";
+    $starburst.append($starSpin);
+    $starburst.append($starText);
+
+    $starburst.onclick = (e) => {
+      e.preventDefault();
+      const $el = document.querySelector(".p-drinksdrinksdrinks");
+      const $target = document.querySelector(".starburst");
+      if ([ ...$target.classList ].includes("starburst-unclicked")) {
+        $target.classList.remove("starburst-unclicked");
+        $target.classList.add("starburst-clicked");
+        $el.classList.remove("hide");
+      } else {
+        $target.classList.remove("starburst-clicked");
+        $target.classList.add("starburst-unclicked");
+        $el.classList.add("hide");
+      }
+    }
+    $el.before($starburst);
+    $el.classList.add("hide");
+  }
 }
 
 // STOREFRONT CAROUSELS
-const setupSlides = ($el) => {  
+const setupCarousels = ($el) => {  
   const $carousels = document.querySelectorAll("div.embed-internal");
   // console.log(`showSlides -> $carousels`, $carousels);
 
@@ -160,6 +186,7 @@ const setupSlides = ($el) => {
         return name !== "embed" && name !== "embed-internal" && name !== "embed-internal-";
       })[0].split("-").slice(-1).pop();
       c.setAttribute("data-title", title);
+
       const $prevBtn = document.createElement("button");
         $prevBtn.classList.add("btn-carousel", "btn-carousel-prev");
         $prevBtn.setAttribute("data-title", title);
@@ -170,7 +197,6 @@ const setupSlides = ($el) => {
           // console.log(e.target.getAttribute("data-title"));
           shiftSlides(e.target.getAttribute("data-title"), "prev");
         }
-      
       const $nextBtn = document.createElement("button");
         $nextBtn.classList.add("btn-carousel", "btn-carousel-next");
         $nextBtn.setAttribute("data-title", title);
@@ -187,7 +213,6 @@ const setupSlides = ($el) => {
 
       // get title of carousel by extrapolating classes
       const $slides = c.querySelectorAll("div");
-      console.log($slides.length);
 
       if ($slides.length % 2 === 0) {
         c.classList.add("carousel-even");

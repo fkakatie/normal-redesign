@@ -53,6 +53,9 @@ main svg {
 table thead tr th code {
   display: none; }
 
+.hide {
+  display: none; }
+
 body {
   font-family: "Pragati Narrow", sans-serif;
   font-size: 2rem;
@@ -193,25 +196,63 @@ svg.icon-v, svg.icon-gf {
     opacity: 1; } }
 
 .starburst {
-  position: absolute;
-  top: -1rem;
-  left: -1rem;
+  position: relative;
+  margin: -7.5rem -1rem !important;
+  min-width: 0 !important;
   height: 10rem;
   width: 10rem;
-  background: #0D26F9;
-  color: #FFD4CC;
-  z-index: 2; }
-  .starburst p {
-    position: relative;
+  z-index: 2;
+  cursor: pointer; }
+  .starburst-unclicked {
+    color: #0D26F9; }
+    .starburst-unclicked .starburst-spin {
+      background: #FFD4CC; }
+  .starburst-clicked {
+    display: none; }
+    .starburst-clicked .starburst-spin {
+      background: #0D26F9; }
+  .starburst-spin {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 2; }
+    .starburst-spin:before, .starburst-spin:after {
+      content: "";
+      position: absolute;
+      display: block;
+      background: inherit;
+      width: 100%;
+      height: 100%; }
+    .starburst-spin:before {
+      transform: rotate(30deg); }
+    .starburst-spin:after {
+      transform: rotate(60deg); }
+  .starburst:hover .starburst-spin {
+    animation: spin 5s linear infinite; }
+  .starburst-text {
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: rotate(-15deg) translate(-33%, -66%);
     width: auto !important;
     min-width: 0 !important;
-    padding: 1.8rem;
     line-height: 1;
     font-weight: 700;
-    z-index: 3; }
+    text-align: center;
+    z-index: 3;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden; }
+
+@media only screen and (max-width: 41.1rem) {
+  .starburst {
+    margin: 0 auto !important; } }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 header {
   flex-shrink: 0; }
@@ -392,6 +433,8 @@ h1#normalreg + p {
   #store > *, #lab > * {
     min-width: 28rem;
     margin: 0 auto; }
+  #store div h3, #lab div h3 {
+    margin-top: 2rem; }
   #store div[class^="p-"], #lab div[class^="p-"] {
     margin: 4.6rem 0;
     padding: 1.8rem 0; }
