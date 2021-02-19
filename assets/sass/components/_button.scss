@@ -1,56 +1,101 @@
 .btn {
-    display: inline-block;
-    margin: 1rem 0;
-    padding: 0.5rem 1rem;
-    background: $color-white;
-    color: $color-blue;
-    font-family: $font-thin;
-    font-weight: $weight-bold;
-    font-size: 80%;
-    transition: 0.2s;
-    @include bfv;
-    @include stretchY;
+    
+    &-back {
+        @include font-poppins; 
+        font-size: 1.8rem;
+        line-height: 1;
 
-    &:hover, &:focus {
-        letter-spacing: 1px;
-        cursor: pointer;
-        filter: brightness(1.2);
-        @include bfv;
-    }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
-    &-carousel {
+        padding-top: 1.8rem;
         position: absolute;
-        top: 50%;
-        width: auto;
-        min-width: 0 !important;
-        width: 5rem !important;
-        height: 5rem;
-        line-height: 5rem;
-        font-size: 150%;
-        background: transparent;
-        color: $color-blue;
+        top: 0;
+        left: 4rem;
         border-radius: 50%;
-        border: 0 !important;
-        z-index: 3;
-        transform: translateY(-50%);
-        transition: 0.2s;
+
+        height: 10rem;
+        width: 10rem;
+
         cursor: pointer;
 
-        &-prev {
-            left: 0.5rem;
+        @include bfv;
+        transition: 0.2s all;
+
+        &:hover, &:focus {
+            transform: rotate(-3deg) scale(1.2);
         }
 
-        &-next {
-            right: 0.5rem;
-        }
-
-        &:hover {
-            background: $color-blue;
-            color: $color-white;
+        & svg {
+            margin-top: -0.5rem;
+            height: 4rem;
+            width: 4rem;
         }
     }
-
-    // &-invert {
-    //     // 
-    // }
 }
+
+@media only screen and (max-width: 41.1rem) {
+    .btn-back {
+        left: 0;
+        position: inherit;
+        margin: 4rem auto;
+    }
+}
+
+// .btn {
+//     display: inline-block;
+//     margin: 1rem 0;
+//     padding: 0.5rem 1rem;
+//     background: $color-white;
+//     color: $color-blue;
+//     font-weight: $weight-bold;
+//     font-size: 80%;
+//     transition: 0.2s;
+//     @include bfv;
+//     @include stretchY;
+
+//     &:hover, &:focus {
+//         letter-spacing: 1px;
+//         cursor: pointer;
+//         filter: brightness(1.2);
+//         @include bfv;
+//     }
+
+//     &-carousel {
+//         position: absolute;
+//         top: 50%;
+//         width: auto;
+//         min-width: 0 !important;
+//         width: 5rem !important;
+//         height: 5rem;
+//         line-height: 5rem;
+//         font-size: 150%;
+//         background: transparent;
+//         color: $color-blue;
+//         border-radius: 50%;
+//         border: 0 !important;
+//         z-index: 3;
+//         transform: translateY(-50%);
+//         transition: 0.2s;
+//         cursor: pointer;
+
+//         &-prev {
+//             left: 0.5rem;
+//         }
+
+//         &-next {
+//             right: 0.5rem;
+//         }
+
+//         &:hover {
+//             background: $color-blue;
+//             color: $color-white;
+//         }
+//     }
+
+//     // &-invert {
+//     //     // 
+//     // }
+// }

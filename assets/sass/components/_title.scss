@@ -1,0 +1,10 @@
+h1#normalreg {
+    @include font-normal;
+    font-size: 7.3rem;
+
+    & svg.icon-reg {
+        vertical-align: super;
+        font-size: 50%;
+        margin-right: -3.9rem; // offset for center alignment
+    }
+}

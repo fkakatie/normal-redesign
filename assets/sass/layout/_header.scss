@@ -1,6 +1,6 @@
 header {
     flex-shrink: 0;
-    // border: 2px solid tomato;
+    @include font-acumin-thin;
 
     & section {
         display: flex;
@@ -8,6 +8,7 @@ header {
         justify-content: space-between;
         @include container;
         @include bfv;
+        padding: 4rem 0;
     }
 
     & a {
@@ -15,7 +16,7 @@ header {
         transition: 0.2s linear;
 
         &:hover svg.icon-normal, &:focus svg.icon-normal {
-            transform: rotate(30deg);
+            transform: rotate(12deg);
         }
     }
 
@@ -28,10 +29,18 @@ header {
         }
     }
 
-    & .header-cart {
-        font-family: $font-hand;
-        font-size: 200%;
+    & div {
+        position: relative;
+        // border: 2px solid red;
+    }
+
+    & p {
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -33%);
+        color: $color-white;
+        line-height: 1;
         letter-spacing: -1.5px;
-        @include stretchX
     }
 }

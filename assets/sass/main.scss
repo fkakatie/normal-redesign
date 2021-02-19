@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap');
 
 @import "abstracts/mixins";
 @import "abstracts/variables";
@@ -8,13 +7,20 @@
 @import "base/typography";
 
 @import "components/button";
-@import "components/icons";
+@import "components/svg";
 @import "components/menu-carousel";
 @import "components/starburst";
+@import "components/title";
 
 @import "layout/header";
 @import "layout/main";
+@import "layout/order";
 @import "layout/footer";
 @import "layout/index";
 @import "layout/icons";
 @import "layout/storefronts";
+
+@import "themes/blue";
+@import "themes/pink";
+@import "themes/white";
+@import "themes/yellow";

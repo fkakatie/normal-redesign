@@ -1,0 +1,13 @@
+.theme-yellow {
+    background: $color-yellow;
+    color: $color-green;
+
+    & header p {
+        color: $color-yellow;
+    }
+
+    & .btn-back {
+        color: $color-yellow;
+        background: $color-green;
+    }
+}

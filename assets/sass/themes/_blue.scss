@@ -1,0 +1,13 @@
+.theme-blue {
+    background: $color-blue;
+    color: $color-pink;
+
+    & header p {
+        color: $color-blue;
+    }
+
+    & .btn-back {
+        color: $color-blue;
+        background: $color-pink;
+    }
+}

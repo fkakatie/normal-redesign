@@ -1,0 +1,26 @@
+main svg {
+    height: 0.8em;
+    width: 0.8em;
+    display: inline-block;
+    text-transform: none;
+}
+
+svg {
+    fill: currentColor;
+    stroke: currentColor;
+    vertical-align: middle;
+
+    &.icon-store, &.icon-lab, 
+    &.icon-cooler-bag, &.icon-shipping-box, 
+    &.icon-to-go-bag, &.icon-van {
+        height: 15rem;
+        width: 20rem;
+        stroke-width: 0;
+    }
+
+    &.icon-v, &.icon-gf {
+        margin: 0 -0.2rem;
+        font-size: 120%;
+        @include stretchX
+    }
+}

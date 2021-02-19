@@ -4,7 +4,10 @@ let storeLocation;
 // UNIVERSAL SETUP
 const setPage = () => {
   const path = window.location.pathname;
-  if (path.includes("store")) {
+  if (path.includes("order")) {
+    // console.log("order");
+    buildOrderPage();
+  } else if (path.includes("store")) {
     // console.log("store");
     shopify();
     // drinksStarburst();
@@ -23,26 +26,6 @@ const setPage = () => {
     // console.log("merch");
   } else if (path.includes("merch")) {
     // console.log("pint-club");
-  } else if (path.includes("icons")) {
-    // console.log("icons");
-
-    // i'm going to regret this
-
-    const $ps = document.querySelectorAll("p");
-    // console.log($ps);
-    $ps.forEach((p) => {
-      // console.log([ ...p.parentElement.classList][0]);
-      const classList = [...p.parentElement.classList][0];
-      if (classList === "p-logos" && p.textContent) {
-        console.log(classList);
-        const svg = p.innerHTML.split("</svg>")[0].trim() + "</svg>";
-        const text = p.innerHTML.split("</svg>")[1].trim();
-        console.log(svg, text);
-        p.innerHTML = svg;
-        p.setAttribute("title", text);
-      }
-    })
-
   }
   else {
     // default location is store
@@ -79,14 +62,40 @@ const codify = () => {
   const $code = document.querySelectorAll("code");
   if ($code) {
     $code.forEach((c, i) => {
-      const [ key, value ] = c.textContent.split(": ");
-      const [ style, color ] = value.split(" ");
-      const $parent = $code[i].parentNode.parentNode.parentNode.parentNode.parentNode;
-      $parent.classList.add(style);
-      $parent.setAttribute("data-primary", color);
+      const [ key, values ] = c.textContent.split(": ");
+      if (key === "theme") {
+        setPageTheme(values); // set theme class on body
+      } else if (key === "block") {
+        setBlockTheme(c, values); // set theme class on parent
+      }
+      // const [ style, color ] = value.split(" ");
+      
+      // $parent.classList.add(style);
+      // $parent.setAttribute("data-primary", color);
+      
     })
   }
   colorize();
+}
+
+const setPageTheme = (color) => {
+  const $body = document.querySelector("body");
+  const configuredColors = [ "blue", "pink", "yellow" ];
+  if (configuredColors.includes(color)) {
+    $body.classList.add(`theme-${color}`);
+  } else {
+    $body.classList.add(`theme-${white}`);
+  }
+}
+
+const setBlockTheme = ($el, color) => {
+  const $parent = $el.parentNode.parentNode.parentNode.parentNode.parentNode;
+  const configuredColors = [ "blue", "pink", "yellow" ];
+  if (configuredColors.includes(color)) {
+    $parent.classList.add(`theme-${color}`);
+  } else {
+    $parent.classList.add("theme-white");
+  }
 }
 
 const colorize = () => {
@@ -134,6 +143,81 @@ const buildIndexGrid = () => {
     }
   }
 };
+
+// ORDER PAGE
+const buildOrderPage = () => {
+
+  const showOrderBlock = (e) => {
+    // console.log(`show order block running`);
+    const $parent = e.target.closest("p");
+    if ($parent) {
+      const target = $parent.getAttribute("data-target");
+      
+      const showThis = document.querySelector(`.p-${target}`);
+      const thisTheme = showThis.classList[1];
+      const $body = document.querySelector("body");
+      $body.classList.add(thisTheme);
+      showThis.classList.add("show-flex");
+  
+      const $orderDiv = document.querySelector(".p-order");
+      $orderDiv.classList.add("hide");
+      
+    }
+  }
+
+  const backToOptions = (e) => {
+    console.log("back to options running");
+    const $btn = e.target.closest("aside");
+    console.log($btn);
+    if ($btn) {
+      const target = $btn.getAttribute("data-target");
+      const theme = $btn.getAttribute("data-theme");
+
+      const hideThis = document.querySelector(`.${target}`);
+      console.log(`backToOptions -> hideThis`, hideThis);
+      hideThis.classList.remove("show-flex");
+
+      const $body = document.querySelector("body");
+      $body.classList.remove(theme);
+
+
+      console.log(target, theme);
+
+      const $orderDiv = document.querySelector(".p-order");
+      $orderDiv.classList.remove("hide");
+
+    }
+  }
+
+  // console.log(`build order page running`);
+  const $divs = document.querySelectorAll("main div");
+  $divs.forEach((d) => {
+    if ([ ...d.classList].includes("p-order")) {
+      const $children = [ ...d.children ];
+      $children.forEach((c) => {
+        const elName = cleanName(c.textContent.trim());
+        c.setAttribute("data-target", elName);
+        c.onclick = (e) => {
+          showOrderBlock(e);
+        }
+      })
+    }
+    else if (d.classList.length > 1) {
+      console.log(d);
+      const $backBtn = document.createElement("aside");
+        $backBtn.classList.add("btn-back");
+        $backBtn.setAttribute("data-target", d.classList[0]);
+        $backBtn.setAttribute("data-theme", d.classList[1]);
+        $backBtn.textContent = "back to options";
+        $backBtn.innerHTML 
+          += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-arrow-left"><use href="/icons.svg#arrow-left"></use></svg>`;
+        $backBtn.onclick = (e) => {
+          backToOptions(e);
+        }
+      d.prepend($backBtn);
+    }
+  })
+}
 
 // STOREFRONTS
 const shopify = () => {
@@ -320,8 +404,8 @@ const randomNum = (min, max) => {
 };
 
 window.onload = (event) => {
-  // classify();
-  // codify();
+  classify();
+  codify();
   testCart();
   setPage();
   updateCopyright();

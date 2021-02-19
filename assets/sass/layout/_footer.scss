@@ -1,9 +1,11 @@
 footer {
     flex-shrink: 0;
+    @include font-poppins-black;
+    font-size: 50%;
 
     & div {
         text-align: center;
         text-transform: lowercase;
-        @include container
+        @include container;
     }
 }

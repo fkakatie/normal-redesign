@@ -45,24 +45,19 @@ ul {
     margin-left: 1.8rem;
 }
 
-svg {
-    fill: currentColor;
-    stroke: currentColor;
-    vertical-align: middle;
-}
-
-main svg {
-    height: 0.8em;
-    width: 0.8em;
-    display: inline-block;
-    text-transform: none;
-}
-
 //code blocks
 table thead tr th code { 
     display: none;
 }
 
 .hide {
-    display: none;
+    display: none !important;
+}
+
+.show {
+    display: inline-block !important;
+}
+
+.show-flex {
+    display: flex !important;
 }

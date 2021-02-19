@@ -1,13 +1,40 @@
+@import url("https://use.typekit.net/ysf7eux.css"); // ACUMIN
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap');
+
+@font-face {
+    font-family: "GT Walsheim";
+    src: url("/fonts/GT-Walsheim-Medium.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "GT Walsheim";
+    src: url("/fonts/GT-Walsheim-Bold.otf") format("opentype");
+    font-weight:600;
+    font-style: normal;
+}
+@font-face {
+    font-family: "GT Walsheim";
+    src: url("/fonts/GT-Walsheim-Black.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: "GT Walsheim";
+    src: url("/fonts/GT-Walsheim-Ultra-Bold.otf") format("opentype");
+    font-weight: 800;
+    font-style: normal;
+}
+
 body {
-    font-family: $font-thin;
-    font-size: 2rem;
+    @include font-acumin-semibold;
+    font-size: 3rem;
     line-height: 1.8;
 }
 
 strong {
-    font-family: $font-thin;
     font-weight: $weight-bold;
-    -webkit-text-stroke: 0.5px $color-blue;
 }
 
 em {
@@ -19,11 +46,10 @@ u {
 }
 
 h1, h2, h3 {
-    font-family: $font-main;
     text-transform: lowercase;
     line-height: 1;
     margin-bottom: 1rem;
-    @include stretchY;
+    // @include stretchY;
 
     & svg {
         font-weight: $weight-normal;
@@ -36,18 +62,12 @@ h1 {
 }
 
 h2 {
-    font-family: $font-thin;
     font-weight: $weight-bold;
     font-size: 4.2rem;
 }
 
 h3 {
-    font-family: $font-thin;
     font-weight: $weight-bold;
-}
-
-sup, sub {
-    font-family: sans-serif;
 }
 
 a {
