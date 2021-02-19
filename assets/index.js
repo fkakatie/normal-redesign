@@ -166,22 +166,16 @@ const buildOrderPage = () => {
   }
 
   const backToOptions = (e) => {
-    console.log("back to options running");
     const $btn = e.target.closest("aside");
-    console.log($btn);
     if ($btn) {
       const target = $btn.getAttribute("data-target");
       const theme = $btn.getAttribute("data-theme");
 
       const hideThis = document.querySelector(`.${target}`);
-      console.log(`backToOptions -> hideThis`, hideThis);
       hideThis.classList.remove("show-flex");
 
       const $body = document.querySelector("body");
       $body.classList.remove(theme);
-
-
-      console.log(target, theme);
 
       const $orderDiv = document.querySelector(".p-order");
       $orderDiv.classList.remove("hide");
@@ -189,7 +183,6 @@ const buildOrderPage = () => {
     }
   }
 
-  // console.log(`build order page running`);
   const $divs = document.querySelectorAll("main div");
   $divs.forEach((d) => {
     if ([ ...d.classList].includes("p-order")) {
@@ -203,7 +196,6 @@ const buildOrderPage = () => {
       })
     }
     else if (d.classList.length > 1) {
-      console.log(d);
       const $backBtn = document.createElement("aside");
         $backBtn.classList.add("btn-back");
         $backBtn.setAttribute("data-target", d.classList[0]);
