@@ -2,11 +2,12 @@ header {
     flex-shrink: 0;
     // border: 2px solid tomato;
 
-    & div {
+    & section {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        @include container
+        @include container;
+        @include bfv;
     }
 
     & a {
@@ -19,7 +20,7 @@ header {
     }
 
     & svg {
-        &.icon-normal {
+        &.icon-normal, &.icon-cone {
             height: 7rem;
             width: 7rem;
             stroke-width: 0;

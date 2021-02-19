@@ -7,8 +7,8 @@ const setPage = () => {
   if (path.includes("store")) {
     // console.log("store");
     shopify();
-    drinksStarburst();
-    setupCarousels();
+    // drinksStarburst();
+    // setupCarousels();
   } else if (path.includes("lab")) {
     // console.log("lab");
     shopify();
@@ -320,8 +320,8 @@ const randomNum = (min, max) => {
 };
 
 window.onload = (event) => {
-  classify();
-  codify();
+  // classify();
+  // codify();
   testCart();
   setPage();
   updateCopyright();

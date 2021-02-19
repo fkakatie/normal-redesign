@@ -257,20 +257,22 @@ svg.icon-v, svg.icon-gf {
 
 header {
   flex-shrink: 0; }
-  header div {
+  header section {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 1200px;
     max-width: 80%;
     margin: 0 auto;
-    padding: 1.8rem 0; }
+    padding: 1.8rem 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden; }
   header a {
     line-height: 1;
     transition: 0.2s linear; }
     header a:hover svg.icon-normal, header a:focus svg.icon-normal {
       transform: rotate(30deg); }
-  header svg.icon-normal {
+  header svg.icon-normal, header svg.icon-cone {
     height: 7rem;
     width: 7rem;
     stroke-width: 0;
@@ -453,41 +455,3 @@ main#icons .p-icons svg {
 main#icons .p-logos svg {
   width: 100% !important;
   height: 100% !important; }
-
-h1#normalreg + p {
-  margin-bottom: 1.8rem; }
-
-#store, #lab {
-  text-align: center; }
-  #store > *, #lab > * {
-    min-width: 28rem;
-    margin: 0 auto; }
-  #store div h3, #lab div h3 {
-    margin-top: 2rem; }
-  #store div[class^="p-"], #lab div[class^="p-"] {
-    margin: 4.6rem 0;
-    padding: 1.8rem 0; }
-    #store div[class^="p-"] p, #lab div[class^="p-"] p {
-      line-height: 1.2;
-      width: 50%;
-      min-width: 32rem;
-      margin: 0 auto; }
-    #store div[class^="p-"] .btn, #lab div[class^="p-"] .btn {
-      line-height: 1.8; }
-  #store div.filled, #lab div.filled {
-    border: 1px solid #0D26F9;
-    background: #0D26F9;
-    color: #FFFCF3; }
-  #store div.outline, #lab div.outline {
-    border: 1px solid currentColor; }
-    #store div.outline h2, #lab div.outline h2 {
-      margin-bottom: 1.5rem;
-      width: 100%; }
-      #store div.outline h2 + table, #lab div.outline h2 + table {
-        border-bottom: 1px solid currentColor;
-        width: 100%; }
-    #store div.outline .btn, #lab div.outline .btn {
-      background-color: #0D26F9;
-      color: #FFFCF3; }
-  #store strong, #lab strong {
-    font-size: 120%; }
