@@ -436,8 +436,10 @@ main#icons .p-icons, main#icons .p-logos {
   main#icons .p-icons h2, main#icons .p-logos h2 {
     width: 100%;
     margin-bottom: 4rem; }
+  main#icons .p-icons p, main#icons .p-logos p {
+    width: 33%;
+    padding: 1rem; }
   main#icons .p-icons svg, main#icons .p-logos svg {
-    padding: 1rem;
     fill: currentColor;
     stroke: currentColor;
     stroke-width: 0;
@@ -449,8 +451,8 @@ main#icons .p-icons svg {
   transform: scale(1, 1); }
 
 main#icons .p-logos svg {
-  width: 25rem !important;
-  height: 25rem !important; }
+  width: 100% !important;
+  height: 100% !important; }
 
 h1#normalreg + p {
   margin-bottom: 1.8rem; }

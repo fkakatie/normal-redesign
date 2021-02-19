@@ -11,13 +11,19 @@ main#icons {
             width: 100%;
             margin-bottom: 4rem;
         }
+
+        & p {
+            // border: 2px solid red;
+            width: 33%;
+            padding: 1rem;
+        }
     
         & svg {
-            padding: 1rem;
             fill: currentColor;
             stroke: currentColor;
             stroke-width: 0;
             vertical-align: middle;
+            // border: 2px solid green;
         }
     }
 
@@ -31,8 +37,9 @@ main#icons {
     
     & .p-logos {
         & svg {
-            width: 25rem !important;
-            height: 25rem !important;
+            width: 100% !important;
+            height: 100% !important;
         }
     }
+
 }

@@ -23,7 +23,28 @@ const setPage = () => {
     // console.log("merch");
   } else if (path.includes("merch")) {
     // console.log("pint-club");
-  } else {
+  } else if (path.includes("icons")) {
+    // console.log("icons");
+
+    // i'm going to regret this
+
+    const $ps = document.querySelectorAll("p");
+    // console.log($ps);
+    $ps.forEach((p) => {
+      // console.log([ ...p.parentElement.classList][0]);
+      const classList = [...p.parentElement.classList][0];
+      if (classList === "p-logos" && p.textContent) {
+        console.log(classList);
+        const svg = p.innerHTML.split("</svg>")[0].trim() + "</svg>";
+        const text = p.innerHTML.split("</svg>")[1].trim();
+        console.log(svg, text);
+        p.innerHTML = svg;
+        p.setAttribute("title", text);
+      }
+    })
+
+  }
+  else {
     // default location is store
     console.log("index");
     buildIndexGrid();
