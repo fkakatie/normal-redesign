@@ -6,8 +6,14 @@
         color: $color-blue;
     }
 
-    & .btn-back {
-        color: $color-blue;
-        background: $color-pink;
+    & .btn {
+        &-rect {
+            color: $color-blue;
+            background: $color-pink;
+        }
+        &-back {
+            color: $color-blue;
+            background: $color-pink;
+        }
     }
 }

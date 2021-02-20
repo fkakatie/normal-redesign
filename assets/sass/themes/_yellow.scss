@@ -6,8 +6,10 @@
         color: $color-yellow;
     }
 
-    & .btn-back {
-        color: $color-yellow;
-        background: $color-green;
+    & .btn {
+        &-back {
+            color: $color-yellow;
+            background: $color-green;
+        }
     }
 }

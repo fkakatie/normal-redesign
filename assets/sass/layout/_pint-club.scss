@@ -1,0 +1,203 @@
+.embed-internal-pintbanner {
+    // border: 2px solid gold;
+    position: absolute;
+    left: 0;
+    width: calc(100vw - (100vw - 100%)); // remove scrollbar from equation
+    & > div p {
+        position: relative;
+        // background-color: blue;
+        height: 60rem;
+        display: flex;
+        justify-content: flex-start;
+        
+        overflow-x: scroll;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+
+        &::-webkit-scrollbar {
+            width: 1rem;
+        }
+
+        &::-webkit-scrollbar-track,
+        &::-webkit-scrollbar-thumb {
+            background: $color-white;
+        }
+        
+        & img {
+            // border: 2px solid red;
+            height: 60rem;
+            width: 100%;
+            object-fit: cover;
+            &:not(:last-child) {
+                margin-right: 1rem;
+            }
+        }
+    }
+}
+
+h2 {
+    &#welcome-to-normal-pint-club {
+        margin-top: calc(60rem + 4rem);
+    }
+    &#how-it-works {
+        font-size: 5rem;
+        & + ol {
+            // background: gold;
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            & > li {
+                @include font-poppins-bold;
+                font-size: 1.6rem;
+                line-height: 1.2;
+                // border: 2px solid green;
+                width: calc(100% / 3);
+                padding: 4rem 6rem;
+                & > svg {
+                    max-width: 100%;
+                    margin-bottom: 4rem;
+                }
+            }
+        }
+    }
+    &#options {
+        margin-top: 4rem;
+        display: none;
+        & ~ ul {
+            margin: 0;
+            // border: 2px solid red;
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            & > li {
+                // border: 2px solid gold;
+                width: calc(100% / 2);
+                & svg.icon-cone {
+                    display: block;
+                    overflow: visible;
+                    margin: 1rem auto;
+                    stroke-width: 0;
+                    // padding: 1rem;
+                    width: 15rem;
+                    height: 15rem;
+                }
+                & > ul {
+                    list-style: none;
+                    margin: 0;
+                    @include font-poppins;
+                    font-size: 55%;
+                    & a {
+                        text-decoration: none;
+                        @include font-acumin-semibold;
+                        font-size: 2rem;
+                    }
+                }
+            }
+        }
+    }
+    &#normal-pint-club-faq, &#normal-pint-club-faqs {
+        // color: red;
+        margin-top: 4rem;
+        & ~ p {
+            @include font-poppins-bold;
+            font-size: 1.8rem;
+            line-height: 1.4;
+        }
+        & ~ h3 {
+            margin-top: 2rem;
+            text-align: left;
+            transition: 0.2s all;
+            cursor: pointer;
+            &:focus, &:hover {
+                letter-spacing: 1.5px;
+            }
+            & ~ p {
+                @include font-poppins;
+                text-align: left;
+                font-size: 55%;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 76.8rem) {
+    h2 {
+        // border: 2px solid gold;
+        &#how-it-works {
+            & + ol {
+                & > li {
+                    padding: 2rem 3rem;
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 41.1rem) {
+    h2 {
+        // border: 2px solid gold;
+        &#how-it-works {
+            & + ol {
+                & > li {
+                    width: 100%;
+                }
+            }
+
+        }
+    }
+}
+
+// AFTER CLASSES & IDS ARE ADDED
+#pintclub {
+    & .pintclub-logo {
+        // border: 2px solid red;
+        position: absolute;
+        z-index: 2;
+        // top: 0;
+        right: 12%;
+        & svg {
+            transform: translateY(-11rem);
+        }
+    }
+    & .p-options {
+        margin-top: 4rem;
+        & ul {
+            // border: 2px solid red;
+            & li {
+                padding: 4rem 6rem;
+            }
+            & ul {
+                & li {
+                    padding: 0;
+                }
+            }
+        }
+    }
+    & .faq-container {
+        // text-align: left;
+        display: flex;
+        flex-wrap: wrap;
+
+        & > .faq-item {
+            // border: 2px solid red;
+            text-align: left;
+            // margin-bottom: 2rem;
+            width: calc(100% / 2);
+            padding: 4rem 2rem;
+            & h3 {
+                transition: 0.2s all;
+                cursor: pointer;
+
+                &:hover, &:focus {
+                    letter-spacing: 1.5px;
+                }
+            }
+            & p {
+                // color: red;
+                @include font-poppins;
+                font-size: 55%;
+                display: none;
+            }
+        }
+    }
+}

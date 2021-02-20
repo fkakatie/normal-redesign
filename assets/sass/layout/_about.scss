@@ -117,16 +117,6 @@ h3 {
 
 // AFTER CLASSES & IDS ARE ADDED
 #about {
-    & svg.icon-arrow-down {
-        cursor: pointer;
-        transition: 0.1s all;
-        // @include bfv; 
-
-        &:hover {
-            transform: scaleY(1.2) translateY(0.6rem);
-        }
-    }
-
     & .locations-container {
         // border: 2px solid gold;
         // display: flex;
@@ -339,11 +329,13 @@ h3 {
                 &.store {
                     & h3, & p {
                         margin-left: 0;
+                        text-align: right;
                     }
                 }
                 &.lab {
                     & h3, & p {
                        margin-right: 0;
+                       text-align: left;
                     }
                 }
             }

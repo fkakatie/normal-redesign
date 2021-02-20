@@ -48,6 +48,11 @@ table thead tr th code {
 .show {
   display: inline-block !important; }
 
+.show-block {
+  display: block !important; }
+  .show-block > * {
+    display: block !important; }
+
 .show-flex {
   display: flex !important; }
 
@@ -160,6 +165,18 @@ h5 {
 a {
   color: inherit; }
 
+.btn-rect {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  line-height: 1;
+  margin-top: 2rem;
+  transition: 0.2s all;
+  cursor: pointer;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden; }
+  .btn-rect:hover, .btn-rect:focus {
+    letter-spacing: 1.5px; }
+
 .btn-back {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
@@ -210,7 +227,7 @@ svg {
   fill: currentColor;
   stroke: currentColor;
   vertical-align: middle; }
-  svg.icon-store, svg.icon-lab, svg.icon-cooler-bag, svg.icon-shipping-box, svg.icon-to-go-bag, svg.icon-van {
+  svg.icon-store, svg.icon-lab, svg.icon-cooler-bag, svg.icon-shipping-box, svg.icon-to-go-bag, svg.icon-van, svg.icon-pint-club, svg.icon-pints {
     height: 15rem;
     width: 20rem;
     stroke-width: 0; }
@@ -222,6 +239,12 @@ svg {
     margin: 4rem 1rem;
     width: 4.5rem;
     height: 4.5rem; }
+
+#about svg.icon-arrow-down, #pintclub svg.icon-arrow-down {
+  cursor: pointer;
+  transition: 0.1s all; }
+  #about svg.icon-arrow-down:hover, #pintclub svg.icon-arrow-down:hover {
+    transform: scaleY(1.2) translateY(0.6rem); }
 
 h1#normalreg {
   font-size: 9.9rem; }
@@ -533,12 +556,6 @@ h3#lab {
     width: 100%;
     padding: 2rem 3rem; } }
 
-#about svg.icon-arrow-down {
-  cursor: pointer;
-  transition: 0.1s all; }
-  #about svg.icon-arrow-down:hover {
-    transform: scaleY(1.2) translateY(0.6rem); }
-
 #about .locations-container {
   margin-top: 4rem; }
   #about .locations-container .location-item {
@@ -653,9 +670,149 @@ h3#lab {
       margin-top: 4rem;
       width: 100%; }
     #about .locations-container .location-item.store h3, #about .locations-container .location-item.store p {
-      margin-left: 0; }
+      margin-left: 0;
+      text-align: right; }
     #about .locations-container .location-item.lab h3, #about .locations-container .location-item.lab p {
-      margin-right: 0; } }
+      margin-right: 0;
+      text-align: left; } }
+
+.embed-internal-pintbanner {
+  position: absolute;
+  left: 0;
+  width: calc(100vw - (100vw - 100%)); }
+  .embed-internal-pintbanner > div p {
+    position: relative;
+    height: 60rem;
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-behavior: smooth; }
+    .embed-internal-pintbanner > div p::-webkit-scrollbar {
+      width: 1rem; }
+    .embed-internal-pintbanner > div p::-webkit-scrollbar-track, .embed-internal-pintbanner > div p::-webkit-scrollbar-thumb {
+      background: #FFFCF3; }
+    .embed-internal-pintbanner > div p img {
+      height: 60rem;
+      width: 100%;
+      object-fit: cover; }
+      .embed-internal-pintbanner > div p img:not(:last-child) {
+        margin-right: 1rem; }
+
+h2#welcome-to-normal-pint-club {
+  margin-top: calc(60rem + 4rem); }
+
+h2#how-it-works {
+  font-size: 5rem; }
+  h2#how-it-works + ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap; }
+    h2#how-it-works + ol > li {
+      font-family: "Poppins", sans-serif;
+      font-weight: 600;
+      font-style: normal;
+      font-size: 1.6rem;
+      line-height: 1.2;
+      width: calc(100% / 3);
+      padding: 4rem 6rem; }
+      h2#how-it-works + ol > li > svg {
+        max-width: 100%;
+        margin-bottom: 4rem; }
+
+h2#options {
+  margin-top: 4rem;
+  display: none; }
+  h2#options ~ ul {
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap; }
+    h2#options ~ ul > li {
+      width: calc(100% / 2); }
+      h2#options ~ ul > li svg.icon-cone {
+        display: block;
+        overflow: visible;
+        margin: 1rem auto;
+        stroke-width: 0;
+        width: 15rem;
+        height: 15rem; }
+      h2#options ~ ul > li > ul {
+        list-style: none;
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-style: normal;
+        font-size: 55%; }
+        h2#options ~ ul > li > ul a {
+          text-decoration: none;
+          font-family: acumin-pro-extra-condensed, sans-serif;
+          font-weight: 600;
+          font-style: normal;
+          font-size: 2rem; }
+
+h2#normal-pint-club-faq, h2#normal-pint-club-faqs {
+  margin-top: 4rem; }
+  h2#normal-pint-club-faq ~ p, h2#normal-pint-club-faqs ~ p {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 1.8rem;
+    line-height: 1.4; }
+  h2#normal-pint-club-faq ~ h3, h2#normal-pint-club-faqs ~ h3 {
+    margin-top: 2rem;
+    text-align: left;
+    transition: 0.2s all;
+    cursor: pointer; }
+    h2#normal-pint-club-faq ~ h3:focus, h2#normal-pint-club-faq ~ h3:hover, h2#normal-pint-club-faqs ~ h3:focus, h2#normal-pint-club-faqs ~ h3:hover {
+      letter-spacing: 1.5px; }
+    h2#normal-pint-club-faq ~ h3 ~ p, h2#normal-pint-club-faqs ~ h3 ~ p {
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      font-style: normal;
+      text-align: left;
+      font-size: 55%; }
+
+@media only screen and (max-width: 76.8rem) {
+  h2#how-it-works + ol > li {
+    padding: 2rem 3rem; } }
+
+@media only screen and (max-width: 41.1rem) {
+  h2#how-it-works + ol > li {
+    width: 100%; } }
+
+#pintclub .pintclub-logo {
+  position: absolute;
+  z-index: 2;
+  right: 12%; }
+  #pintclub .pintclub-logo svg {
+    transform: translateY(-11rem); }
+
+#pintclub .p-options {
+  margin-top: 4rem; }
+  #pintclub .p-options ul li {
+    padding: 4rem 6rem; }
+  #pintclub .p-options ul ul li {
+    padding: 0; }
+
+#pintclub .faq-container {
+  display: flex;
+  flex-wrap: wrap; }
+  #pintclub .faq-container > .faq-item {
+    text-align: left;
+    width: calc(100% / 2);
+    padding: 4rem 2rem; }
+    #pintclub .faq-container > .faq-item h3 {
+      transition: 0.2s all;
+      cursor: pointer; }
+      #pintclub .faq-container > .faq-item h3:hover, #pintclub .faq-container > .faq-item h3:focus {
+        letter-spacing: 1.5px; }
+    #pintclub .faq-container > .faq-item p {
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      font-style: normal;
+      font-size: 55%;
+      display: none; }
 
 main#icons .p-icons, main#icons .p-logos {
   border: 2px solid #0D26F9;
@@ -696,6 +853,9 @@ main#icons .p-logos svg {
   color: #FFD4CC; }
   .theme-blue header p {
     color: #0D26F9; }
+  .theme-blue .btn-rect {
+    color: #0D26F9;
+    background: #FFD4CC; }
   .theme-blue .btn-back {
     color: #0D26F9;
     background: #FFD4CC; }

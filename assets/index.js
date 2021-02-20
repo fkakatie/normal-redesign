@@ -25,12 +25,17 @@ const setPage = () => {
   } else if (path.includes("about")) {
     // console.log("about page");
     buildLocationsGrid();
-    setupAboutAnchors();
+    setupDownAnchors();
     fetchProductLocations();
   } else if (path.includes("pint-club")) {
-    // console.log("merch");
-  } else if (path.includes("merch")) {
     // console.log("pint-club");
+    floatPintLogo();
+    buildPintBanner();
+    setupDownAnchors();
+    setupPintSubOptions();
+    buildClubFAQ();
+  } else if (path.includes("merch")) {
+    // console.log("merch");
   } else {
     // default location is store
     console.log("index");
@@ -79,10 +84,12 @@ const codify = () => {
         switch (values) {
           case "search":
             return buildProductSearch(c);
+          case "pint-club":
+            return buildPintClubCheckout(c);
           default:
+            console.log(`${values} code block hasn't been configured yet`);
             break;
         }
-        console.log("does this work?");
       }
     });
   }
@@ -94,7 +101,7 @@ const setPageTheme = (color) => {
   if (configuredColors.includes(color)) {
     $body.classList.add(`theme-${color}`);
   } else {
-    $body.classList.add(`theme-${white}`);
+    $body.classList.add(`theme-white`);
   }
 };
 
@@ -121,7 +128,7 @@ const fetchLabels = async () => {
   const resp = await fetch("/labels.json");
   let json = await resp.json();
   if (json.data) {
-    json = json.data;
+    json = json.data; // helix quirk, difference between live and local
   }
   window.labels = {};
   json.forEach((j) => {
@@ -136,7 +143,7 @@ const fetchProductLocations = async () => {
     const resp = await fetch("/product-locations.json");
     let json = await resp.json();
     if (json.data) {
-      json = json.data;
+      json = json.data; // helix quirk, difference between live and local
     }
     window.productLocations = json;
   }
@@ -412,13 +419,14 @@ const buildLocationsGrid = () => {
   $locationsBlock.append($flexContainer);
 };
 
-const setupAboutAnchors = () => {
+const setupDownAnchors = () => {
   const $downArrows = document.querySelectorAll("svg.icon-arrow-down");
   if ($downArrows) {
     $downArrows.forEach((a) => {
       const $next = a.parentNode.parentNode.parentNode.nextElementSibling;
+      // console.log(`$downArrows.forEach -> $next`, $next);
       const $anchor = a.parentNode;
-      if ($next && $anchor) {
+      if ($next && $anchor && $next.classList[0]) {
         const classList = $next.classList[0].split("p-")[1];
         $next.setAttribute("id", classList);
         $anchor.href = `#${classList}`;
@@ -441,7 +449,7 @@ const buildProductSearch = ($code) => {
   const $inputField = document.createElement("input");
   $inputField.type = "search";
   $inputField.id = "product-search";
-  $inputField.placeholder = "enter city or zip code here";
+  $inputField.placeholder = "enter city or zip here";
   const $searchBtn = document.createElement("button");
   $searchBtn.textContent = "search";
   $searchForm.onsubmit = (e) => {
@@ -534,6 +542,109 @@ const buildLocationBlock = (location) => {
   }
   return $block;
 };
+
+// PINT CLUB
+const floatPintLogo = () => {
+  // console.log(`float pint logo'`);
+  const $pintLogo = document.querySelector("svg.icon-pint-club");
+  // console.log(`floatPintLogo -> $pintLogo`, $pintLogo);
+  if ($pintLogo) {
+    const $parent = $pintLogo.parentNode;
+    $parent.classList.add("pintclub-logo");
+  }
+}
+
+const buildPintBanner = () => {
+  const $pintbanner = document.querySelector(".embed-internal-pintbanner div p");
+  if ($pintbanner) {
+    // set horizonal scroll on banner
+    $pintbanner.onwheel = (e) => {
+      if (e.wheelDelta < 0) {
+        $pintbanner.scrollLeft += 468;
+      } else {
+        $pintbanner.scrollLeft -= 468;
+      }
+    };
+  }
+}
+
+const buildPintClubCheckout = ($code) => {
+  // console.log(`building pint club checkout`);
+  const $parent = $code.parentNode.parentNode.parentNode.parentNode.parentNode;
+  // console.log($parent);
+}
+
+const setupPintSubOptions = () => {
+  const $pintclubOptions = document.querySelector(".p-options");
+  if ($pintclubOptions) {
+    // console.log(`pint sub options`);
+    const $options = $pintclubOptions.querySelectorAll("a");
+    if ($options) {
+      $options.forEach((o) => {
+        const title = o.getAttribute("href")
+        o.removeAttribute("href");
+        o.classList.add("btn-rect");
+        o.setAttribute("data-club-type", cleanName(title));
+        o.onclick = (e) => {
+          const $el = e.target.closest("a");
+          const target = $el.getAttribute("data-club-type");
+          alert(target);
+        }
+      })
+    }
+    // console.log($options);
+    
+  }
+}
+
+const buildClubFAQ = () => {
+  const $faqBlock = document.querySelector(".p-normalpintclubfaq");
+  if ($faqBlock) {
+    const faqChildren = [ ...$faqBlock.children].splice(2); // ignore header and desc
+
+    const $flexContainer = document.createElement("section");
+      $flexContainer.classList.add("faq-container");
+  
+    let tempObj = [];
+    let flexItems = [];
+  
+    faqChildren.forEach((c) => {
+      if (c.nodeName === "H3") { // start of new block
+        tempObj = [];
+        tempObj.push(c);
+        flexItems.push(tempObj);
+      } else if (c.nodeName !== "H2") { // exclude section header
+        tempObj.push(c);
+      }
+    });
+    
+    flexItems.forEach((item, i) => {
+      const $flexItem = document.createElement("div");
+      $flexItem.classList.add("faq-item");
+      $flexItem.setAttribute("data-index", i + 1);
+      for (let i = 0; i < item.length; i++) {
+        // setup click on qs
+        if (item[i].nodeName === "H3") {
+          item[i].onclick = (e) => {
+            const $parent = e.target.parentNode;
+            // console.log(`flexItems.forEach -> $parent`, $parent);
+            const status = $parent.getAttribute("data-clicked");
+            if (status === "true") { //already clicked
+              $parent.classList.remove("show-block");
+              $parent.setAttribute("data-clicked", false);
+            } else { // not clicked
+              $parent.setAttribute("data-clicked", true);
+              $parent.classList.add("show-block");
+            }
+          }
+        }
+        $flexItem.append(item[i]);
+      }
+      $flexContainer.append($flexItem);
+    });
+    $faqBlock.append($flexContainer);
+  }
+}
 
 // HEADER
 const testCart = () => {

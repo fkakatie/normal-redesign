@@ -58,6 +58,13 @@ table thead tr th code {
     display: inline-block !important;
 }
 
+.show-block {
+    display: block !important;
+    & > * {
+        display: block !important;
+    }
+}
+
 .show-flex {
     display: flex !important;
 }

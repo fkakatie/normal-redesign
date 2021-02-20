@@ -12,7 +12,8 @@ svg {
 
     &.icon-store, &.icon-lab, 
     &.icon-cooler-bag, &.icon-shipping-box, 
-    &.icon-to-go-bag, &.icon-van {
+    &.icon-to-go-bag, &.icon-van,
+    &.icon-pint-club, &.icon-pints {
         height: 15rem;
         width: 20rem;
         stroke-width: 0;
@@ -30,5 +31,18 @@ svg {
         margin: 4rem 1rem;
         width: 4.5rem;
         height: 4.5rem;
+    }
+}
+
+// page-specific
+#about, #pintclub {
+    & svg.icon-arrow-down {
+        cursor: pointer;
+        transition: 0.1s all;
+        // @include bfv; 
+
+        &:hover {
+            transform: scaleY(1.2) translateY(0.6rem);
+        }
     }
 }

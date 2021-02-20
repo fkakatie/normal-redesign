@@ -6,8 +6,10 @@
         color: $color-pink;
     }
 
-    & .btn-back {
-        color: $color-pink;
-        background: $color-red;
+    & .btn {
+        &-back {
+            color: $color-pink;
+            background: $color-red;
+        }
     }
 }

@@ -1,4 +1,19 @@
 .btn {
+
+    &-rect {
+        display: inline-block;
+        // background: red;
+        padding: 0.5rem 1rem;
+        line-height: 1;
+        margin-top: 2rem;
+        transition: 0.2s all;
+        cursor: pointer;
+        @include bfv;
+
+        &:hover, &:focus {
+            letter-spacing: 1.5px;
+        }
+    }
     
     &-back {
         @include font-poppins; 
