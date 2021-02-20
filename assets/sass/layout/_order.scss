@@ -1,9 +1,4 @@
 h2 {
-    margin: 0;
-    padding: 0;
-    height: 0;
-    // display:
-    // border: 2px solid red;
     &#order, &#pick-up, &#shipping {
         // display: none;
         & ~ * {
@@ -28,7 +23,6 @@ h2 {
             }
 
             & svg {
-                // color: red;
                 margin-bottom: -4rem;
                 // border: 2px solid red;
             }

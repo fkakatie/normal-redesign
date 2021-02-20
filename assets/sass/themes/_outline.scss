@@ -1,0 +1,7 @@
+.theme-outline {
+    border: 1px solid currentColor;
+    & h2 {
+        padding-bottom: 2rem;
+        border-bottom: 1px solid currentColor;
+    }
+}

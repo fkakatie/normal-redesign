@@ -23,4 +23,12 @@ svg {
         font-size: 120%;
         @include stretchX
     }
+
+    &.icon-arrow-up, &.icon-arrow-down,
+    &.icon-arrow-left, &.icon-arrow-right {
+        // color: red;
+        margin: 4rem 1rem;
+        width: 4.5rem;
+        height: 4.5rem;
+    }
 }

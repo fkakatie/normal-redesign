@@ -61,3 +61,27 @@ table thead tr th code {
 .show-flex {
     display: flex !important;
 }
+
+// FORM RESET
+input,
+label,
+select,
+button,
+textarea {
+    margin: 0;
+    border: 0;
+    padding: 1rem;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: normal;
+    background: none;
+    @include font-acumin-semibold;
+    color: inherit;
+    font-size: 120%;
+    line-height: 1;
+}
+
+/* Remove the stupid outer glow in Webkit */
+input:focus {
+    outline: 0;
+}

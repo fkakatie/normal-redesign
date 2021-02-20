@@ -7,19 +7,22 @@
 @import "base/typography";
 
 @import "components/button";
+@import "components/contact";
 @import "components/svg";
 @import "components/menu-carousel";
 @import "components/starburst";
 @import "components/title";
 
 @import "layout/header";
-@import "layout/main";
-@import "layout/order";
 @import "layout/footer";
+@import "layout/main";
 @import "layout/index";
-@import "layout/icons";
+@import "layout/order";
+@import "layout/about";
 @import "layout/storefronts";
+@import "layout/icons";
 
+@import "themes/outline";
 @import "themes/blue";
 @import "themes/pink";
 @import "themes/white";
