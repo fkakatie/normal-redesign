@@ -639,8 +639,9 @@ h3#lab {
       margin-right: calc(32.5rem + 6rem); } }
 
 @media only screen and (max-width: 41.1rem) {
-  .search-form button {
-    min-width: 50%; }
+  .search-form input {
+    text-overflow: ellipsis;
+    overflow: hidden; }
   #product-search-results div {
     width: 100%;
     margin: 0 0 1rem !important; }

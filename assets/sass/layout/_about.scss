@@ -314,8 +314,9 @@ h3 {
 @media only screen and (max-width: 41.1rem) {
     .search-form {
         // border: 2px solid gold;
-        & button {
-            min-width: 50%;
+        & input {
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
     }
     #product-search-results {
