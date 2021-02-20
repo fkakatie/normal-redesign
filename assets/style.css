@@ -183,8 +183,9 @@ a {
   transition: 0.2s all; }
   .btn-back:hover, .btn-back:focus {
     transform: rotate(-3deg) scale(1.2); }
-  .btn-back svg {
+  .btn-back svg.icon-arrow-left {
     margin-top: -0.5rem;
+    margin-bottom: 0;
     height: 4rem;
     width: 4rem; }
 
