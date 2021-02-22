@@ -2,14 +2,45 @@
     background: $color-pink;
     color: $color-red;
 
+    input {
+        &:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0px 5rem $color-pink inset;
+            -webkit-text-fill-color: $color-red;
+        }
+    }
+
     & header p {
         color: $color-pink;
     }
 
     & .btn {
-        &-back {
+        &-back, &-rect {
             color: $color-pink;
             background: $color-red;
         }
     }
+
+    & .customize {
+        &::-webkit-scrollbar-thumb {
+            background: $color-red;
+        }
+        &-close {
+            background: $color-pink;
+        }
+        &-table-body-radio, &-table-body-checkbox {
+            background: $color-red;
+            color: $color-pink; 
+        
+            &-container {
+                background: $color-pink;
+                color: $color-red;
+            }
+        }
+    }
+}
+
+@keyframes pink-error-blink {
+    0% { background: $color-pink; }
+   50% { background: $color-red; }
+   99% { background: $color-pink; }
 }

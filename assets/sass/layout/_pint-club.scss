@@ -44,13 +44,14 @@ h2 {
         & + ol {
             // background: gold;
             list-style: none;
+            margin: 0;
             display: flex;
             flex-wrap: wrap;
             & > li {
+                // border: 2px solid green;
                 @include font-poppins-bold;
                 font-size: 1.6rem;
                 line-height: 1.2;
-                // border: 2px solid green;
                 width: calc(100% / 3);
                 padding: 4rem 6rem;
                 & > svg {
@@ -144,7 +145,16 @@ h2 {
             }
 
         }
+        &#options {
+            & ~ ul {
+                & > li {
+                    // border: 2px solid gold;
+                    width: 100%;
+                }
+            }
+        }
     }
+    
 }
 
 // AFTER CLASSES & IDS ARE ADDED
@@ -197,6 +207,32 @@ h2 {
                 @include font-poppins;
                 font-size: 55%;
                 display: none;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 76.8rem) {
+    #pintclub { 
+        & h1#normalreg {
+            // color: green;
+            margin-bottom: 10rem;
+        }
+        & h2 {
+            &.welcometonormalpintclub {
+                margin-top: calc(60rem + 4rem + 10rem);
+            }
+        }
+    }
+
+}
+
+@media only screen and (max-width: 41.1rem) {
+    #pintclub {
+        & .faq-container {
+            & > .faq-item {
+                width: 100%;
+                padding: 2rem 0;
             }
         }
     }

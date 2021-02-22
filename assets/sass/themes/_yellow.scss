@@ -2,14 +2,45 @@
     background: $color-yellow;
     color: $color-green;
 
+    input {
+        &:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0px 5rem $color-yellow inset;
+            -webkit-text-fill-color: $color-green;
+        }
+    }
+
     & header p {
         color: $color-yellow;
     }
 
     & .btn {
-        &-back {
+        &-back, &-rect {
             color: $color-yellow;
             background: $color-green;
         }
     }
+
+    & .customize {
+        &::-webkit-scrollbar-thumb {
+            background: $color-green;
+        }
+        &-close {
+            background: $color-yellow;
+        }
+        &-table-body-radio, &-table-body-checkbox {
+            background: $color-green;
+            color: $color-yellow; 
+        
+            &-container {
+                background: $color-yellow;
+                color: $color-green;
+            }
+        }
+    }
+}
+
+@keyframes yellow-error-blink {
+    0% { background: $color-yellow; }
+   50% { background: $color-green; }
+   99% { background: $color-yellow; }
 }

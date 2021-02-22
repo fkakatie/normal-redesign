@@ -1,15 +1,61 @@
 .theme-white {
     background: $color-white;
     color: $color-blue;
+    
+    input {
+        &:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0px 5rem $color-white inset;
+            -webkit-text-fill-color: $color-blue;
+            &:hover, &:focus {
+                -webkit-box-shadow: 0 0 0px 5rem $color-pink inset;
+            }
+        }
+    }
 
     & header p {
         color: $color-white;
     }
 
     & .btn {
-        &-back {
+        &-back, &-rect {
             color: $color-white;
             background: $color-blue;
         }
     }
+
+    & .customize {
+        &::-webkit-scrollbar-thumb {
+            background: $color-blue;
+        }
+        & .invalid-field {
+            animation-name: white-error-blink;
+        }
+        &-close {
+            background: $color-white;
+        }
+        &-table {
+            &-body {
+                &-field, &-selectwrapper {
+                    &:hover, &:focus {
+                        background: $color-pink !important;
+                    }
+                }
+                &-radio, &-checkbox {
+                    background: $color-blue;
+                    color: $color-white; 
+                
+                    &-container {
+                        background: $color-white;
+                        color: $color-blue;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes white-error-blink {
+     0% { background: $color-white; }
+    50% { background: $color-pink; }
+    99% { background: $color-white; }
 }

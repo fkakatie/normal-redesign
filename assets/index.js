@@ -10,16 +10,19 @@ const setPage = () => {
   } else if (path.includes("store")) {
     // console.log("store");
     shopify();
+    buildCustomizationTool();
     // drinksStarburst();
     // setupCarousels();
   } else if (path.includes("lab")) {
     // console.log("lab");
     shopify();
+    buildCustomizationTool();
     drinksStarburst();
     setupCarousels();
   } else if (path.includes("delivery")) {
     // console.log("delivery");
     shopify();
+    buildCustomizationTool();
     drinksStarburst();
     setupCarousels();
   } else if (path.includes("about")) {
@@ -33,6 +36,7 @@ const setPage = () => {
     buildPintBanner();
     setupDownAnchors();
     setupPintSubOptions();
+    buildCustomizationTool();
     buildClubFAQ();
   } else if (path.includes("merch")) {
     // console.log("merch");
@@ -99,9 +103,9 @@ const setPageTheme = (color) => {
   const $body = document.querySelector("body");
   const configuredColors = ["blue", "pink", "yellow"];
   if (configuredColors.includes(color)) {
-    $body.classList.add(`theme-${color}`);
+    $body.classList.add("theme", `theme-${color}`);
   } else {
-    $body.classList.add(`theme-white`);
+    $body.classList.add("theme", `theme-white`);
   }
 };
 
@@ -123,7 +127,43 @@ const setBlockStyle = ($el, style) => {
   }
 };
 
-// FETCHING DATA
+// LOCAL STORAGE
+const saveToLocalStorage = () => {
+  const $fieldsToStore = document.querySelectorAll("[data-store=true]");
+  if ($fieldsToStore) {
+    $fieldsToStore.forEach((f) => {
+      if (f.value.trim() !== "") {
+        localStorage.setItem(`normal-${f.name}`, f.value);
+      }
+    })
+  }
+}
+
+const getContactFromLocalStorage = () => {
+  const $fieldsToStore = document.querySelectorAll("[data-store=true]");
+  if ($fieldsToStore) {
+    $fieldsToStore.forEach((f) => {
+      const thisItem = localStorage.getItem(`normal-${f.name}`);
+      if (thisItem) { 
+        f.value = thisItem;
+      } 
+    })
+  }
+}
+
+const getAddressFromLocalStorage = () => {
+  const $fieldsToStore = document.querySelectorAll("[data-store=true][data-fieldType=address]");
+  if ($fieldsToStore) {
+    $fieldsToStore.forEach((f) => {
+      const thisItem = localStorage.getItem(`normal-${f.name}`);
+      if (thisItem) { 
+        f.value = thisItem;
+      } 
+    })
+  }
+}
+
+// FETCH DATA
 const fetchLabels = async () => {
   const resp = await fetch("/labels.json");
   let json = await resp.json();
@@ -148,6 +188,21 @@ const fetchProductLocations = async () => {
     window.productLocations = json;
   }
   return window.productLocations;
+};
+
+const fetchDeliveryZips = async () => {
+  if (!window.deliveryZips) {
+    const resp = await fetch("/delivery-zips.json");
+    let json = await resp.json();
+    if (json.data) {
+      json = json.data; // helix quirk, difference between live and local
+    }
+    window.deliveryZips =  json.sort((a, b) => {
+      if (a.zip > b.zip) { return 1 }
+      else { return -1 }
+    });
+  }
+  return window.deliveryZips;
 };
 
 // INDEX
@@ -588,12 +643,64 @@ const setupPintSubOptions = () => {
         o.onclick = (e) => {
           const $el = e.target.closest("a");
           const target = $el.getAttribute("data-club-type");
-          alert(target);
+          populateCustomizationTool("customize your pint club subscription");
+          customizeToolforClub(target);
         }
       })
     }
     // console.log($options);
-    
+  }
+}
+
+const customizeToolforClub = (target) => {
+  // set payment option
+  const $parent = document.getElementById("radio-paymentoption");
+  if ($parent) {
+    const $paymentOption = $parent.querySelector("div");
+    const $sibling = $parent.querySelector("h3");
+    const $radio = document.getElementById(target);
+  
+    $paymentOption.classList.remove("hide");
+    $parent.setAttribute("data-open", true);
+    $sibling.setAttribute("data-open", true);
+    $paymentOption.setAttribute("data-open", true);
+    $radio.checked = true;
+  }
+
+  // trigger address field on local delivery
+  const $localDeliveryOpt = document.getElementById("localdelivery");
+  const $pickupOpt = document.getElementById("pickup");
+
+  if ($localDeliveryOpt && $pickupOpt) {
+
+    $localDeliveryOpt.onclick = async (e) => {
+      const $customBody = document.querySelector(".customize-table-body");
+      const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
+
+      if (!$addrFields.length) {
+        let fields = getFields([ "address" ]);
+        fields.forEach((f) => {
+          $customBody.append(buildFields(f));
+        });
+        getAddressFromLocalStorage();
+
+        const $zipDropdown = $customBody.querySelector("#zip");
+        const deliveryZips = await fetchDeliveryZips();
+        const zipArr = deliveryZips.map((z) => z.zip);        
+        populateOptions($zipDropdown, zipArr);
+      }
+    }
+
+    $pickupOpt.onclick = (e) => {
+      const $customBody = document.querySelector(".customize-table-body");
+      const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
+      if ($addrFields.length) {
+        $addrFields.forEach((f) => {
+          f.remove();
+        })
+      }
+
+    }
   }
 }
 
@@ -646,10 +753,353 @@ const buildClubFAQ = () => {
   }
 }
 
+// COMPONENTS
+const buildCustomizationTool = () => {
+
+  const $main = document.querySelector("main");
+  const mainTheme = getMainTheme();
+
+  const $customSection = document.createElement("section");
+    $customSection.classList.add("customize", mainTheme, "hide");
+
+  const $customClose = document.createElement("div");
+    $customClose.classList.add("customize-close");
+    $customClose.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-close">
+      <use href="/icons.svg#close"></use>
+    </svg>`;
+    $customClose.onclick = (e) => {
+      const $customScreen = document.querySelector(".customize");
+      $customScreen.classList.add("hide");
+    }
+
+  const $customTable = document.createElement("div");
+    $customTable.classList.add("customize-table");
+
+  const $customHead = document.createElement("h2");
+    $customHead.classList.add("customize-table-head");
+    $customHead.textContent = "customize your ...";
+  const $customBody = document.createElement("form");
+    $customBody.classList.add("customize-table-body");
+  
+  const $customFoot = document.createElement("div");
+    $customFoot.classList.add("customize-foot");
+
+  $customTable.append($customHead, $customBody);
+
+  $customSection.append($customClose, $customTable, $customFoot);
+
+  $main.append($customSection);
+}
+
+const populateCustomizationTool = (title) => {
+
+  const $customTool = document.querySelector(".customize-table");
+
+  const $customHead = $customTool.querySelector(".customize-table-head");
+    $customHead.textContent = title;
+  
+  const $customBody = $customTool.querySelector(".customize-table-body");
+    $customBody.innerHTML = ""; // clear on each populate
+
+  let fields = getFields([ "contact", "pint-club" ]);
+
+  fields.forEach((f) => {
+    $customBody.append(buildFields(f));
+  })
+
+  getContactFromLocalStorage();
+
+  const $customFoot = document.querySelector(".customize-foot");
+    $customFoot.innerHTML = ""; // clear on each populate
+  
+  const $btn = document.createElement("a");
+    $btn.classList.add("btn-rect");
+    $btn.textContent = "join the club";
+    $btn.onclick = (e) => {
+      const valid = validateSubmission();
+      if (valid) {
+        saveToLocalStorage();
+        alert(`congrats, you signed up for pint club!`)
+      } else {
+        console.log(`uh-oh, you're missing some data`)
+      }
+    }
+  $customFoot.append($btn);
+
+  showCustomizationTool();
+}
+
+const showCustomizationTool = () => {
+  const $customTool = document.querySelector(".customize");
+  if ($customTool) {
+    // console.log(`showing customization tool`);
+    $customTool.classList.remove("hide");
+  }
+}
+
+const validateSubmission = () => {
+  const $form = document.querySelector(".customize-table-body");
+    const $requiredFields = $form.querySelectorAll("[required]");
+    const $radios = $form.querySelectorAll("[type=radio]");
+    const $selects = $form.querySelectorAll("select");
+
+  let invalidFieldsById = []; // inputs and selects go here
+  let invalidRadiosByName = [];
+
+  if ($requiredFields) {
+    $requiredFields.forEach((f) => {
+      if (!f.value.trim() || !f.checkValidity()) {
+        invalidFieldsById.push(f.id);
+      }
+    });
+  }
+
+  if ($selects) {
+    $selects.forEach((s) => {
+      if (s.value === "") {
+        invalidFieldsById.push(s.id);
+      }
+    });
+  }
+
+  if ($radios) {
+    let radiosByName = {};
+
+    $radios.forEach((r) => {
+      if (radiosByName[r.name]) { // if property exists
+        radiosByName[r.name].push(r.checked);
+      } else { // if property does not exist
+        radiosByName[r.name] = [r.checked];
+      }
+    });
+
+    for (prop in radiosByName) {
+      if (!radiosByName[prop].includes(true)) {
+        invalidRadiosByName.push(prop);
+      }
+    }
+  }
+
+  const allInvalidFields = [...invalidFieldsById, ...invalidRadiosByName];
+
+  if (allInvalidFields.length === 0) {
+    return true;
+  } else {
+    // attach error mssg on these fields
+    invalidFieldsById.forEach((i) => {
+      const $field = document.getElementById(i);
+      $field.classList.add("invalid-field");
+    });
+
+    invalidRadiosByName.forEach((n) => {
+      const $radioGroup = document.querySelector(`[name=${n}]`).parentNode
+        .parentNode;
+      $radioGroup.classList.add("invalid-field");
+      const $parent = $radioGroup.parentNode;
+      const $child = $parent.querySelector("h3");
+      const open = $parent.getAttribute("data-open");
+      if (open !== "true") {
+        $radioGroup.classList.remove("hide");
+        $parent.setAttribute("data-open", true);
+        $child.setAttribute("data-open", true);
+        $radioGroup.setAttribute("data-open", true);
+      }
+    });
+
+    setTimeout(() => {
+      const $invalidFields = document.querySelectorAll(".invalid-field");
+      if ($invalidFields) {
+        $invalidFields.forEach((f) => {
+          f.classList.remove("invalid-field");
+        });
+      }
+    }, 1000); //remove this class after the animation runs
+
+    return false;
+  }
+};
+
+const getFields = (fields) => {
+
+  let allFields = [];
+  fields.forEach((f) => {
+    switch (f) {
+      case "contact":
+        allFields.push(
+          { data: { store: true }, title: "name", type: "text", placeholder: "your name", required: true },
+          { data: { store: true }, title: "cell", type: "tel", placeholder: "your cell", required: true },
+          { data: { store: true }, title: "email", type: "email", placeholder: "your email", required: true }
+        );
+        break;
+      case "address":
+        allFields.push(
+          { data: { fieldtype: "address", store: true }, title: "addr1", type: "text", placeholder: "your address", required: true },
+          { data: { fieldtype: "address", store: true }, title: "addr2", type: "text", placeholder: "apt # or building code? add here!" },
+          { data: { fieldtype: "address", store: true }, title: "city", type: "text", placeholder: "your city", required: true },
+          { data: { fieldtype: "address", store: true }, title: "state", type: "text", value: "utah", readonly: true },
+          { data: { fieldtype: "address" }, title: "zip", type: "select", placeholder: "your zip code", src: "deliveryZips", required: true }          
+        );
+        break;
+        case "pint-club":
+          allFields.push(
+            { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
+            { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ], required: true },
+            { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
+            { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "local delivery" ], required: true }
+          );
+        break;
+      default:
+        break;
+    }
+  })
+  return allFields;
+}
+
+const buildFields = (field) => {
+  let $field;
+
+  if (field.type === "radio" || field.type === "checkbox") {
+    //setup options
+    $field = document.createElement("div");
+      $field.classList.add(`customize-table-body-${field.type}`);
+      $field.id = `${field.type}-${cleanName(field.title)}`;
+
+    const $title = document.createElement("h3");
+      $title.textContent = field.label;
+      $title.onclick = (e) => {
+        const $parent = e.target.parentNode;
+        const $sibling = e.target.nextElementSibling;
+        const open = $sibling.getAttribute("data-open");
+
+        if (open === "true") {
+          $sibling.classList.add("hide");
+          $parent.setAttribute("data-open", false);
+          $sibling.setAttribute("data-open", false);
+          e.target.setAttribute("data-open", false)
+        } else {
+          $sibling.classList.remove("hide");
+          $parent.setAttribute("data-open", true);
+          $sibling.setAttribute("data-open", true);
+          e.target.setAttribute("data-open", true);
+        }
+
+      }
+    $field.append($title); 
+
+    const $optionsContainer = document.createElement("div");
+      $optionsContainer.classList.add(`customize-table-body-${field.type}-container`, "hide");
+    
+    field.options.forEach((o) => {
+      
+      const $label = document.createElement("label");
+        $label.classList.add(`customize-table-body-${field.type}-container-optionblock`);
+        $label.setAttribute("for", cleanName(o));
+        $label.textContent = o;
+
+      const $customEl = document.createElement("span");
+        $customEl.classList.add(`customize-table-body-${field.type}-container-optionblock-custom`);
+      
+      const $option = document.createElement("input");
+        $option.classList.add(`customize-table-body-${field.type}-container-optionblock-option`);
+        $option.id = cleanName(o);
+        $option.name = field.title;
+        $option.type = field.type;
+        $option.value = o;
+
+      $label.append($option, $customEl);      
+
+      $optionsContainer.append($label);
+    })
+    $field.append($optionsContainer);
+
+  } 
+  else if (field.type === "select") {
+
+    $field = document.createElement("div"); // wrapper
+      $field.classList.add("customize-table-body-selectwrapper");
+    if (field.data) {
+      for (dataType in field.data) {
+        $field.setAttribute(`data-${dataType}`, field.data[dataType]);
+      }
+    }
+    $select = document.createElement(field.type);
+      $select.classList.add("customize-table-body-selectwrapper-select");
+      $select.id = cleanName(field.title);
+      $select.name = cleanName(field.title);
+    
+    const $option = document.createElement("option");
+      $option.value = "";
+      $option.textContent = field.placeholder;
+      $option.disabled = true;
+      $option.selected = true;
+      $option.hidden = true;
+    $select.append($option);
+    $field.append($select);
+  } else {
+    $field = document.createElement("input");
+      $field.classList.add("customize-table-body-field");
+      $field.id = cleanName(field.title);
+      $field.name = cleanName(field.title);
+      $field.type = field.type || "text";
+
+      if (field.type === "tel") {
+        // tel pattern
+        $field.pattern = "[0-9]{10,11}";
+      } else if (field.type === "email") {
+        $field.pattern = "[a-zA-Z0-9]+@[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)+";
+      }
+
+      if (field.placeholder) {
+        $field.placeholder = field.placeholder;
+      }
+      if (field.value) {
+        $field.value = field.value;
+      }
+      if (field.data) {
+        for (dataType in field.data) {
+          $field.setAttribute(`data-${dataType}`, field.data[dataType]);
+        }
+      }
+      if (field.required) {
+        $field.required = field.required;
+      }
+      if (field.readonly) {
+        $field.readOnly = field.readonly;
+      }
+  }
+
+  return $field;
+}
+
+const populateOptions = ($el, data) => {
+  data.forEach((d) => {
+    // console.log(d);
+    const $option = document.createElement("option");
+      $option.value = d;
+      $option.textContent = d;
+    $el.append($option);
+  })
+}
+
+const getMainTheme = () => {
+  const $main = document.querySelector("main");
+  const classList = [ ...$main.classList ];
+  if (classList.includes("theme")) {
+    if (classList[classList.length - 1].includes("theme-")) {
+      return classList[classList.length - 1];
+    } else {
+      return "theme-white"
+    }
+  }
+  return "theme-white";
+}
+
 // HEADER
 const testCart = () => {
   const $headerCart = document.querySelector(".header-cart");
-  $headerCart.textContent = randomNum(0, 9);
+  if ($headerCart) { 
+    $headerCart.textContent = randomNum(0, 9);
+  }
 };
 
 // FOOTER
