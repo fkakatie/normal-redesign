@@ -422,6 +422,38 @@ svg {
   #about svg.icon-arrow-down:hover, #pintclub svg.icon-arrow-down:hover {
     transform: scaleY(1.2) translateY(0.6rem); }
 
+.screensaver {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  min-height: 100vh;
+  width: calc(100vw - (100vw - 100%));
+  overflow: auto;
+  z-index: 10; }
+  .screensaver-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%); }
+  .screensaver-logocontainer {
+    display: inline-block;
+    animation: bounceX 6s linear infinite alternate; }
+    .screensaver-logocontainer svg.icon-normal {
+      width: 12rem;
+      height: 12rem;
+      stroke-width: 0;
+      animation: bounceY 4.5s linear infinite alternate; }
+
+@keyframes bounceX {
+  100% {
+    transform: translateX(calc(100vw - 12rem)); } }
+
+@keyframes bounceY {
+  100% {
+    transform: translateY(calc(100vh - 12rem)); } }
+
 h1#normalreg {
   font-size: 9.9rem; }
   h1#normalreg svg.icon-reg {
@@ -978,9 +1010,9 @@ h2#normal-pint-club-faq, h2#normal-pint-club-faqs {
   display: flex;
   flex-wrap: wrap; }
   #pintclub .faq-container > .faq-item {
-    text-align: left;
     width: calc(100% / 2);
-    padding: 4rem 2rem; }
+    padding: 4rem 2rem;
+    text-align: left; }
     #pintclub .faq-container > .faq-item h3 {
       transition: 0.2s all;
       cursor: pointer; }

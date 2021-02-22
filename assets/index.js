@@ -128,8 +128,8 @@ const setBlockStyle = ($el, style) => {
 };
 
 // LOCAL STORAGE
-const saveToLocalStorage = () => {
-  const $fieldsToStore = document.querySelectorAll("[data-store=true]");
+const saveToLocalStorage = ($form) => {
+  const $fieldsToStore = $form.querySelectorAll("[data-store=true]");
   if ($fieldsToStore) {
     $fieldsToStore.forEach((f) => {
       if (f.value.trim() !== "") {
@@ -753,7 +753,7 @@ const buildClubFAQ = () => {
   }
 }
 
-// COMPONENTS
+// CUSTOMIZE COMPONENT
 const buildCustomizationTool = () => {
 
   const $main = document.querySelector("main");
@@ -815,13 +815,17 @@ const populateCustomizationTool = (title) => {
   const $btn = document.createElement("a");
     $btn.classList.add("btn-rect");
     $btn.textContent = "join the club";
-    $btn.onclick = (e) => {
-      const valid = validateSubmission();
+    $btn.onclick = async (e) => {
+      const $form = document.querySelector("form");
+      const valid = validateSubmission($form);
       if (valid) {
-        saveToLocalStorage();
-        alert(`congrats, you signed up for pint club!`)
+        saveToLocalStorage($form);
+        buildScreensaver("sending in your subscription...");
+        const formData = await getSubmissionData($form);
+        setTimeout(removeScreensaver, 8000);
+        console.log(`formData`, formData);
       } else {
-        console.log(`uh-oh, you're missing some data`)
+        console.error("please fill out all required fields!");
       }
     }
   $customFoot.append($btn);
@@ -837,11 +841,10 @@ const showCustomizationTool = () => {
   }
 }
 
-const validateSubmission = () => {
-  const $form = document.querySelector(".customize-table-body");
-    const $requiredFields = $form.querySelectorAll("[required]");
-    const $radios = $form.querySelectorAll("[type=radio]");
-    const $selects = $form.querySelectorAll("select");
+const validateSubmission = ($form) => {
+  const $requiredFields = $form.querySelectorAll("[required]");
+  const $radios = $form.querySelectorAll("[type=radio]");
+  const $selects = $form.querySelectorAll("select");
 
   let invalidFieldsById = []; // inputs and selects go here
   let invalidRadiosByName = [];
@@ -885,13 +888,12 @@ const validateSubmission = () => {
   if (allInvalidFields.length === 0) {
     return true;
   } else {
-    // attach error mssg on these fields
-    invalidFieldsById.forEach((i) => {
+    invalidFieldsById.forEach((i) => { // attach error mssg on these fields
       const $field = document.getElementById(i);
       $field.classList.add("invalid-field");
     });
 
-    invalidRadiosByName.forEach((n) => {
+    invalidRadiosByName.forEach((n) => { // pop open dropdown with errors
       const $radioGroup = document.querySelector(`[name=${n}]`).parentNode
         .parentNode;
       $radioGroup.classList.add("invalid-field");
@@ -918,6 +920,37 @@ const validateSubmission = () => {
     return false;
   }
 };
+
+const getSubmissionData = ($form) => {
+  const $fields = $form.querySelectorAll("[name]"); // all named fields
+  let data = {};
+
+  if ($fields) {
+    $fields.forEach((f) => {
+      if (f.nodeName === "SELECT") {
+        data[f.name] = f.value;
+      } else if (f.type === "checkbox") {
+        if (f.checked) { // only check checked checkbox (wow) options
+          if (data[f.name]) { // if prop exists
+            data[f.name].push(f.value)
+          } else { // if prop DOES NOT exist
+            data[f.name] = [ f.value ];
+          }
+        }
+      } else if (f.type === "radio") {
+        if (f.checked) { // only add selected radio option
+          data[f.name] = f.value;
+        }
+      } else {
+        if (f.value) { // exclude empty fields
+          data[f.name] = f.value;
+        }
+      }
+    })
+  }
+
+  return data;
+}
 
 const getFields = (fields) => {
 
@@ -1081,17 +1114,34 @@ const populateOptions = ($el, data) => {
   })
 }
 
-const getMainTheme = () => {
+// SCREENSAVER COMPONENT
+const buildScreensaver = (message) => {
   const $main = document.querySelector("main");
-  const classList = [ ...$main.classList ];
-  if (classList.includes("theme")) {
-    if (classList[classList.length - 1].includes("theme-")) {
-      return classList[classList.length - 1];
-    } else {
-      return "theme-white"
-    }
+  const mainTheme = getMainTheme();
+
+  const $screensaver = document.createElement("section");
+    $screensaver.classList.add("screensaver", mainTheme);
+
+  const $message = document.createElement("h2");
+    $message.classList.add("screensaver-message");
+    $message.textContent = message;
+  
+  const $logoContainer = document.createElement("div");
+    $logoContainer.classList.add("screensaver-logocontainer")
+    $logoContainer.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-normal">
+    <use href="/icons.svg#normal"></use>
+  </svg>`;
+    
+  $screensaver.append($message, $logoContainer);
+
+  $main.append($screensaver);
+}
+
+const removeScreensaver = () => {
+  const $screensaver = document.querySelector(".screensaver");
+  if ($screensaver) {
+    $screensaver.remove();
   }
-  return "theme-white";
 }
 
 // HEADER
@@ -1121,6 +1171,19 @@ const cleanName = (str) => {
     .replace(/[^0-9a-z]/gi, ""); // replace non alpha-numeric
   return clean;
 };
+
+const getMainTheme = () => {
+  const $main = document.querySelector("main");
+  const classList = [ ...$main.classList ];
+  if (classList.includes("theme")) {
+    if (classList[classList.length - 1].includes("theme-")) {
+      return classList[classList.length - 1];
+    } else {
+      return "theme-white"
+    }
+  }
+  return "theme-white";
+}
 
 const getColorMatch = (color) => {
   switch (color) {

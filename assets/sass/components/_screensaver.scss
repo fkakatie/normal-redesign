@@ -1,0 +1,48 @@
+.screensaver {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    min-height: 100vh;
+    width: calc(100vw - (100vw - 100%)); // remove scrollbar from equation
+    overflow: auto;
+    z-index: 10;
+    // background: red;
+
+    &-message {
+        // color: red;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        text-align: center;
+        // font-size: 6rem;
+        transform: translate(-50%, -50%);
+    }
+
+    &-logocontainer {
+        // border: 2px solid red;
+        display: inline-block;
+        animation: bounceX 6s linear infinite alternate;
+        // @include bfv;
+        
+        & svg.icon-normal {
+            width: 12rem;
+            height: 12rem;
+            stroke-width: 0;
+            animation: bounceY 4.5s linear infinite alternate;
+        }
+    }
+
+}
+
+@keyframes bounceX {
+    100% {
+        transform: translateX( calc(100vw - 12rem) );
+    }
+}
+
+@keyframes bounceY {
+    100% {
+        transform: translateY( calc(100vh - 12rem) );
+    }
+}
