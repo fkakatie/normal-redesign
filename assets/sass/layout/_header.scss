@@ -21,7 +21,7 @@ header {
     }
 
     & svg {
-        &.icon-normal, &.icon-cone {
+        &.icon-normal, &.icon-pint {
             height: 7rem;
             width: 7rem;
             stroke-width: 0;
@@ -35,13 +35,15 @@ header {
     }
 
     & p {
+        border: 2px solid red;
         position: absolute;
-        top: 25%;
+        top: 50%;
         left: 50%;
-        transform: translate(-50%, -33%);
-        color: $color-white;
+        width: 100%;
+        text-align: center;
+        transform: translate(-50%, -50%);
         font-size: 120%;
         line-height: 1;
-        letter-spacing: -1.5px;
+        // letter-spacing: -1.5px;
     }
 }
