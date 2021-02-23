@@ -5,9 +5,10 @@
         // background: red;
         padding: 0.6rem 1.4rem 0.8rem;
         line-height: 1;
-        margin-top: 2rem;
+        margin-top: 0.2rem;
         transition: 0.2s all;
-        cursor: pointer;
+        font-size: 2rem;
+        cursor: pointer !important;
         @include bfv;
 
         &:hover, &:focus {

@@ -137,7 +137,8 @@ div.embed-internal-indexcarousel + p {
         }
 
         &::after {
-            content: "⟶";
+            content: url("./svg/arrow-right.svg");
+            width: 3.5rem;
             position: absolute;
             right: 1.8rem;
         }

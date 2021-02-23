@@ -12,8 +12,12 @@
         }
     }
 
-    & header p {
-        color: $color-blue;
+    & .header-cart {
+        background: $color-white;
+
+        &-text {
+            color: $color-blue;
+        }
     }
 
     & .btn {
@@ -51,6 +55,29 @@
                 }
             }
         }
+    }
+
+    & .menu {
+        &-filled {
+            background: $color-blue;
+            color: $color-white;
+
+            &:nth-child(odd) {
+                background: $color-pink;
+                color: $color-blue;
+            }
+    
+            & .btn {
+                &-rect {
+                    background: $color-white;
+                    color: $color-blue;
+                }
+            }
+        }
+    }
+
+    & #back-to-top {
+        background: $color-white;
     }
 }
 

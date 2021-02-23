@@ -1,0 +1,40 @@
+#back-to-top {
+    // background: red;
+
+    position: fixed;
+    bottom: 4rem;
+    right: calc(10% + 1px); // pixel perfect hack
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 8rem;
+    height: 8rem;
+    line-height: 1;
+    text-align: center;
+    border-radius: 50%;
+    // padding: 1rem;
+    font-size: 1.6rem;
+    transition: 0.2s all;
+    opacity: 0.5;
+    cursor: pointer;
+
+    z-index: 8;
+
+    &:hover, &:focus {
+        transform: translateY(-0.5rem);
+        opacity: 1;
+    }
+
+    & svg.icon-arrow-up {
+        // color: white;
+        display: block;
+        width: 3rem;
+        height: 3rem;
+        margin: 0 auto;
+        stroke-width: 5;
+        text-align: center;
+    }
+}

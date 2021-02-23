@@ -3,61 +3,95 @@ let storeLocation;
 
 // UNIVERSAL SETUP
 const setupHead = () => {
-  console.log(`setting up head`);
-  document.title = `normal® - ${setPage()}`;
+  const title = getPage();
+  document.title = `normal® ${title === "home" ? "" : `- ${title}`}`;
+}
+
+const getPage = () => {
+  const path = window.location.pathname;
+  if (path.includes("order")) {
+    return "order";
+  } else if (path.includes("store")) {
+    return "store";
+  } else if (path.includes("lab")) {
+    return "lab";
+  } else if (path.includes("delivery")) {
+    return "delivery";
+  } else if (path.includes("about")) {
+    return "about";
+  } else if (path.includes("pint-club")) {
+    return "pint club";
+  } else if (path.includes("cone-builder")) {
+    return "cone builder";
+  } else if (path.includes("merch")) {
+    return "merch";
+  } else {
+    return "home";
+  }
 }
 
 const setPage = () => {
-  const path = window.location.pathname;
-  if (path.includes("order")) {
-    // console.log("order");
-    buildOrderPage();
-    return "order";
-  } else if (path.includes("store")) {
-    // console.log("store");
-    shopify();
-    buildCustomizationTool();
-    // drinksStarburst();
-    // setupCarousels();
-    return "store";
-  } else if (path.includes("lab")) {
-    // console.log("lab");
-    shopify();
-    buildCustomizationTool();
-    drinksStarburst();
-    setupCarousels();
-    return "lab";
-  } else if (path.includes("delivery")) {
-    // console.log("delivery");
-    shopify();
-    buildCustomizationTool();
-    drinksStarburst();
-    setupCarousels();
-    return "delivery";
-  } else if (path.includes("about")) {
-    // console.log("about page");
-    buildLocationsGrid();
-    setupDownAnchors();
-    fetchProductLocations();
-    return "about";
-  } else if (path.includes("pint-club")) {
-    // console.log("pint-club");
-    floatPintLogo();
-    buildPintBanner();
-    setupDownAnchors();
-    setupPintSubOptions();
-    buildCustomizationTool();
-    buildClubFAQ();
-    return "pint club";
-  } else if (path.includes("merch")) {
-    // console.log("merch");
-    return "merch";
-  } else {
-    // default location is store
-    console.log("home");
-    buildIndexGrid();
-    return "home";
+  const page = getPage();
+  console.log(`setPage -> page`, page);
+  
+  switch (page) {
+    case "order":
+      buildOrderPage();
+      break;
+    case "store":
+      getCurrentStore();
+      shopify();
+      styleMenus();
+      fixCart();
+      // buildCustomizationTool();
+      // drinksStarburst();
+      // setupCarousels();
+      break;
+    case "lab":
+      getCurrentStore();
+      shopify();
+      styleMenus();
+      fixCart();
+      // buildCustomizationTool();
+      // drinksStarburst();
+      // setupCarousels();
+      break;
+    case "delivery":
+      getCurrentStore();
+      shopify();
+      styleMenus();
+      fixCart();
+      // buildCustomizationTool();
+      // drinksStarburst();
+      // setupCarousels();
+      break;
+    case "about":
+      buildLocationsGrid();
+      fetchProductLocations();
+      setupDownAnchors();
+      break;
+    case "pint club":
+      floatPintLogo();
+      buildPintBanner();
+      setupPintSubOptions();
+      buildClubFAQ();
+      buildCustomizationTool();
+      setupDownAnchors();
+      break;
+    case "cone builder":
+      console.log("nothing yet~");
+      break;
+    case "merch":
+      console.log("nothing yet~");
+      break;
+    case "home":
+      buildIndexCarousel();
+      break;
+    default:
+      console.error("something went wrong!")
+      break;
   }
+
 };
 
 const classify = () => {
@@ -93,9 +127,9 @@ const codify = () => {
       if (key === "theme") {
         setPageTheme(values); // set theme class on body
       } else if (key === "style") {
-        // console.log(values);
         setBlockStyle(c, values);
       } else if (key === "color") {
+        console.log(values);
         setBlockTheme(c, values); // set theme class on parent
       } else if (key === "code") {
         switch (values) {
@@ -114,7 +148,7 @@ const codify = () => {
 
 const setPageTheme = (color) => {
   const $body = document.querySelector("body");
-  const configuredColors = ["blue", "pink", "yellow"];
+  const configuredColors = ["bluepink", "bluewhite", "pink", "yellow"];
   if (configuredColors.includes(color)) {
     $body.classList.add("theme", `theme-${color}`);
   } else {
@@ -124,7 +158,7 @@ const setPageTheme = (color) => {
 
 const setBlockTheme = ($el, color) => {
   const $parent = $el.parentNode.parentNode.parentNode.parentNode.parentNode;
-  const configuredColors = ["blue", "pink", "yellow"];
+  const configuredColors = ["bluepink", "bluewhite", "pink", "yellow"];
   if (configuredColors.includes(color)) {
     $parent.classList.add(`theme-${color}`);
   } else {
@@ -139,6 +173,43 @@ const setBlockStyle = ($el, style) => {
     $parent.classList.add(`theme-${style}`);
   }
 };
+
+const fixCart = () => {
+  const $cart = document.querySelector(".header-cart");
+  if ($cart) {
+    $cart.classList.add("header-cart-fixed")
+  }
+}
+
+const buildBackToTopBtn = () => {
+  const $btn = document.createElement("aside");
+    $btn.id = "back-to-top";
+    $btn.classList.add("hide");
+    $btn.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-arrow-up">
+    <use href="/icons.svg#arrow-up"></use>
+    </svg>`;
+    $btn.innerHTML += "back to top";
+    $btn.onclick = (e) => {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      const $backToTopBtn = document.getElementById("back-to-top");
+      $backToTopBtn.classList.add("hide");
+    }
+
+  const $body = document.querySelector("body");
+  $body.append($btn);
+}
+
+const showBackToTopBtn = debounce(function() {
+  const $btn = document.getElementById("back-to-top");
+  if ($btn) {
+    if (window.scrollY > 0) {
+      $btn.classList.remove("hide");
+    } else { 
+      $btn.classList.add("hide");
+    }
+  }
+}, 1000);
 
 // LOCAL STORAGE
 const saveToLocalStorage = ($form) => {
@@ -187,7 +258,6 @@ const fetchLabels = async () => {
   json.forEach((j) => {
     window.labels[j.key] = j.value;
   });
-  console.log(window.labels);
   return window.labels;
 };
 
@@ -219,30 +289,19 @@ const fetchDeliveryZips = async () => {
 };
 
 // INDEX
-const buildIndexGrid = () => {
-  console.log(`\nbuild index grid running`);
-  const indexPaths = ["/", "/index", "/index.html"];
-  if (indexPaths.includes(window.location.pathname)) {
-    const $main = document.querySelector("main");
-    const carouselHeight = parseInt(
-      document.querySelector("#carousel").offsetHeight
-    );
-    $main.style.minHeight = `${
-      carouselHeight > 0 ? carouselHeight + 32 : 697
-    }px`;
-    const $carousel = document.querySelector(".embed-internal-carousel");
-    if ($carousel) {
-      // set horizonal scroll on carousel
-      $carousel.onwheel = (e) => {
-        if (e.wheelDelta < 0) {
-          $carousel.scrollLeft += 468;
-        } else {
-          $carousel.scrollLeft -= 468;
-        }
-      };
-    }
+const buildIndexCarousel = () => {
+  const $carousel = document.querySelector(".embed-internal-indexcarousel");
+  
+  if ($carousel) {
+    $carousel.onwheel = (e) => {     // set horizonal scroll on carousel
+      if (e.wheelDelta < 0) {
+        $carousel.scrollLeft += 468;
+      } else {
+        $carousel.scrollLeft -= 468;
+      }
+    };
   }
-};
+}
 
 // ORDER PAGE
 const buildOrderPage = () => {
@@ -307,6 +366,12 @@ const buildOrderPage = () => {
 };
 
 // STOREFRONTS
+const getCurrentStore = () => {
+  const currentStore = getPage();
+  // console.log(`getCurrentStore -> currentStore`, currentStore);
+  return currentStore;
+}
+
 const shopify = () => {
   const squarePrefix = "https://squareup.com/dashboard/items/library/";
   const $as = document.querySelectorAll("main a");
@@ -318,7 +383,7 @@ const shopify = () => {
         a.setAttribute("data-id", id);
         a.setAttribute("onclick", "addToCart(this)");
         a.removeAttribute("href");
-        a.classList.add("btn");
+        a.classList.add("btn-rect");
       }
     });
   }
@@ -332,6 +397,24 @@ const addToCart = (item) => {
   const currentVal = parseInt($headerCart.textContent);
   $headerCart.textContent = currentVal + 1;
 };
+
+const styleMenus = () => {
+  // console.log(`building menus`);
+  const $main = document.querySelector("main");
+  const $divs = [ ...$main.querySelectorAll("div")];
+  $divs.forEach((d) => {
+    // console.log(d.firstElementChild, d.firstElementChild.nodeName);
+    if (d.firstElementChild.nodeName === "H2" && d.firstElementChild.id !== "contact-us") {
+      d.classList.add("menu");
+      const $embed = d.querySelector(".embed");
+      if ($embed) {
+        d.classList.add("menu-carousel", "theme-outline");
+      } else {
+        d.classList.add("menu-filled", "theme-filled");
+      }
+    }
+  })
+}
 
 const drinksStarburst = () => {
   const $el = document.querySelector(".p-drinksdrinksdrinks");
@@ -1178,16 +1261,18 @@ const updateCopyright = () => {
 
 // UTILITIES
 const cleanName = (str) => {
-  const clean = str
-    .split(" ").join("") // remove spaces
-    .toLowerCase()
-    .replace(/[^0-9a-z]/gi, ""); // replace non alpha-numeric
-  return clean;
+  if (str) {
+    const clean = str
+      .split(" ").join("") // remove spaces
+      .toLowerCase()
+      .replace(/[^0-9a-z]/gi, ""); // replace non alpha-numeric
+      return clean;
+  }
 };
 
 const getMainTheme = () => {
-  const $main = document.querySelector("main");
-  const classList = [ ...$main.classList ];
+  const $body = document.querySelector("body");
+  const classList = [ ...$body.classList ];
   if (classList.includes("theme")) {
     if (classList[classList.length - 1].includes("theme-")) {
       return classList[classList.length - 1];
@@ -1198,30 +1283,37 @@ const getMainTheme = () => {
   return "theme-white";
 }
 
-const getColorMatch = (color) => {
-  switch (color) {
-    case "blue":
-      return "white";
-    case "white":
-    case "pink":
-      return "blue";
-    default:
-      return null;
-  }
-};
-
 const randomNum = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+/* from underscore.js */
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function() {
+    const context = this, args = arguments;
+    const later = function() {
+      timeout = null;
+      if (!immediate) { func.apply(context, args) };
+    };
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) { func.apply(context, args) };
+  };
+}
+
 window.onload = async (e) => {
+  setupHead();
   classify();
   codify();
   setPage();
-  setupHead();
   
-  // await fetchLabels();
+  await fetchLabels();
 
   testCart();
+  buildBackToTopBtn();
   updateCopyright();
 };
+
+window.onscroll = showBackToTopBtn;

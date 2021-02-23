@@ -9,8 +9,12 @@
         }
     }
 
-    & header p {
-        color: $color-red;
+    & .header-cart {
+        background: $color-pink;
+
+        &-text {
+            color: $color-red;
+        }
     }
 
     & .btn {
@@ -36,6 +40,10 @@
                 color: $color-red;
             }
         }
+    }
+
+    & #back-to-top {
+        background: $color-pink;
     }
 }
 

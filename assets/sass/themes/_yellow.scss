@@ -9,8 +9,12 @@
         }
     }
 
-    & header p {
-        color: $color-green;
+    & .header-cart {
+        background: $color-yellow;
+
+        &-text {
+            color: $color-green;
+        }
     }
 
     & .btn {
@@ -36,6 +40,10 @@
                 color: $color-green;
             }
         }
+    }
+
+    & #back-to-top {
+        background: $color-yellow;
     }
 }
 

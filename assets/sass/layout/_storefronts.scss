@@ -1,3 +1,115 @@
+h2 {
+    &#soft-serve, &#drinks-drinks-drinks, &#pints, &#bars, &#composed-cones, &#pizza, &#choco-taco, &#ice-cream-cake { // STORE HEADINGS
+        // color: red;
+        & ~ h3 {
+            // color: red;
+            margin-top: 2rem;
+            margin-bottom: 0.2rem;
+        }
+        & ~ p {
+            @include font-poppins;
+            font-size: 60%;
+            line-height: 1.4;
+            margin-top: 0.4rem;
+            & strong {
+                @include font-poppins-black;
+                font-size: 120%;
+            }
+            & a {
+                @include font-acumin-semibold;
+                font-size: 2rem;
+                text-decoration: none;
+                cursor: not-allowed;
+            }
+        }
+    }
+    &#soft-serve { // soft-serve heading
+        & ~ h3 {
+            margin: 0.2rem 0;
+        }
+    }
+}
+
+.embed-internal-storemenus {
+    // background: yellow;
+    & div {
+        & h3 {
+            margin-top: 2rem;
+            margin-bottom: 0.2rem;
+        }
+        & p {
+            @include font-poppins;
+            font-size: 60%;
+            line-height: 1.4;
+            margin-top: 0.4rem;
+            & strong {
+                @include font-poppins-black;
+                font-size: 120%;
+            }
+            & a {
+                @include font-acumin-semibold;
+                font-size: 2rem;
+                text-decoration: none;
+                cursor: not-allowed;
+            }
+        }
+    }
+    
+}
+
+// AFTER CLASSES AND IDS ARE ADDED
+.menu {
+    // border: 2px solid red;
+    margin-top: 4rem;
+    padding: 2rem 0;
+
+    &-filled {
+        & > * {
+            padding-left: 33%;
+            padding-right: 33%;
+        }
+    } 
+
+    &-carousel {
+        // border: 2px solid blue;
+        padding: 0.5rem 0 2rem;
+    }
+}
+
+.p-softserve {
+    // border: 20px solid gold;
+    & .btn {
+        &-rect {
+            margin: 2rem 0;
+        }
+    }
+}
+
+
+@media only screen and (max-width: 76.8rem) {
+    .menu {
+        &-filled {
+            & > * {
+                padding-left: 25%;
+                padding-right: 25%;
+            }
+        }
+    }
+}
+
+
+@media only screen and (max-width: 41.1rem) {
+    .menu {
+        &-filled {
+            & > * {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+    }
+}
+
+
 // h1#normalreg + p {
 //     // color: red;
 //     margin-bottom: 1.8rem;

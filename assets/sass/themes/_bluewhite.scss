@@ -1,4 +1,4 @@
-.theme-blue {
+.theme-bluewhite {
     background: $color-blue;
     color: $color-white;
 
@@ -9,8 +9,12 @@
         }
     }
 
-    & header p {
-        color: $color-white;
+    & .header-cart {
+        background: $color-blue;
+
+        &-text {
+            color: $color-white;
+        }
     }
 
     & .btn {
@@ -36,6 +40,14 @@
                 color: $color-white;
             }
         }
+    }
+
+    & .menu {
+        background: red;
+    }
+
+    & #back-to-top {
+        background: $color-blue;
     }
 }
 

@@ -1,4 +1,4 @@
-.theme-blue {
+.theme-bluepink {
     background: $color-blue;
     color: $color-pink;
 
@@ -9,8 +9,12 @@
         }
     }
 
-    & header p {
-        color: $color-pink;
+    & .header-cart {
+        background: $color-blue;
+
+        &-text {
+            color: $color-pink;
+        }
     }
 
     & .btn {
@@ -36,6 +40,10 @@
                 color: $color-pink;
             }
         }
+    }
+
+    & #back-to-top {
+        background: $color-blue;
     }
 }
 
