@@ -1078,7 +1078,7 @@ main#icons .p-logos svg {
     -webkit-box-shadow: 0 0 0px 5rem #0D26F9 inset;
     -webkit-text-fill-color: #FFD4CC; }
   .theme-blue header p {
-    color: #0D26F9; }
+    color: #FFD4CC; }
   .theme-blue .btn-back, .theme-blue .btn-rect {
     color: #0D26F9 !important;
     background: #FFD4CC !important; }
@@ -1108,10 +1108,10 @@ main#icons .p-logos svg {
     -webkit-box-shadow: 0 0 0px 5rem #FFD4CC inset;
     -webkit-text-fill-color: #F94F0D; }
   .theme-pink header p {
-    color: #FFD4CC; }
+    color: #F94F0D; }
   .theme-pink .btn-back, .theme-pink .btn-rect {
-    color: #FFD4CC;
-    background: #F94F0D; }
+    color: #FFD4CC !important;
+    background: #F94F0D !important; }
   .theme-pink .customize::-webkit-scrollbar-thumb {
     background: #F94F0D; }
   .theme-pink .customize-close {
@@ -1140,7 +1140,7 @@ main#icons .p-logos svg {
     .theme-white input:-webkit-autofill:hover, .theme-white input:-webkit-autofill:focus {
       -webkit-box-shadow: 0 0 0px 5rem #FFD4CC inset; }
   .theme-white header p {
-    color: #FFFCF3; }
+    color: #0D26F9; }
   .theme-white .btn-back, .theme-white .btn-rect {
     color: #FFFCF3;
     background: #0D26F9; }
@@ -1151,7 +1151,7 @@ main#icons .p-logos svg {
   .theme-white .customize-close {
     background: #FFFCF3; }
   .theme-white .customize-table-body-field:hover, .theme-white .customize-table-body-field:focus, .theme-white .customize-table-body-selectwrapper:hover, .theme-white .customize-table-body-selectwrapper:focus {
-    background: #FFD4CC !important; }
+    background: #FFD4CC; }
   .theme-white .customize-table-body-radio, .theme-white .customize-table-body-checkbox {
     background: #0D26F9;
     color: #FFFCF3; }
@@ -1174,10 +1174,10 @@ main#icons .p-logos svg {
     -webkit-box-shadow: 0 0 0px 5rem #FFFC92 inset;
     -webkit-text-fill-color: #00C1C6; }
   .theme-yellow header p {
-    color: #FFFC92; }
+    color: #00C1C6; }
   .theme-yellow .btn-back, .theme-yellow .btn-rect {
-    color: #FFFC92;
-    background: #00C1C6; }
+    color: #FFFC92 !important;
+    background: #00C1C6 !important; }
   .theme-yellow .customize::-webkit-scrollbar-thumb {
     background: #00C1C6; }
   .theme-yellow .customize-close {

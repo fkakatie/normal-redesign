@@ -165,7 +165,7 @@ const getAddressFromLocalStorage = () => {
 
 // FETCH DATA
 const fetchLabels = async () => {
-  const resp = await fetch("/labels.json");
+  const resp = await fetch("/_data/labels.json");
   let json = await resp.json();
   if (json.data) {
     json = json.data; // helix quirk, difference between live and local
@@ -180,7 +180,7 @@ const fetchLabels = async () => {
 
 const fetchProductLocations = async () => {
   if (!window.productLocations) {
-    const resp = await fetch("/product-locations.json");
+    const resp = await fetch("/_data/product-locations.json");
     let json = await resp.json();
     if (json.data) {
       json = json.data; // helix quirk, difference between live and local
@@ -192,7 +192,7 @@ const fetchProductLocations = async () => {
 
 const fetchDeliveryZips = async () => {
   if (!window.deliveryZips) {
-    const resp = await fetch("/delivery-zips.json");
+    const resp = await fetch("/_data/delivery-zips.json");
     let json = await resp.json();
     if (json.data) {
       json = json.data; // helix quirk, difference between live and local
@@ -1146,9 +1146,9 @@ const removeScreensaver = () => {
 
 // HEADER
 const testCart = () => {
-  const $headerCart = document.querySelector(".header-cart");
-  if ($headerCart) { 
-    $headerCart.textContent = randomNum(0, 9);
+  const $headerText = document.querySelector(".header-cart-text");
+  if ($headerText) { 
+    $headerText.textContent = randomNum(0, 19);
   }
 };
 
@@ -1201,7 +1201,7 @@ const randomNum = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-window.onload = async (event) => {
+window.onload = async (e) => {
   classify();
   codify();
   setPage();

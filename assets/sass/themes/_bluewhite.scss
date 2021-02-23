@@ -1,39 +1,39 @@
 .theme-blue {
     background: $color-blue;
-    color: $color-pink;
+    color: $color-white;
 
     input {
         &:-webkit-autofill {
             -webkit-box-shadow: 0 0 0px 5rem $color-blue inset;
-            -webkit-text-fill-color: $color-pink;
+            -webkit-text-fill-color: $color-white;
         }
     }
 
     & header p {
-        color: $color-blue;
+        color: $color-white;
     }
 
     & .btn {
         &-back, &-rect {
             color: $color-blue !important;
-            background: $color-pink !important;
+            background: $color-white !important;
         }
     }
 
     & .customize {
         &::-webkit-scrollbar-thumb {
-            background: $color-pink;
+            background: $color-white;
         }
         &-close {
             background: $color-blue;
         }
         &-table-body-radio, &-table-body-checkbox {
-            background: $color-pink;
+            background: $color-white;
             color: $color-blue; 
         
             &-container {
                 background: $color-blue;
-                color: $color-pink;
+                color: $color-white;
             }
         }
     }
@@ -41,6 +41,6 @@
 
 @keyframes blue-error-blink {
     0% { background: $color-blue; }
-   50% { background: $color-pink; }
+   50% { background: $color-white; }
    99% { background: $color-blue; }
 }

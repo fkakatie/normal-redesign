@@ -10,13 +10,13 @@
     }
 
     & header p {
-        color: $color-yellow;
+        color: $color-green;
     }
 
     & .btn {
         &-back, &-rect {
-            color: $color-yellow;
-            background: $color-green;
+            color: $color-yellow !important;
+            background: $color-green !important;
         }
     }
 
