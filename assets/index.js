@@ -2,34 +2,44 @@
 let storeLocation;
 
 // UNIVERSAL SETUP
+const setupHead = () => {
+  console.log(`setting up head`);
+  document.title = `normal® - ${setPage()}`;
+}
+
 const setPage = () => {
   const path = window.location.pathname;
   if (path.includes("order")) {
     // console.log("order");
     buildOrderPage();
+    return "order";
   } else if (path.includes("store")) {
     // console.log("store");
     shopify();
     buildCustomizationTool();
     // drinksStarburst();
     // setupCarousels();
+    return "store";
   } else if (path.includes("lab")) {
     // console.log("lab");
     shopify();
     buildCustomizationTool();
     drinksStarburst();
     setupCarousels();
+    return "lab";
   } else if (path.includes("delivery")) {
     // console.log("delivery");
     shopify();
     buildCustomizationTool();
     drinksStarburst();
     setupCarousels();
+    return "delivery";
   } else if (path.includes("about")) {
     // console.log("about page");
     buildLocationsGrid();
     setupDownAnchors();
     fetchProductLocations();
+    return "about";
   } else if (path.includes("pint-club")) {
     // console.log("pint-club");
     floatPintLogo();
@@ -38,12 +48,15 @@ const setPage = () => {
     setupPintSubOptions();
     buildCustomizationTool();
     buildClubFAQ();
+    return "pint club";
   } else if (path.includes("merch")) {
     // console.log("merch");
+    return "merch";
   } else {
     // default location is store
-    console.log("index");
+    console.log("home");
     buildIndexGrid();
+    return "home";
   }
 };
 
@@ -1205,7 +1218,8 @@ window.onload = async (e) => {
   classify();
   codify();
   setPage();
-
+  setupHead();
+  
   // await fetchLabels();
 
   testCart();

@@ -607,10 +607,10 @@ h2#carousel + div.embed {
         height: 30rem;
         max-width: 100%; } }
 
-div.embed-internal-carousel + p {
+div.embed-internal-indexcarousel + p {
   position: relative;
   text-align: left; }
-  div.embed-internal-carousel + p a {
+  div.embed-internal-indexcarousel + p a {
     display: block;
     font-size: 2.9rem;
     line-height: 2.9rem;
@@ -618,9 +618,9 @@ div.embed-internal-carousel + p {
     transition: 0.1s;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden; }
-    div.embed-internal-carousel + p a:hover, div.embed-internal-carousel + p a:focus {
+    div.embed-internal-indexcarousel + p a:hover, div.embed-internal-indexcarousel + p a:focus {
       letter-spacing: 1.5px; }
-    div.embed-internal-carousel + p a::after {
+    div.embed-internal-indexcarousel + p a::after {
       content: "⟶";
       position: absolute;
       right: 1.8rem; }
@@ -1098,6 +1098,36 @@ main#icons .p-logos svg {
     background: #0D26F9; }
   50% {
     background: #FFD4CC; }
+  99% {
+    background: #0D26F9; } }
+
+.theme-blue {
+  background: #0D26F9;
+  color: #FFFCF3; }
+  .theme-blue input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 5rem #0D26F9 inset;
+    -webkit-text-fill-color: #FFFCF3; }
+  .theme-blue header p {
+    color: #FFFCF3; }
+  .theme-blue .btn-back, .theme-blue .btn-rect {
+    color: #0D26F9 !important;
+    background: #FFFCF3 !important; }
+  .theme-blue .customize::-webkit-scrollbar-thumb {
+    background: #FFFCF3; }
+  .theme-blue .customize-close {
+    background: #0D26F9; }
+  .theme-blue .customize-table-body-radio, .theme-blue .customize-table-body-checkbox {
+    background: #FFFCF3;
+    color: #0D26F9; }
+    .theme-blue .customize-table-body-radio-container, .theme-blue .customize-table-body-checkbox-container {
+      background: #0D26F9;
+      color: #FFFCF3; }
+
+@keyframes blue-error-blink {
+  0% {
+    background: #0D26F9; }
+  50% {
+    background: #FFFCF3; }
   99% {
     background: #0D26F9; } }
 
