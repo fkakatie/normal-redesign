@@ -454,6 +454,94 @@ svg {
   #about svg.icon-arrow-down:hover, #pintclub svg.icon-arrow-down:hover {
     transform: scaleY(1.2) translateY(0.6rem); }
 
+.menu-carousel {
+  position: relative;
+  overflow-x: hidden; }
+  .menu-carousel-btn {
+    position: absolute;
+    display: inline-block;
+    padding: 0.5rem;
+    border-radius: 50%;
+    top: 55%;
+    z-index: 4;
+    transition: 0.2s all;
+    cursor: pointer;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden; }
+    .menu-carousel-btn-left {
+      left: 0.5rem; }
+    .menu-carousel-btn-right {
+      right: 0.5rem; }
+    .menu-carousel-btn svg.icon {
+      height: 3rem;
+      width: 3rem;
+      margin: 0.5rem;
+      stroke-width: 6; }
+  .menu-carousel-three .menu-carousel-btn {
+    display: none; }
+  .menu-carousel-two .menu-carousel-btn {
+    display: none; }
+  .menu-carousel-two div {
+    width: calc(100% / 2);
+    padding: 0 10rem; }
+  .menu-carousel-single {
+    background: purple; }
+    .menu-carousel-single .menu-carousel-btn {
+      display: none; }
+    .menu-carousel-single div {
+      width: 100%; }
+
+.embed-internal-storemenus {
+  width: 100%;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none; }
+  .embed-internal-storemenus::-webkit-scrollbar {
+    display: none; }
+  .embed-internal-storemenus div {
+    min-width: calc(100% / 3);
+    padding: 0 6rem; }
+    .embed-internal-storemenus div h3 {
+      margin-top: 2rem;
+      margin-bottom: 0.2rem; }
+    .embed-internal-storemenus div p {
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      font-style: normal;
+      font-size: 60%;
+      line-height: 1.4;
+      margin-top: 0.4rem; }
+      .embed-internal-storemenus div p strong {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 120%; }
+      .embed-internal-storemenus div p a {
+        font-family: acumin-pro-extra-condensed, sans-serif;
+        font-weight: 600;
+        font-style: normal;
+        font-size: 2rem;
+        text-decoration: none;
+        cursor: not-allowed; }
+
+@media only screen and (max-width: 76.8rem) {
+  .menu-carousel-full div, .menu-carousel-three div {
+    min-width: calc(100% / 2);
+    padding: 0 10rem; }
+  .menu-carousel-three .menu-carousel-btn {
+    display: inline-block; } }
+
+@media only screen and (max-width: 41.1rem) {
+  .menu-carousel-full div, .menu-carousel-two div, .menu-carousel-three div {
+    min-width: 100%;
+    padding: 0 6rem; }
+  .menu-carousel-two .menu-carousel-btn {
+    display: inline-block; } }
+
 .screensaver {
   position: fixed;
   top: 0;
@@ -762,30 +850,6 @@ h2#soft-serve ~ p, h2#drinks-drinks-drinks ~ p, h2#pints ~ p, h2#bars ~ p, h2#co
 h2#soft-serve ~ h3 {
   margin: 0.2rem 0; }
 
-.embed-internal-storemenus div h3 {
-  margin-top: 2rem;
-  margin-bottom: 0.2rem; }
-
-.embed-internal-storemenus div p {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size: 60%;
-  line-height: 1.4;
-  margin-top: 0.4rem; }
-  .embed-internal-storemenus div p strong {
-    font-family: "Poppins", sans-serif;
-    font-weight: 700;
-    font-style: normal;
-    font-size: 120%; }
-  .embed-internal-storemenus div p a {
-    font-family: acumin-pro-extra-condensed, sans-serif;
-    font-weight: 600;
-    font-style: normal;
-    font-size: 2rem;
-    text-decoration: none;
-    cursor: not-allowed; }
-
 .menu {
   margin-top: 4rem;
   padding: 2rem 0; }
@@ -793,7 +857,7 @@ h2#soft-serve ~ h3 {
     padding-left: 33%;
     padding-right: 33%; }
   .menu-carousel {
-    padding: 0.5rem 0 2rem; }
+    padding: 0.5rem 0 1rem; }
 
 .p-softserve .btn-rect {
   margin: 2rem 0; }
@@ -1332,6 +1396,12 @@ main#icons .p-logos svg {
     .theme-white .menu-filled .btn-rect {
       background: #FFFCF3;
       color: #0D26F9; }
+  .theme-white .menu-carousel-btn {
+    background: #FFFCF3; }
+    .theme-white .menu-carousel-btn:hover, .theme-white .menu-carousel-btn:focus {
+      background: #0D26F9; }
+      .theme-white .menu-carousel-btn:hover svg.icon, .theme-white .menu-carousel-btn:focus svg.icon {
+        color: #FFFCF3; }
   .theme-white #back-to-top {
     background: #FFFCF3; }
 

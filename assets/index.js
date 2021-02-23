@@ -42,10 +42,10 @@ const setPage = () => {
       getCurrentStore();
       shopify();
       styleMenus();
+      setupCarousels();
       fixCart();
       // buildCustomizationTool();
       // drinksStarburst();
-      // setupCarousels();
       break;
     case "lab":
       getCurrentStore();
@@ -201,6 +201,7 @@ const buildBackToTopBtn = () => {
 }
 
 const showBackToTopBtn = debounce(function() {
+  // console.log(`showing back to top`);
   const $btn = document.getElementById("back-to-top");
   if ($btn) {
     if (window.scrollY > 0) {
@@ -209,7 +210,7 @@ const showBackToTopBtn = debounce(function() {
       $btn.classList.add("hide");
     }
   }
-}, 1000);
+}, 1000); // one second
 
 // LOCAL STORAGE
 const saveToLocalStorage = ($form) => {
@@ -450,92 +451,110 @@ const drinksStarburst = () => {
 };
 
 // STOREFRONT CAROUSELS
-const setupCarousels = ($el) => {
-  const $carousels = document.querySelectorAll("div.embed-internal");
-  // console.log(`showSlides -> $carousels`, $carousels);
+const resetCarousels = debounce(function() {
+  // console.log(`reseting carousels`);
+  const currentStore = getCurrentStore();
+  const configuredStores = [ "store", "lab", "delivery", "merch" ];
 
-  if ($carousels) {
-    // setup carousels
-    $carousels.forEach((c) => {
-      const title = [...c.classList]
-        .filter((name) => {
-          return (
-            name !== "embed" &&
-            name !== "embed-internal" &&
-            name !== "embed-internal-"
-          );
-        })[0]
-        .split("-")
-        .slice(-1)
-        .pop();
-      c.setAttribute("data-title", title);
-
-      const $prevBtn = document.createElement("button");
-      $prevBtn.classList.add("btn-carousel", "btn-carousel-prev");
-      $prevBtn.setAttribute("data-title", title);
-      $prevBtn.textContent = "⟵";
-      $prevBtn.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // console.log(e.target.getAttribute("data-title"));
-        shiftSlides(e.target.getAttribute("data-title"), "prev");
-      };
-      const $nextBtn = document.createElement("button");
-      $nextBtn.classList.add("btn-carousel", "btn-carousel-next");
-      $nextBtn.setAttribute("data-title", title);
-      $nextBtn.textContent = "⟶";
-      $nextBtn.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // console.log(e.target.getAttribute("data-title"));
-        shiftSlides(e.target.getAttribute("data-title"), "next");
-      };
-
-      c.prepend($prevBtn);
-      c.prepend($nextBtn);
-
-      // get title of carousel by extrapolating classes
-      const $slides = c.querySelectorAll("div");
-
-      if ($slides.length % 2 === 0) {
-        c.classList.add("carousel-even");
-      } else {
-        c.classList.add("carousel-odd");
-      }
-
-      // setup slides inside carousels
-      if ($slides) {
-        $slides.forEach((s, i) => {
-          s.setAttribute("data-index", i + 1);
-          s.setAttribute("data-title", title);
-          s.classList.add("carousel-slide");
-        });
-      }
-    });
-  }
-};
-
-const shiftSlides = (title, direction) => {
-  const $thisCarousel = document.querySelector(`div.embed-internal-${title}`);
-  const $theseSlides = [...$thisCarousel.querySelectorAll("div")];
-  while ($thisCarousel.lastChild.nodeName === "div") {
-    $thisCarousel.removeChild($thisCarousel.lastChild);
-  }
-  if ($theseSlides) {
-    const $first = $theseSlides[0];
-    const $last = $theseSlides[$theseSlides.length - 1];
-    if (direction === "prev") {
-      $theseSlides.splice(-1, 1);
-      $theseSlides.unshift($last);
-    } else if (direction === "next") {
-      $theseSlides.splice(1, 1);
-      $theseSlides.push($first);
+  if (configuredStores.includes(currentStore)) {
+    const $carousels = document.querySelectorAll(`.embed-internal-${currentStore}menus`);
+    if ($carousels) {
+      $carousels.forEach((c) => {
+        c.scrollLeft = 0;
+      })
     }
   }
-  $theseSlides.forEach((s) => {
-    $thisCarousel.append(s);
-  });
+}, 500); // half second
+
+const setupCarousels = () => {
+
+  const $carouselWrappers = document.querySelectorAll(".menu-carousel");
+
+  if ($carouselWrappers) {
+
+    $carouselWrappers.forEach((w) => {
+      const $carousel = w.querySelector(`div.embed-internal-${getPage()}menus`);
+
+      if ($carousel) {
+        // build btns
+        const $leftBtn = document.createElement("aside");
+          $leftBtn.classList.add("menu-carousel-btn", "menu-carousel-btn-left");
+          $leftBtn.setAttribute("data-action", "slideLeft");
+          $leftBtn.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-arrow-left">
+            <use href="/icons.svg#arrow-left"></use>
+          </svg>`;
+          $leftBtn.onclick = (e) => { carouselNav(e, "left"); }
+                  
+          const $rightBtn = document.createElement("aside");
+          $rightBtn.classList.add("menu-carousel-btn", "menu-carousel-btn-right");
+          $rightBtn.setAttribute("data-action", "slideRight");
+          $rightBtn.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-arrow-right">
+            <use href="/icons.svg#arrow-right"></use>
+          </svg>`;
+          $rightBtn.onclick = (e) => { carouselNav(e, "right"); }
+        $carousel.append($leftBtn, $rightBtn);
+
+        const numOfSlides = $carousel.querySelectorAll("div").length;
+        console.log(numOfSlides);
+
+        if (numOfSlides % 2 === 0) {
+          $carousel.classList.add("menu-carousel-even");
+        } else {
+          $carousel.classList.add("menu-carousel-odd");
+        }
+
+        if (numOfSlides === 1) {
+          $carousel.classList.add("menu-carousel-one");
+        } else if (numOfSlides === 2) {
+          $carousel.classList.add("menu-carousel-two");
+        } else if (numOfSlides === 3) {
+          $carousel.classList.add("menu-carousel-three");
+        } else if (numOfSlides > 3) {
+          $carousel.classList.add("menu-carousel-full");
+        }
+
+      }
+    })
+  }
 };
+
+const carouselNav = (e, direction) => {
+  const $btn = e.target.closest(".menu-carousel-btn");
+  const $parent = $btn.parentNode;
+  const childWidth = $parent.querySelector("div").offsetWidth;
+  const numOfSlides = $parent.querySelectorAll("div").length;
+  const prevPosition = $parent.scrollLeft;
+
+  if (direction === "left") {
+    const currPosition = prevPosition - childWidth;
+    if (currPosition < 0) {
+      reorgSlides($parent, "left");
+    } else {
+      $parent.scrollLeft -= childWidth;
+    }
+  } else if (direction === "right") {
+    const currPosition = prevPosition + childWidth;
+    if (currPosition >= ((numOfSlides - 2) * childWidth)) {
+      reorgSlides($parent, "right");
+    } else {
+      $parent.scrollLeft += childWidth;
+    }
+  }
+
+}
+
+const reorgSlides = ($carousel, direction) => {
+  const $slides = $carousel.querySelectorAll("div");
+  if (direction === "left") {
+    const $lastSlide = $slides[$slides.length - 1];
+    $lastSlide.remove();
+    $carousel.prepend($lastSlide);   
+  } else if (direction === "right") {
+    const $firstSlide = $slides[0];
+    $firstSlide.remove();
+    $carousel.append($firstSlide);
+  }
+}
 
 // ABOUT PAGE
 const buildLocationsGrid = () => {
@@ -1317,3 +1336,4 @@ window.onload = async (e) => {
 };
 
 window.onscroll = showBackToTopBtn;
+window.onresize = resetCarousels;

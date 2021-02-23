@@ -74,6 +74,19 @@
                 }
             }
         }
+        &-carousel {
+            &-btn {
+                background: $color-white;
+
+                &:hover, &:focus {
+                    background: $color-blue;
+                    
+                    & svg.icon {
+                        color: $color-white;
+                    }
+                }
+            }
+        }
     }
 
     & #back-to-top {

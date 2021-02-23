@@ -30,33 +30,6 @@ h2 {
     }
 }
 
-.embed-internal-storemenus {
-    // background: yellow;
-    & div {
-        & h3 {
-            margin-top: 2rem;
-            margin-bottom: 0.2rem;
-        }
-        & p {
-            @include font-poppins;
-            font-size: 60%;
-            line-height: 1.4;
-            margin-top: 0.4rem;
-            & strong {
-                @include font-poppins-black;
-                font-size: 120%;
-            }
-            & a {
-                @include font-acumin-semibold;
-                font-size: 2rem;
-                text-decoration: none;
-                cursor: not-allowed;
-            }
-        }
-    }
-    
-}
-
 // AFTER CLASSES AND IDS ARE ADDED
 .menu {
     // border: 2px solid red;
@@ -72,7 +45,7 @@ h2 {
 
     &-carousel {
         // border: 2px solid blue;
-        padding: 0.5rem 0 2rem;
+        padding: 0.5rem 0 1rem;
     }
 }
 
