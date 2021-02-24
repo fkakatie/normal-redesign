@@ -1033,9 +1033,9 @@ const populateCustomizationToolSquare = (title, item) => {
         $title.textContent = "flavor (select 1)";
         $title.onclick = (e) => {
           const $parent = e.target.parentNode;
-          console.log(`populateCustomizationToolSquare -> $parent`, $parent);
+          // console.log(`populateCustomizationToolSquare -> $parent`, $parent);
           const $sibling = e.target.nextElementSibling;
-          console.log(`populateCustomizationToolSquare -> $sibling`, $sibling);
+          // console.log(`populateCustomizationToolSquare -> $sibling`, $sibling);
           const open = $sibling.getAttribute("data-open");
   
           if (open === "true") {
