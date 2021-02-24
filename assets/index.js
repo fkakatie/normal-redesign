@@ -34,7 +34,7 @@ const getPage = () => {
 
 const setPage = () => {
   const page = getPage();
-  console.log(`setPage -> page`, page);
+  // console.log(`setPage -> page`, page);
   
   switch (page) {
     case "order":
@@ -46,7 +46,7 @@ const setPage = () => {
       styleMenus();
       setupCarousels();
       fixCart();
-      // buildCustomizationTool();
+      buildCustomizationTool();
       // drinksStarburst();
       break;
     case "lab":
@@ -462,6 +462,47 @@ const drinksStarburst = () => {
   }
 };
 
+const customizeToolforStore = (target) => {
+  // limit soft serve toppings
+  const $toppingCheckboxes = document.querySelectorAll("input[name=topping]");
+  // console.log($toppingCheckboxes);
+  if ($toppingCheckboxes) {
+    $toppingCheckboxes.forEach((c) => {
+      // console.log(c);
+      c.onchange = (e) => {
+        const max = 3;
+        const $cbs =  [ ...document.querySelectorAll("input[name=topping]")];
+        const numChecked = $cbs.filter((c) => c.checked).length;
+      
+        if (numChecked === max) { // max checkboxes checked
+          $cbs.forEach((c) => {
+            if (!c.checked) { c.disabled = true }; // disable checkboxes
+          })
+        } else { 
+          $cbs.forEach((c) => {
+            c.disabled = false; // enable checkboxes
+          })
+        }
+      }
+
+    })
+  }
+
+  // set payment option
+  // if ($parent) {
+  //   const $paymentOption = $parent.querySelector("div");
+  //   const $sibling = $parent.querySelector("h3");
+  //   const $radio = document.getElementById(target);
+  
+  //   $paymentOption.classList.remove("hide");
+  //   $parent.setAttribute("data-open", true);
+  //   $sibling.setAttribute("data-open", true);
+  //   $paymentOption.setAttribute("data-open", true);
+  //   $radio.checked = true;
+  // }
+
+}
+
 /*==========================================================
 STOREFRONT CAROUSELS
 ==========================================================*/
@@ -775,7 +816,7 @@ const setupPintSubOptions = () => {
         o.onclick = (e) => {
           const $el = e.target.closest("a");
           const target = $el.getAttribute("data-club-type");
-          populateCustomizationTool("customize your pint club subscription");
+          populateCustomizationTool("customize your pint club subscription", [ "contact", "pint-club" ]);
           customizeToolforClub(target);
         }
       })
@@ -925,7 +966,7 @@ const buildCustomizationTool = () => {
   $main.append($customSection);
 }
 
-const populateCustomizationTool = (title) => {
+const populateCustomizationTool = (title, fields, obj) => {
 
   const $customTool = document.querySelector(".customize-table");
 
@@ -935,9 +976,9 @@ const populateCustomizationTool = (title) => {
   const $customBody = $customTool.querySelector(".customize-table-body");
     $customBody.innerHTML = ""; // clear on each populate
 
-  let fields = getFields([ "contact", "pint-club" ]);
+  let allFields = getFields(fields, obj);
 
-  fields.forEach((f) => {
+  allFields.forEach((f) => {
     $customBody.append(buildFields(f));
   })
 
@@ -962,6 +1003,236 @@ const populateCustomizationTool = (title) => {
         console.error("please fill out all required fields!");
       }
     }
+  $customFoot.append($btn);
+
+  showCustomizationTool();
+}
+
+const populateCustomizationToolSquare = (title, item) => {
+
+  const itemData = item.item_data;
+  const itemVariations = itemData.variations;
+  const itemModifiers = itemData.modifier_list_info;
+
+  const $customTool = document.querySelector(".customize-table");
+
+  const $customHead = $customTool.querySelector(".customize-table-head");
+    $customHead.textContent = title;
+  
+  const $customBody = $customTool.querySelector(".customize-table-body");
+    $customBody.innerHTML = ""; // clear on each populate
+
+  if (itemVariations) { // flavor
+
+      //setup options
+      const $field = document.createElement("div");
+        $field.classList.add(`customize-table-body-radio`);
+        $field.id = `radio-variation`;
+  
+      const $title = document.createElement("h3");
+        $title.textContent = "flavor (select 1)";
+        $title.onclick = (e) => {
+          const $parent = e.target.parentNode;
+          console.log(`populateCustomizationToolSquare -> $parent`, $parent);
+          const $sibling = e.target.nextElementSibling;
+          console.log(`populateCustomizationToolSquare -> $sibling`, $sibling);
+          const open = $sibling.getAttribute("data-open");
+  
+          if (open === "true") {
+            $sibling.classList.add("hide");
+            $parent.setAttribute("data-open", false);
+            $sibling.setAttribute("data-open", false);
+            e.target.setAttribute("data-open", false)
+          } else {
+            $sibling.classList.remove("hide");
+            $parent.setAttribute("data-open", true);
+            $sibling.setAttribute("data-open", true);
+            e.target.setAttribute("data-open", true);
+          }
+  
+        }
+
+      $field.append($title); 
+  
+      const $optionsContainer = document.createElement("div");
+        $optionsContainer.classList.add(`customize-table-body-radio-container`, "hide");
+      
+      itemVariations.forEach((v) => {
+        
+        const $label = document.createElement("label");
+          $label.classList.add(`customize-table-body-radio-container-optionblock`);
+          $label.setAttribute("for", cleanName(v.item_variation_data.name));
+          $label.textContent = v.item_variation_data.name;
+  
+        const $customEl = document.createElement("span");
+          $customEl.classList.add(`customize-table-body-radio-container-optionblock-custom`);
+        
+        const $option = document.createElement("input");
+          $option.classList.add(`customize-table-body-radio-container-optionblock-option`);
+          $option.id = cleanName(v.item_variation_data.name);
+          $option.name = cleanName(title);
+          $option.type = "radio";
+          $option.value = v.id;
+  
+        $label.append($option, $customEl);      
+  
+        $optionsContainer.append($label);
+        
+      })
+
+      $field.append($optionsContainer);
+
+    $customBody.append($field);
+  }
+
+  if (itemModifiers) { // modifiers
+  
+    // console.log(itemModifiers);
+    itemModifiers.forEach((m) => {
+      const ml = catalog.byId[m.modifier_list_id]; // this is a single modifier category (obj)
+      const mlData = ml.modifier_list_data; // this is a single modifer category WITH DATA I CARE ABOUT (obj)
+      const mlName = mlData.name; // this is the single modifier category NAME (str)
+      const mlModifiers = mlData.modifiers; // these are all the modifiers in a category (arr);
+
+      // console.log(``);
+      // console.log(mlName);
+      // console.log(mlModifiers);
+      // console.log(``);
+
+      if (mlName.includes("topping 2") || mlName.includes("topping 3")) {
+        return; // only show ONE topping group
+      }
+
+      //setup options
+      const $field = document.createElement("div");
+        $field.classList.add(`customize-table-body-radio`);
+        // $field.id = `radio-modifer-${cleanName(mlName)}`;
+  
+      const $title = document.createElement("h3");
+        $title.textContent = removeStorefrontName(mlName);
+
+        if (mlName.includes("topping")) {
+          const noNumberName = mlName.replace(/[0-9]/g, "");
+          $title.textContent = removeStorefrontName(noNumberName).trim(); // remove numbers
+          $title.textContent += "s (select up to 3)";
+          $field.id = `radio-modifer-${removeStorefrontName(cleanName(noNumberName))}`;
+        } else {
+          $title.textContent = removeStorefrontName(mlName);
+        }
+
+        $title.onclick = (e) => {
+          const $parent = e.target.parentNode;
+          const $sibling = e.target.nextElementSibling;
+          const open = $sibling.getAttribute("data-open");
+  
+          if (open === "true") {
+            $sibling.classList.add("hide");
+            $parent.setAttribute("data-open", false);
+            $sibling.setAttribute("data-open", false);
+            e.target.setAttribute("data-open", false)
+          } else {
+            $sibling.classList.remove("hide");
+            $parent.setAttribute("data-open", true);
+            $sibling.setAttribute("data-open", true);
+            e.target.setAttribute("data-open", true);
+          }
+  
+        }
+
+      $field.append($title); 
+
+      const $optionsContainer = document.createElement("div");
+        $optionsContainer.classList.add(`customize-table-body-radio-container`, "hide");
+
+      // console.log(`\n`, mlName, mlData);
+      mlModifiers.forEach((mod) => {
+        // console.log(mod);
+        const modId = mod.id;
+        const modData = mod.modifier_data;
+        const modName = modData.name;
+        const modPrice = formatMoney(modData.price_money.amount);
+
+        // console.log(`  > ${modName} (${modId}): ${modPrice}`);
+
+        if (modName.includes("select topping")) {
+          return; // do not display "select topping" option
+        } 
+
+        if (mlName.includes("topping")) {
+
+          const noNumberName = mlName.replace(/[0-9]/g, "");
+
+          const $label = document.createElement("label");
+            $label.classList.add(`customize-table-body-checkbox-container-optionblock`);
+            $label.setAttribute("for", cleanName(modName)); // item specific
+            $label.textContent = modName; // item specific
+            if (modPrice > 0) { $label.textContent += ` (+$${modPrice})` }
+  
+          const $customEl = document.createElement("span");
+            $customEl.classList.add(`customize-table-body-checkbox-container-optionblock-custom`);
+
+          const $option = document.createElement("input");
+          $option.classList.add(`customize-table-body-checkbox-container-optionblock-option`, `topping-option`);
+          $option.id = cleanName(modName); // item specific
+          $option.name = removeStorefrontName(cleanName(noNumberName)); // name of ENTIRE category
+          $option.type = "checkbox";
+          $option.value = modId; // item specific id
+  
+          $label.append($option, $customEl); // add input el and custom radio btn to label el
+          $optionsContainer.append($label); // add label el to options container el 
+         
+        } else {
+
+          const $label = document.createElement("label");
+            $label.classList.add(`customize-table-body-radio-container-optionblock`);
+            $label.setAttribute("for", cleanName(modName)); // item specific
+            $label.textContent = modName; // item specific
+            if (modPrice > 0) { $label.textContent += ` (+$${modPrice})` }
+  
+            const $customEl = document.createElement("span");
+              $customEl.classList.add(`customize-table-body-radio-container-optionblock-custom`);
+
+            const $option = document.createElement("input");
+            $option.classList.add(`customize-table-body-radio-container-optionblock-option`);
+            $option.id = cleanName(modName); // item specific
+            $option.name = cleanName(mlName); // name of ENTIRE category
+            $option.type = "radio";
+            $option.value = modId; // item specific id
+    
+            $label.append($option, $customEl); // add input el and custom radio btn to label el
+            $optionsContainer.append($label); // add label el to options container el 
+
+        }
+
+      })
+
+      $field.append($optionsContainer); // add options container el to field el
+      $customBody.append($field); // add entire field to custom body el
+
+    })
+    
+  }
+
+  const $customFoot = document.querySelector(".customize-foot");
+    $customFoot.innerHTML = ""; // clear on each populate
+
+  const $btn = document.createElement("a");
+    $btn.classList.add("btn-rect");
+    $btn.textContent = "add to cart";
+    $btn.onclick = async (e) => {
+      const $form = document.querySelector("form");
+      const valid = validateSubmission($form);
+      if (valid) {
+        // saveToLocalStorage($form);
+        buildScreensaver("customizing your cone...");
+        const formData = await getSubmissionData($form);
+        setTimeout(removeScreensaver, 8000);
+        console.log(`formData`, formData);
+      } else {
+        console.error("please fill out all required fields!");
+      }
+    }
+
   $customFoot.append($btn);
 
   showCustomizationTool();
@@ -1107,13 +1378,13 @@ const getFields = (fields) => {
           { data: { fieldtype: "address" }, title: "zip", type: "select", placeholder: "your zip code", src: "deliveryZips", required: true }          
         );
         break;
-        case "pint-club":
-          allFields.push(
-            { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
-            { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ], required: true },
-            { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
-            { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "local delivery" ], required: true }
-          );
+      case "pint-club":
+        allFields.push(
+          { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
+          { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ], required: true },
+          { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
+          { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "local delivery" ], required: true }
+        );
         break;
       default:
         break;
@@ -1316,6 +1587,13 @@ const cleanName = (str) => {
   }
 };
 
+const removeStorefrontName = (str) => {
+  if (str) {
+    const clean = str.toLowerCase().replace(/store|lab|delivery|merch/g, "");
+    return clean;
+  }
+}
+
 const getMainTheme = () => {
   const $body = document.querySelector("body");
   const classList = [ ...$body.classList ];
@@ -1332,6 +1610,10 @@ const getMainTheme = () => {
 const randomNum = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+const formatMoney = (num) => {
+  return Number(num / 100).toFixed(2);
+}
 
 /* from underscore.js */
 function debounce(func, wait, immediate) {
@@ -1394,6 +1676,7 @@ function addToCart(e) {
   var id = e.getAttribute("data-id");
   if (id) {
     var obj = catalog.byId[id];
+    // console.log(`\naddToCart -> obj`, obj);
     if (obj.type === "ITEM") {
       if (
         obj.item_data.modifier_list_info ||
@@ -1410,6 +1693,74 @@ function addToCart(e) {
       updateCart();
     }
   }
+}
+
+// NOT WORKING in this environment -- necessary?
+function findCallout($parent) { 
+  // console.log(`findCallout is running`);
+  // console.log(`\nfindCallout -> $parent`, $parent);
+  var callout="";
+  var $e=$parent.nextSibling;
+  while ($e && $e.tagName != $parent.tagName) {
+    if ($e.tagName === "P" && $e.textContent.indexOf("*") === 0) {
+        callout += `<p>${$e.textContent}</p>`;        
+    }
+    $e = $e.nextSibling;
+  }
+  // console.log(`\nfindCallout -> callout`, callout);
+  return callout;
+}
+
+function configItem(item, callout) {
+  // console.log(`\nconfigItem is running`);
+  // console.log(`  configItem -> item`, item);
+  // console.log(`  configItem -> callout`, callout);
+
+  const itemName = item.item_data.name;
+
+  populateCustomizationToolSquare(`customize your ${removeStorefrontName(itemName)}`, item);
+  customizeToolforStore();
+
+  // var config=document.getElementById("config");
+  // config.classList.remove("hidden");
+  // document.body.classList.add("noscroll");
+  // var html='';
+  // var name=item.item_data.name;
+  // // console.log(`    configItem -> name`, name);
+  // if (name == "lab cone") {
+  //     html=getConeBuilderHTML(item, callout);
+  //     config.classList.add('cone-builder');
+  //     config.innerHTML=html;
+  //     document.querySelectorAll('#config .cb-selection').forEach(($cbs) => {
+  //         $cbs.addEventListener('touchstart', scrollSelection, true);
+  //         $cbs.addEventListener('touchmove', scrollSelection, true);
+  //         $cbs.addEventListener('touchcancel', scrollSelection, true);
+  //         $cbs.addEventListener('touchend', scrollSelection, true);
+  //     });
+  //     updateNumberOfToppings();
+  //     showConfig();
+  //     adjustScrolling(document.querySelector('#config.cone-builder .cb-options .selected'));
+  // } else {
+  //     html=getConfigHTML(item, callout);
+  //     config.classList.remove('cone-builder');
+  //     config.innerHTML=html;
+  // }
+}
+
+function addConfigToCart(e) {
+  console.log(`\nadd config to cart running`);
+  // hideConfig();
+  // var variation="";
+  // var mods=[];
+  // document.querySelectorAll(`#config select`).forEach((e, i) => {
+  //     if (!i) {
+  //         variation=e.value;
+  //     } else {
+  //         if (e.value) mods.push(e.value);
+  //     }
+  // })
+  // cart.add(variation, mods)
+  // updateCart();
 }
 
 

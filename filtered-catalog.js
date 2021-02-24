@@ -4047,7 +4047,7 @@ var catalog_raw = [
         "id": "HDPBOWPUFIVSR2SJW5QNBPLO",
         "item_variation_data": {
          "item_id": "CVMOVN75J6NADSS7GEG4WMFW",
-         "name": "salted vanilla bean ( gf)",
+         "name": "salted vanilla bean (gf)",
          "price_money": {
           "amount": 0
          }

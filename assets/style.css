@@ -378,6 +378,10 @@ a {
           left: 0; }
           .customize-table-body-radio-container-optionblock-option:checked ~ span, .customize-table-body-checkbox-container-optionblock-option:checked ~ span {
             background: currentColor; }
+          .customize-table-body-radio-container-optionblock-option:disabled ~ span, .customize-table-body-checkbox-container-optionblock-option:disabled ~ span {
+            border-color: #ccc;
+            background: #eee;
+            cursor: not-allowed; }
   .customize-foot {
     width: 1200px;
     max-width: 80%;
