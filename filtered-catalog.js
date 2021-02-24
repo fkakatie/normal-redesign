@@ -1,4 +1,4 @@
-var catalog_raw=[
+var catalog_raw = [
     {
      "id": "M2K5IIO5YF37GPU35BGCHCEX",
      "type": "CATEGORY",
