@@ -1,7 +1,9 @@
 // GLOBAL VARIABLES
 let storeLocation;
 
-// UNIVERSAL SETUP
+/*==========================================================
+UNIVERSAL SETUP
+==========================================================*/
 const setupHead = () => {
   const title = getPage();
   document.title = `normal® ${title === "home" ? "" : `- ${title}`}`;
@@ -212,7 +214,9 @@ const showBackToTopBtn = debounce(function() {
   }
 }, 1000); // one second
 
-// LOCAL STORAGE
+/*==========================================================
+LOCAL STORAGE
+==========================================================*/
 const saveToLocalStorage = ($form) => {
   const $fieldsToStore = $form.querySelectorAll("[data-store=true]");
   if ($fieldsToStore) {
@@ -248,7 +252,9 @@ const getAddressFromLocalStorage = () => {
   }
 }
 
-// FETCH DATA
+/*==========================================================
+FETCHING DATA
+==========================================================*/
 const fetchLabels = async () => {
   const resp = await fetch("/_data/labels.json");
   let json = await resp.json();
@@ -289,7 +295,9 @@ const fetchDeliveryZips = async () => {
   return window.deliveryZips;
 };
 
-// INDEX
+/*==========================================================
+INDEX PAGE
+==========================================================*/
 const buildIndexCarousel = () => {
   const $carousel = document.querySelector(".embed-internal-indexcarousel");
   
@@ -304,7 +312,9 @@ const buildIndexCarousel = () => {
   }
 }
 
-// ORDER PAGE
+/*==========================================================
+ORDER PAGE
+==========================================================*/
 const buildOrderPage = () => {
   const showOrderBlock = (e) => {
     // console.log(`show order block running`);
@@ -366,7 +376,9 @@ const buildOrderPage = () => {
   });
 };
 
-// STOREFRONTS
+/*==========================================================
+STOREFRONT PAGES
+==========================================================*/
 const getCurrentStore = () => {
   const currentStore = getPage();
   // console.log(`getCurrentStore -> currentStore`, currentStore);
@@ -390,14 +402,14 @@ const shopify = () => {
   }
 };
 
-const addToCart = (item) => {
-  const id = item.getAttribute("data-id");
-  console.log(`addToCart -> id`, id);
-  alert("add to cart isn't quite built in this environment yet...");
-  const $headerCart = document.querySelector(".header-cart");
-  const currentVal = parseInt($headerCart.textContent);
-  $headerCart.textContent = currentVal + 1;
-};
+// const addToCart = (item) => {
+//   const id = item.getAttribute("data-id");
+//   console.log(`addToCart -> id`, id);
+//   alert("add to cart isn't quite built in this environment yet...");
+//   const $headerCart = document.querySelector(".header-cart");
+//   const currentVal = parseInt($headerCart.textContent);
+//   $headerCart.textContent = currentVal + 1;
+// };
 
 const styleMenus = () => {
   // console.log(`building menus`);
@@ -450,7 +462,9 @@ const drinksStarburst = () => {
   }
 };
 
-// STOREFRONT CAROUSELS
+/*==========================================================
+STOREFRONT CAROUSELS
+==========================================================*/
 const resetCarousels = debounce(function() {
   // console.log(`reseting carousels`);
   const currentStore = getCurrentStore();
@@ -495,7 +509,6 @@ const setupCarousels = () => {
         $carousel.append($leftBtn, $rightBtn);
 
         const numOfSlides = $carousel.querySelectorAll("div").length;
-        console.log(numOfSlides);
 
         if (numOfSlides % 2 === 0) {
           $carousel.classList.add("menu-carousel-even");
@@ -556,7 +569,9 @@ const reorgSlides = ($carousel, direction) => {
   }
 }
 
-// ABOUT PAGE
+/*==========================================================
+ABOUT PAGE
+==========================================================*/
 const buildLocationsGrid = () => {
   const $locationsBlock = document.querySelector(".p-locations");
   const locationsChildren = [ ...$locationsBlock.children];
@@ -713,7 +728,9 @@ const buildLocationBlock = (location) => {
   return $block;
 };
 
-// PINT CLUB
+/*==========================================================
+PINT CLUB PAGE
+==========================================================*/
 const floatPintLogo = () => {
   // console.log(`float pint logo'`);
   const $pintLogo = document.querySelector("svg.icon-pint-club");
@@ -868,7 +885,9 @@ const buildClubFAQ = () => {
   }
 }
 
-// CUSTOMIZE COMPONENT
+/*==========================================================
+CUSTOMIZATION TOOL
+==========================================================*/
 const buildCustomizationTool = () => {
 
   const $main = document.querySelector("main");
@@ -1229,7 +1248,9 @@ const populateOptions = ($el, data) => {
   })
 }
 
-// SCREENSAVER COMPONENT
+/*==========================================================
+SCREENSAVER
+==========================================================*/
 const buildScreensaver = (message) => {
   const $main = document.querySelector("main");
   const mainTheme = getMainTheme();
@@ -1259,7 +1280,9 @@ const removeScreensaver = () => {
   }
 }
 
-// HEADER
+/*==========================================================
+HEADER
+==========================================================*/
 const testCart = () => {
   const $headerText = document.querySelector(".header-cart-text");
   if ($headerText) { 
@@ -1267,7 +1290,9 @@ const testCart = () => {
   }
 };
 
-// FOOTER
+/*==========================================================
+FOOTER
+==========================================================*/
 const updateCopyright = () => {
   // update copyright year in footer
   const date = new Date();
@@ -1278,7 +1303,9 @@ const updateCopyright = () => {
   }
 };
 
-// UTILITIES
+/*==========================================================
+UTILITIES
+==========================================================*/
 const cleanName = (str) => {
   if (str) {
     const clean = str
@@ -1322,7 +1349,78 @@ function debounce(func, wait, immediate) {
   };
 }
 
+/*==========================================================
+LEGACY
+==========================================================*/
+
+function indexCatalog() {
+  catalog = {
+    byId: {},
+    items: [],
+    categories: [],
+    discounts: {},
+  };
+  catalog_raw.forEach((e) => {
+    if (!catalog.byId[e.id]) catalog.byId[e.id] = e;
+
+    if (e.type == "ITEM") {
+      catalog.items.push(e);
+      if (e.item_data.variations)
+        e.item_data.variations.forEach((v) => {
+          catalog.byId[v.id] = v;
+        });
+    }
+    if (e.type == "MODIFIER_LIST") {
+      if (e.modifier_list_data.modifiers)
+        e.modifier_list_data.modifiers.forEach((m) => {
+          m.modifier_data.modifier_list_id = e.id;
+          // console.log(m.modifier_data.modifier_list_id);
+          catalog.byId[m.id] = m;
+        });
+    }
+    if (e.type == "DISCOUNT") {
+      if (e.discount_data.name) {
+        catalog.discounts[e.discount_data.name.toLowerCase()] = { id: e.id };
+      }
+    }
+    if (e.type == "CATEGORY") {
+      catalog.categories.push(e);
+    }
+  });
+} 
+
+function addToCart(e) {
+  // console.log(`addToCart -> addToCart`, e);
+  var id = e.getAttribute("data-id");
+  if (id) {
+    var obj = catalog.byId[id];
+    if (obj.type === "ITEM") {
+      if (
+        obj.item_data.modifier_list_info ||
+        obj.item_data.variations.length > 1
+      ) {
+        var callout = findCallout(e.parentNode);
+        configItem(obj, callout);
+      } else {
+        cart.add(obj.item_data.variations[0].id);
+        updateCart();
+      }
+    } else {
+      cart.add(obj.id);
+      updateCart();
+    }
+  }
+}
+
+
+/*==========================================================
+INIT
+==========================================================*/
+
 window.onload = async (e) => {
+
+  indexCatalog(); // legacy
+
   setupHead();
   classify();
   codify();

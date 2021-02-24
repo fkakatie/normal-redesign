@@ -42,6 +42,38 @@
         }
     }
 
+    & .menu {
+        &-filled {
+            background: $color-green;
+            color: $color-yellow;
+
+            &:nth-child(odd) {
+                background: $color-white;
+                color: $color-green;
+            }
+    
+            & .btn {
+                &-rect {
+                    background: $color-yellow !important;
+                    color: $color-green !important;
+                }
+            }
+        }
+        &-carousel {
+            &-btn {
+                background: $color-yellow;
+
+                &:hover, &:focus {
+                    background: $color-green;
+                    
+                    & svg.icon {
+                        color: $color-yellow;
+                    }
+                }
+            }
+        }
+    }
+
     & #back-to-top {
         background: $color-yellow;
     }

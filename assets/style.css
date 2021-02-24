@@ -862,6 +862,11 @@ h2#soft-serve ~ h3 {
 .p-softserve .btn-rect {
   margin: 2rem 0; }
 
+.p-normal > p {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal; }
+
 @media only screen and (max-width: 76.8rem) {
   .menu-filled > * {
     padding-left: 25%;
@@ -1277,6 +1282,21 @@ main#icons .p-logos svg {
     .theme-bluepink .customize-table-body-radio-container, .theme-bluepink .customize-table-body-checkbox-container {
       background: #0D26F9;
       color: #FFD4CC; }
+  .theme-bluepink .menu-filled {
+    background: #FFD4CC;
+    color: #0D26F9; }
+    .theme-bluepink .menu-filled:nth-child(odd) {
+      background: #FFFCF3;
+      color: #0D26F9; }
+    .theme-bluepink .menu-filled .btn-rect {
+      background: #0D26F9 !important;
+      color: #FFD4CC !important; }
+  .theme-bluepink .menu-carousel-btn {
+    background: #0D26F9; }
+    .theme-bluepink .menu-carousel-btn:hover, .theme-bluepink .menu-carousel-btn:focus {
+      background: #FFD4CC; }
+      .theme-bluepink .menu-carousel-btn:hover svg.icon, .theme-bluepink .menu-carousel-btn:focus svg.icon {
+        color: #0D26F9; }
   .theme-bluepink #back-to-top {
     background: #0D26F9; }
 
@@ -1311,8 +1331,21 @@ main#icons .p-logos svg {
     .theme-bluewhite .customize-table-body-radio-container, .theme-bluewhite .customize-table-body-checkbox-container {
       background: #0D26F9;
       color: #FFFCF3; }
-  .theme-bluewhite .menu {
-    background: red; }
+  .theme-bluewhite .menu-filled {
+    background: #FFFCF3;
+    color: #0D26F9; }
+    .theme-bluewhite .menu-filled:nth-child(odd) {
+      background: #FFD4CC;
+      color: #0D26F9; }
+    .theme-bluewhite .menu-filled .btn-rect {
+      background: #0D26F9 !important;
+      color: #FFFCF3 !important; }
+  .theme-bluewhite .menu-carousel-btn {
+    background: #0D26F9; }
+    .theme-bluewhite .menu-carousel-btn:hover, .theme-bluewhite .menu-carousel-btn:focus {
+      background: #FFFCF3; }
+      .theme-bluewhite .menu-carousel-btn:hover svg.icon, .theme-bluewhite .menu-carousel-btn:focus svg.icon {
+        color: #0D26F9; }
   .theme-bluewhite #back-to-top {
     background: #0D26F9; }
 
@@ -1347,6 +1380,21 @@ main#icons .p-logos svg {
     .theme-pink .customize-table-body-radio-container, .theme-pink .customize-table-body-checkbox-container {
       background: #FFD4CC;
       color: #F94F0D; }
+  .theme-pink .menu-filled {
+    background: #F94F0D;
+    color: #FFD4CC; }
+    .theme-pink .menu-filled:nth-child(odd) {
+      background: #FFFC92;
+      color: #F94F0D; }
+    .theme-pink .menu-filled .btn-rect {
+      background: #FFD4CC !important;
+      color: #F94F0D !important; }
+  .theme-pink .menu-carousel-btn {
+    background: #FFD4CC; }
+    .theme-pink .menu-carousel-btn:hover, .theme-pink .menu-carousel-btn:focus {
+      background: #F94F0D; }
+      .theme-pink .menu-carousel-btn:hover svg.icon, .theme-pink .menu-carousel-btn:focus svg.icon {
+        color: #FFD4CC; }
   .theme-pink #back-to-top {
     background: #FFD4CC; }
 
@@ -1436,6 +1484,21 @@ main#icons .p-logos svg {
     .theme-yellow .customize-table-body-radio-container, .theme-yellow .customize-table-body-checkbox-container {
       background: #FFFC92;
       color: #00C1C6; }
+  .theme-yellow .menu-filled {
+    background: #00C1C6;
+    color: #FFFC92; }
+    .theme-yellow .menu-filled:nth-child(odd) {
+      background: #FFFCF3;
+      color: #00C1C6; }
+    .theme-yellow .menu-filled .btn-rect {
+      background: #FFFC92 !important;
+      color: #00C1C6 !important; }
+  .theme-yellow .menu-carousel-btn {
+    background: #FFFC92; }
+    .theme-yellow .menu-carousel-btn:hover, .theme-yellow .menu-carousel-btn:focus {
+      background: #00C1C6; }
+      .theme-yellow .menu-carousel-btn:hover svg.icon, .theme-yellow .menu-carousel-btn:focus svg.icon {
+        color: #FFFC92; }
   .theme-yellow #back-to-top {
     background: #FFFC92; }
 

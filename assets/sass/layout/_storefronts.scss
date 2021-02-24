@@ -58,6 +58,12 @@ h2 {
     }
 }
 
+.p-normal {
+    & > p {
+        @include font-poppins-black;
+    }
+}
+
 
 @media only screen and (max-width: 76.8rem) {
     .menu {
@@ -81,73 +87,3 @@ h2 {
         }
     }
 }
-
-
-// h1#normalreg + p {
-//     // color: red;
-//     margin-bottom: 1.8rem;
-// }
-
-// #store, #lab {
-//     text-align: center;
-
-//     & > * {
-//         // width: 50%;
-//         min-width: 28rem;
-//         margin: 0 auto;
-//     }
-    
-//     & div {
-//         // padding: 1.8rem 0;
-//         // margin: 1.8rem 0;
-
-//         & h3 {
-//             margin-top: 2rem;
-//         }
-
-//         &[class^="p-"] {
-//             margin: 4.6rem 0;
-//             padding: 1.8rem 0;
-
-//             & p {
-//                 line-height: 1.2;
-//                 width: 50%;
-//                 min-width: 32rem;
-//                 margin: 0 auto;
-//             }
-
-//             & .btn {
-//                 line-height: 1.8;
-//             }
-//         }
-
-//         &.filled {
-//             border: 1px solid $color-blue;
-//             background: $color-blue;
-//             color: $color-white;
-//         }
-
-//         &.outline {
-//             border: 1px solid currentColor;
-
-//             & h2 {
-//                 margin-bottom: 1.5rem;
-//                 width: 100%;
-                
-//                 & + table {
-//                     border-bottom: 1px solid currentColor;
-//                     width: 100%;
-//                 }
-//             }
-
-//             & .btn {
-//                 background-color: $color-blue;
-//                 color: $color-white;
-//             }
-//         }
-//     }
-
-//     & strong {
-//         font-size: 120%;
-//     }
-// }

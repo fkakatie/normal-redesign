@@ -43,7 +43,35 @@
     }
 
     & .menu {
-        background: red;
+        &-filled {
+            background: $color-white;
+            color: $color-blue;
+
+            &:nth-child(odd) {
+                background: $color-pink;
+                color: $color-blue;
+            }
+    
+            & .btn {
+                &-rect {
+                    background: $color-blue !important;
+                    color: $color-white !important;
+                }
+            }
+        }
+        &-carousel {
+            &-btn {
+                background: $color-blue;
+
+                &:hover, &:focus {
+                    background: $color-white;
+                    
+                    & svg.icon {
+                        color: $color-blue;
+                    }
+                }
+            }
+        }
     }
 
     & #back-to-top {
