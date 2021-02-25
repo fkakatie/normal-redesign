@@ -1122,7 +1122,7 @@ const populateCustomizationToolSquare = (title, item) => {
 
     if (itemData.name.includes("soft serve")) {
       $title.textContent = "flavor (select 1)"; // this needs to be dynamic
-    } else if (itemVariations[0].item_variation_data.name.includes("oz")) {
+    } else if (itemVariations[0].item_variation_data.name.includes("oz") || itemVariations[0].item_variation_data.name.includes("size")) {
       $title.textContent = "select your size";
     } else if (itemVariations[0].item_variation_data.name.includes("shot")) {
       $title.textContent = "shots";
