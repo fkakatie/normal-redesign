@@ -221,6 +221,7 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   padding-top: 1.8rem;
   position: absolute;
   top: 0;
@@ -245,6 +246,88 @@ a {
     left: 0;
     position: inherit;
     margin: 4rem auto; } }
+
+.checkout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  min-height: 100vh;
+  width: calc(100vw - (100vw - 100%));
+  overflow: auto;
+  z-index: 9; }
+  .checkout::-webkit-scrollbar {
+    width: 1rem; }
+  .checkout-container {
+    position: relative;
+    border: 1px solid currentColor;
+    width: 1200px;
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 1.8rem 0;
+    padding: 0;
+    margin-top: 16rem; }
+  .checkout-back {
+    position: absolute;
+    top: -5rem;
+    left: -5rem; }
+  .checkout-table {
+    width: calc(100% + 1px);
+    border-collapse: collapse;
+    line-height: 1.2; }
+    .checkout-table th, .checkout-table td {
+      padding: 2rem; }
+    .checkout-table-head {
+      border-bottom: 1px solid currentColor; }
+    .checkout-table-body-quantity {
+      width: 15%; }
+      .checkout-table-body-quantity .quantity {
+        display: inline-block;
+        width: 2.3rem;
+        height: 2.3rem;
+        border-radius: 50%;
+        margin: 0 0.5rem;
+        line-height: 1;
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-style: normal;
+        cursor: pointer;
+        transition: 0.2s all;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden; }
+        .checkout-table-body-quantity .quantity:hover, .checkout-table-body-quantity .quantity:focus {
+          transform: scale(1.3); }
+    .checkout-table-body-item {
+      width: 70%;
+      text-align: left; }
+    .checkout-table-body-price {
+      width: 15%;
+      text-align: right; }
+    .checkout-table-foot {
+      border-top: 1px solid currentColor;
+      text-align: right; }
+
+@media only screen and (max-width: 76.8rem) {
+  .checkout-table-body-quantity {
+    width: 20%; }
+  .checkout-table-body-item {
+    width: 60%; }
+  .checkout-table-body-price {
+    width: 20%; } }
+
+@media only screen and (max-width: 41.1rem) {
+  .checkout-container {
+    margin-top: 6rem; }
+  .checkout-back {
+    position: static;
+    margin: 0 auto;
+    margin-top: 2rem; }
+  .checkout-table-body-quantity {
+    width: 25%; }
+  .checkout-table-body-item {
+    width: 50%; }
+  .checkout-table-body-price {
+    width: 25%; } }
 
 .embed-internal-contact {
   margin-top: 6rem; }
@@ -624,8 +707,20 @@ header {
     transition: 0.1s linear;
     cursor: pointer;
     z-index: 5; }
+    header .header-cart::before {
+      content: "";
+      display: none;
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-top: 1rem solid transparent;
+      border-bottom: 1rem solid transparent;
+      top: 50%;
+      right: 100%;
+      transform: translateY(-50%); }
     header .header-cart:hover, header .header-cart:focus {
-      transform: scale(1.2) rotate(12deg); }
+      transform: scale(1.2) rotate(12deg);
+      z-index: 9; }
     header .header-cart-fixed {
       position: fixed;
       right: calc(10% + 1px); }
@@ -1286,6 +1381,18 @@ main#icons .p-logos svg {
     .theme-bluepink .customize-table-body-radio-container, .theme-bluepink .customize-table-body-checkbox-container {
       background: #0D26F9;
       color: #FFD4CC; }
+  .theme-bluepink .checkout-back {
+    background: #00C1C6 !important;
+    color: #FFD4CC !important; }
+  .theme-bluepink .checkout-table-body {
+    background: #FFD4CC !important;
+    color: #0D26F9 !important; }
+    .theme-bluepink .checkout-table-body tr {
+      border-top: 1px solid #0D26F9;
+      border-bottom: 1px solid #0D26F9; }
+    .theme-bluepink .checkout-table-body-quantity .quantity {
+      background: #0D26F9;
+      color: #FFD4CC; }
   .theme-bluepink .menu-filled {
     background: #FFD4CC;
     color: #0D26F9; }
@@ -1335,6 +1442,18 @@ main#icons .p-logos svg {
     .theme-bluewhite .customize-table-body-radio-container, .theme-bluewhite .customize-table-body-checkbox-container {
       background: #0D26F9;
       color: #FFFCF3; }
+  .theme-bluewhite .checkout-back {
+    background: #F94F0D !important;
+    color: #FFFCF3 !important; }
+  .theme-bluewhite .checkout-table-body {
+    background: #FFFCF3 !important;
+    color: #0D26F9 !important; }
+    .theme-bluewhite .checkout-table-body tr {
+      border-top: 1px solid #0D26F9;
+      border-bottom: 1px solid #0D26F9; }
+    .theme-bluewhite .checkout-table-body-quantity .quantity {
+      background: #0D26F9;
+      color: #FFFCF3; }
   .theme-bluewhite .menu-filled {
     background: #FFFCF3;
     color: #0D26F9; }
@@ -1382,6 +1501,18 @@ main#icons .p-logos svg {
     background: #F94F0D;
     color: #FFD4CC; }
     .theme-pink .customize-table-body-radio-container, .theme-pink .customize-table-body-checkbox-container {
+      background: #FFD4CC;
+      color: #F94F0D; }
+  .theme-pink .checkout-back {
+    background: #FFFC92 !important;
+    color: #F94F0D !important; }
+  .theme-pink .checkout-table-body {
+    background: #F94F0D !important;
+    color: #FFD4CC !important; }
+    .theme-pink .checkout-table-body tr {
+      border-top: 1px solid #FFD4CC;
+      border-bottom: 1px solid #FFD4CC; }
+    .theme-pink .checkout-table-body-quantity .quantity {
       background: #FFD4CC;
       color: #F94F0D; }
   .theme-pink .menu-filled {
@@ -1439,6 +1570,18 @@ main#icons .p-logos svg {
     .theme-white .customize-table-body-radio-container, .theme-white .customize-table-body-checkbox-container {
       background: #FFFCF3;
       color: #0D26F9; }
+  .theme-white .checkout-back {
+    background: #FBFF5C;
+    color: #0D26F9; }
+  .theme-white .checkout-table-body {
+    background: #0D26F9;
+    color: #FFFCF3; }
+    .theme-white .checkout-table-body tr {
+      border-top: 1px solid #FFFCF3;
+      border-bottom: 1px solid #FFFCF3; }
+    .theme-white .checkout-table-body-quantity .quantity {
+      background: #FFFCF3;
+      color: #0D26F9; }
   .theme-white .menu-filled {
     background: #0D26F9;
     color: #FFFCF3; }
@@ -1486,6 +1629,18 @@ main#icons .p-logos svg {
     background: #00C1C6;
     color: #FFFC92; }
     .theme-yellow .customize-table-body-radio-container, .theme-yellow .customize-table-body-checkbox-container {
+      background: #FFFC92;
+      color: #00C1C6; }
+  .theme-yellow .checkout-back {
+    background: #FFFCF3 !important;
+    color: #00C1C6 !important; }
+  .theme-yellow .checkout-table-body {
+    background: #00C1C6;
+    color: #FFFC92; }
+    .theme-yellow .checkout-table-body tr {
+      border-top: 1px solid #FFFC92;
+      border-bottom: 1px solid #FFFC92; }
+    .theme-yellow .checkout-table-body-quantity .quantity {
       background: #FFFC92;
       color: #00C1C6; }
   .theme-yellow .menu-filled {

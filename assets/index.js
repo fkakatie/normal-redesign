@@ -41,29 +41,35 @@ const setPage = () => {
       buildOrderPage();
       break;
     case "store":
+      setCurrentStore();
       getCurrentStore();
       shopify();
       styleMenus();
       setupCarousels();
       fixCart();
       buildCustomizationTool();
+      buildCheckoutTool();
       // drinksStarburst();
       break;
     case "lab":
+      setCurrentStore();
       getCurrentStore();
       shopify();
       styleMenus();
       fixCart();
-      // buildCustomizationTool();
+      buildCustomizationTool();
+      buildCheckoutTool();
       // drinksStarburst();
       // setupCarousels();
       break;
     case "delivery":
+      setCurrentStore();
       getCurrentStore();
       shopify();
       styleMenus();
       fixCart();
-      // buildCustomizationTool();
+      buildCustomizationTool();
+      buildCheckoutTool();
       // drinksStarburst();
       // setupCarousels();
       break;
@@ -84,7 +90,9 @@ const setPage = () => {
       console.log("nothing yet~");
       break;
     case "merch":
-      console.log("nothing yet~");
+      setCurrentStore();
+      buildCustomizationTool();
+      buildCheckoutTool();
       break;
     case "home":
       buildIndexCarousel();
@@ -217,6 +225,16 @@ const showBackToTopBtn = debounce(function() {
 /*==========================================================
 LOCAL STORAGE
 ==========================================================*/
+const setCurrentStore = () => {
+  const page = getPage();
+  localStorage.setItem("normal-lastVisited", page);
+}
+
+const getLastStore = () => {
+  const lastStore = localStorage.getItem("normal-lastVisited");
+  return lastStore || "store";
+}
+
 const saveToLocalStorage = ($form) => {
   const $fieldsToStore = $form.querySelectorAll("[data-store=true]");
   if ($fieldsToStore) {
@@ -402,15 +420,6 @@ const shopify = () => {
   }
 };
 
-// const addToCart = (item) => {
-//   const id = item.getAttribute("data-id");
-//   console.log(`addToCart -> id`, id);
-//   alert("add to cart isn't quite built in this environment yet...");
-//   const $headerCart = document.querySelector(".header-cart");
-//   const currentVal = parseInt($headerCart.textContent);
-//   $headerCart.textContent = currentVal + 1;
-// };
-
 const styleMenus = () => {
   // console.log(`building menus`);
   const $main = document.querySelector("main");
@@ -501,6 +510,71 @@ const customizeToolforStore = (target) => {
   //   $radio.checked = true;
   // }
 
+}
+
+/*==========================================================
+CART FUNCTIONALITY
+==========================================================*/
+const updateCart = () => {
+  // console.log(`updating cart where it counts`);
+  setCartTotal();
+
+  const $checkoutTable = document.querySelector(".checkout-table-body");
+    $checkoutTable.innerHTML = ""; // clear on each update
+
+  if (cart.line_items) {
+    cart.line_items.forEach((i) => {
+      const variation = catalog.byId[i.variation];
+      const variationName = variation.item_variation_data.name; // for use with mods
+      const item = catalog.byId[variation.item_variation_data.item_id];
+      const itemName = item.item_data.name;
+      const mods = i.mods.map((m) => catalog.byId[m].modifier_data.name);
+
+      const $row = document.createElement("tr");
+        $row.setAttribute("data-id", i.fp);
+  
+      const $quantity = document.createElement("td");
+        $quantity.classList.add("checkout-table-body-quantity");
+        $quantity.innerHTML = `<span onclick="minus(this)" class="quantity quantity-minus">-</span>
+          ${i.quantity}
+          <span onclick="plus(this)" class="quantity quantity-plus">+</span>`;
+  
+      const $item = document.createElement("td");
+        $item.classList.add("checkout-table-body-item");
+        if (mods.length >= 1) {
+          $item.textContent = `${variationName} ${removeStorefrontName(itemName)}, ${mods.join(", ")}`;
+        } else {
+          $item.textContent = removeStorefrontName(itemName);
+        }
+  
+      const $price = document.createElement("td");
+        $price.classList.add("checkout-table-body-price");
+        $price.textContent = `$${formatMoney(i.price * i.quantity)}`;
+  
+      $row.append($quantity, $item, $price);
+      $checkoutTable.append($row);
+  
+    });
+
+    const $checkoutTotal = document.getElementById("checkout-foot-total");
+      $checkoutTotal.textContent = `$${formatMoney(cart.totalAmount())}`;
+  }
+
+}
+
+const plus = (e) => {
+  const fp = e.closest("tr").getAttribute("data-id");
+  const item = cart.line_items.find((i) => fp === i.fp );
+  cart.setQuantity(fp, item.quantity + 1);
+  updateCart();
+}
+
+const minus = (e) => {
+  const fp = e.closest("tr").getAttribute("data-id");
+  const item = cart.line_items.find((i) => fp === i.fp );
+  cart.setQuantity(fp, item.quantity - 1);
+  if (item.quantity < 1) { cart.remove(fp) };
+  updateCart();
 }
 
 /*==========================================================
@@ -994,11 +1068,11 @@ const populateCustomizationTool = (title, fields, obj) => {
       const $form = document.querySelector("form");
       const valid = validateSubmission($form);
       if (valid) {
-        saveToLocalStorage($form);
         buildScreensaver("sending in your subscription...");
+        await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
-        setTimeout(removeScreensaver, 8000);
-        console.log(`formData`, formData);
+        await hideCustomizationTool();
+        removeScreensaver();
       } else {
         console.error("please fill out all required fields!");
       }
@@ -1009,7 +1083,6 @@ const populateCustomizationTool = (title, fields, obj) => {
 }
 
 const populateCustomizationToolSquare = (title, item) => {
-
   const itemData = item.item_data;
   const itemVariations = itemData.variations;
   const itemModifiers = itemData.modifier_list_info;
@@ -1017,135 +1090,157 @@ const populateCustomizationToolSquare = (title, item) => {
   const $customTool = document.querySelector(".customize-table");
 
   const $customHead = $customTool.querySelector(".customize-table-head");
-    $customHead.textContent = title;
-  
+  $customHead.textContent = title;
+
   const $customBody = $customTool.querySelector(".customize-table-body");
-    $customBody.innerHTML = ""; // clear on each populate
+  $customBody.innerHTML = ""; // clear on each populate
 
-  if (itemVariations) { // flavor
+  if (itemVariations) { // this is ALWAYS a radio, only one choice!
 
-      //setup options
-      const $field = document.createElement("div");
-        $field.classList.add(`customize-table-body-radio`);
-        $field.id = `radio-variation`;
-  
-      const $title = document.createElement("h3");
-        $title.textContent = "flavor (select 1)";
-        $title.onclick = (e) => {
-          const $parent = e.target.parentNode;
-          // console.log(`populateCustomizationToolSquare -> $parent`, $parent);
-          const $sibling = e.target.nextElementSibling;
-          // console.log(`populateCustomizationToolSquare -> $sibling`, $sibling);
-          const open = $sibling.getAttribute("data-open");
-  
-          if (open === "true") {
-            $sibling.classList.add("hide");
-            $parent.setAttribute("data-open", false);
-            $sibling.setAttribute("data-open", false);
-            e.target.setAttribute("data-open", false)
-          } else {
-            $sibling.classList.remove("hide");
-            $parent.setAttribute("data-open", true);
-            $sibling.setAttribute("data-open", true);
-            e.target.setAttribute("data-open", true);
-          }
-  
-        }
+    const $field = document.createElement("div");
+    $field.classList.add(`customize-table-body-radio`);
+    $field.id = `radio-variation`;
 
-      $field.append($title); 
-  
-      const $optionsContainer = document.createElement("div");
-        $optionsContainer.classList.add(`customize-table-body-radio-container`, "hide");
-      
-      itemVariations.forEach((v) => {
-        
-        const $label = document.createElement("label");
-          $label.classList.add(`customize-table-body-radio-container-optionblock`);
-          $label.setAttribute("for", cleanName(v.item_variation_data.name));
-          $label.textContent = v.item_variation_data.name;
-  
-        const $customEl = document.createElement("span");
-          $customEl.classList.add(`customize-table-body-radio-container-optionblock-custom`);
-        
-        const $option = document.createElement("input");
-          $option.classList.add(`customize-table-body-radio-container-optionblock-option`);
-          $option.id = cleanName(v.item_variation_data.name);
-          $option.name = cleanName(title);
-          $option.type = "radio";
-          $option.value = v.id;
-  
-        $label.append($option, $customEl);      
-  
-        $optionsContainer.append($label);
-        
-      })
+    const $title = document.createElement("h3");
+    $title.onclick = (e) => {
+      const $parent = e.target.parentNode;
+      const $sibling = e.target.nextElementSibling;
+      const open = $sibling.getAttribute("data-open");
 
-      $field.append($optionsContainer);
+      if (open === "true") {
+        $sibling.classList.add("hide");
+        $parent.setAttribute("data-open", false);
+        $sibling.setAttribute("data-open", false);
+        e.target.setAttribute("data-open", false);
+      } else {
+        $sibling.classList.remove("hide");
+        $parent.setAttribute("data-open", true);
+        $sibling.setAttribute("data-open", true);
+        e.target.setAttribute("data-open", true);
+      }
+    };
 
+    if (itemData.name.includes("soft serve")) {
+      $title.textContent = "flavor (select 1)"; // this needs to be dynamic
+    } else if (itemVariations[0].item_variation_data.name.includes("oz")) {
+      $title.textContent = "select your size";
+    } else if (itemVariations[0].item_variation_data.name.includes("shot")) {
+      $title.textContent = "shots";
+    } else {
+      $title.textContent = "make a selection";
+      console.log("hey normal, here's a new scenario:");
+      console.log(itemData.name, itemVariations);
+    }
+
+    $field.append($title);
+
+    //setup options
+    const $optionsContainer = document.createElement("div");
+    $optionsContainer.classList.add(
+      `customize-table-body-radio-container`,
+      "hide"
+    );
+
+    itemVariations.forEach((v) => {
+      const $label = document.createElement("label");
+      $label.classList.add(`customize-table-body-radio-container-optionblock`);
+      $label.setAttribute("for", cleanName(v.item_variation_data.name));
+      $label.textContent = v.item_variation_data.name;
+
+      const $customEl = document.createElement("span");
+      $customEl.classList.add(
+        `customize-table-body-radio-container-optionblock-custom`
+      );
+
+      const $option = document.createElement("input");
+      $option.classList.add(
+        `customize-table-body-radio-container-optionblock-option`
+      );
+      $option.id = cleanName(v.item_variation_data.name);
+      $option.name = cleanName(itemData.name);
+      $option.type = "radio";
+      $option.value = v.id;
+
+      $label.append($option, $customEl);
+      $optionsContainer.append($label);
+    });
+    $field.append($optionsContainer);
     $customBody.append($field);
   }
 
-  if (itemModifiers) { // modifiers
-  
-    // console.log(itemModifiers);
+  if (itemModifiers) { // except for soft serve toppings, these are ALL RADIOS!
+    // console.log(``);
+    // console.log(itemData.name);
+
     itemModifiers.forEach((m) => {
-      const ml = catalog.byId[m.modifier_list_id]; // this is a single modifier category (obj)
-      const mlData = ml.modifier_list_data; // this is a single modifer category WITH DATA I CARE ABOUT (obj)
-      const mlName = mlData.name; // this is the single modifier category NAME (str)
-      const mlModifiers = mlData.modifiers; // these are all the modifiers in a category (arr);
+      const modCat = catalog.byId[m.modifier_list_id]; // this is a single modifier category (obj)
+      const modCatData = modCat.modifier_list_data; // this is a single modifer category WITH DATA I CARE ABOUT (obj)
+      const modCatName = modCatData.name; // this is the single modifier category NAME (str)
+      const modCatModifiers = modCatData.modifiers; // these are all the modifiers in a category (arr);
 
-      // console.log(``);
-      // console.log(mlName);
-      // console.log(mlModifiers);
-      // console.log(``);
+      // console.log(modCatName);
+      // console.log("> ", modCatModifiers);
 
-      if (mlName.includes("topping 2") || mlName.includes("topping 3")) {
+      if (
+        modCatName.includes("topping 2") ||
+        modCatName.includes("topping 3")
+      ) {
         return; // only show ONE topping group
       }
 
       //setup options
       const $field = document.createElement("div");
-        $field.classList.add(`customize-table-body-radio`);
-        // $field.id = `radio-modifer-${cleanName(mlName)}`;
-  
+      $field.classList.add(`customize-table-body-radio`);
+      // $field.id = `radio-modifer-${cleanName(modCatName)}`;
+
       const $title = document.createElement("h3");
-        $title.textContent = removeStorefrontName(mlName);
+      $title.textContent = removeStorefrontName(modCatName);
 
-        if (mlName.includes("topping")) {
-          const noNumberName = mlName.replace(/[0-9]/g, "");
-          $title.textContent = removeStorefrontName(noNumberName).trim(); // remove numbers
-          $title.textContent += "s (select up to 3)";
-          $field.id = `radio-modifer-${removeStorefrontName(cleanName(noNumberName))}`;
+      // do something special for soft serve toppings
+      if (
+        itemData.name.includes("soft serve") &&
+        modCatName.includes("topping")
+      ) {
+        // ONLY for soft serve toppings
+        const noNumberName = modCatName.replace(/[0-9]/g, "");
+        $title.textContent = removeStorefrontName(noNumberName).trim(); // remove numbers
+        $title.textContent += "s (select up to 3)";
+        $field.id = `radio-modifer-${removeStorefrontName(
+          cleanName(noNumberName)
+        )}`;
+      // all other mod categories (not soft serve toppings)
+      } else {
+        $title.textContent = removeStorefrontName(modCatName);
+      }
+
+      $title.onclick = (e) => {
+        const $parent = e.target.parentNode;
+        const $sibling = e.target.nextElementSibling;
+        const open = $sibling.getAttribute("data-open");
+
+        if (open === "true") {
+          $sibling.classList.add("hide");
+          $parent.setAttribute("data-open", false);
+          $sibling.setAttribute("data-open", false);
+          e.target.setAttribute("data-open", false);
         } else {
-          $title.textContent = removeStorefrontName(mlName);
+          $sibling.classList.remove("hide");
+          $parent.setAttribute("data-open", true);
+          $sibling.setAttribute("data-open", true);
+          e.target.setAttribute("data-open", true);
         }
+      };
 
-        $title.onclick = (e) => {
-          const $parent = e.target.parentNode;
-          const $sibling = e.target.nextElementSibling;
-          const open = $sibling.getAttribute("data-open");
-  
-          if (open === "true") {
-            $sibling.classList.add("hide");
-            $parent.setAttribute("data-open", false);
-            $sibling.setAttribute("data-open", false);
-            e.target.setAttribute("data-open", false)
-          } else {
-            $sibling.classList.remove("hide");
-            $parent.setAttribute("data-open", true);
-            $sibling.setAttribute("data-open", true);
-            e.target.setAttribute("data-open", true);
-          }
-  
-        }
-
-      $field.append($title); 
+      $field.append($title);
 
       const $optionsContainer = document.createElement("div");
-        $optionsContainer.classList.add(`customize-table-body-radio-container`, "hide");
+      $optionsContainer.classList.add(
+        `customize-table-body-radio-container`,
+        "hide"
+      );
 
-      // console.log(`\n`, mlName, mlData);
-      mlModifiers.forEach((mod) => {
+      // console.log(`\n`, modCatName, modCatData);
+      modCatModifiers.forEach((mod) => {
         // console.log(mod);
         const modId = mod.id;
         const modData = mod.modifier_data;
@@ -1154,95 +1249,127 @@ const populateCustomizationToolSquare = (title, item) => {
 
         // console.log(`  > ${modName} (${modId}): ${modPrice}`);
 
-        if (modName.includes("select topping")) {
-          return; // do not display "select topping" option
-        } 
+        if (
+          modName.includes("select topping") || 
+          modName.includes("select a") || 
+          modName.includes("select an") ||
+          modName.includes("select your") ||
+          modName.includes("choose topping") || 
+          modName.includes("choose a") || 
+          modName.includes("choose an") ||
+          modName.includes("choose your")
+        ) {
+          return; // do not display "select..." or "choose..." options
+        }
 
-        if (mlName.includes("topping")) {
-
-          const noNumberName = mlName.replace(/[0-9]/g, "");
+        // do something special for soft serve toppings
+        if (
+          itemData.name.includes("soft serve") &&
+          modCatName.includes("topping")
+        ) {
+          const noNumberName = modCatName.replace(/[0-9]/g, "");
 
           const $label = document.createElement("label");
-            $label.classList.add(`customize-table-body-checkbox-container-optionblock`);
-            $label.setAttribute("for", cleanName(modName)); // item specific
-            $label.textContent = modName; // item specific
-            if (modPrice > 0) { $label.textContent += ` (+$${modPrice})` }
-  
+          $label.classList.add(
+            `customize-table-body-checkbox-container-optionblock`
+          );
+          $label.setAttribute("for", cleanName(modName)); // item specific
+          $label.textContent = modName; // item specific
+          if (modPrice > 0) {
+            $label.textContent += ` (+$${modPrice})`;
+          }
+
           const $customEl = document.createElement("span");
-            $customEl.classList.add(`customize-table-body-checkbox-container-optionblock-custom`);
+          $customEl.classList.add(
+            `customize-table-body-checkbox-container-optionblock-custom`
+          );
 
           const $option = document.createElement("input");
-          $option.classList.add(`customize-table-body-checkbox-container-optionblock-option`, `topping-option`);
+          $option.classList.add(
+            `customize-table-body-checkbox-container-optionblock-option`,
+            `topping-option`
+          );
           $option.id = cleanName(modName); // item specific
           $option.name = removeStorefrontName(cleanName(noNumberName)); // name of ENTIRE category
           $option.type = "checkbox";
           $option.value = modId; // item specific id
-  
+
           $label.append($option, $customEl); // add input el and custom radio btn to label el
-          $optionsContainer.append($label); // add label el to options container el 
-         
+          $optionsContainer.append($label); // add label el to options container el
         } else {
-
           const $label = document.createElement("label");
-            $label.classList.add(`customize-table-body-radio-container-optionblock`);
-            $label.setAttribute("for", cleanName(modName)); // item specific
-            $label.textContent = modName; // item specific
-            if (modPrice > 0) { $label.textContent += ` (+$${modPrice})` }
-  
-            const $customEl = document.createElement("span");
-              $customEl.classList.add(`customize-table-body-radio-container-optionblock-custom`);
+          $label.classList.add(
+            `customize-table-body-radio-container-optionblock`
+          );
+          $label.setAttribute("for", cleanName(modName)); // item specific
+          $label.textContent = modName; // item specific
+          if (modPrice > 0) {
+            $label.textContent += ` (+$${modPrice})`;
+          }
 
-            const $option = document.createElement("input");
-            $option.classList.add(`customize-table-body-radio-container-optionblock-option`);
-            $option.id = cleanName(modName); // item specific
-            $option.name = cleanName(mlName); // name of ENTIRE category
-            $option.type = "radio";
-            $option.value = modId; // item specific id
-    
-            $label.append($option, $customEl); // add input el and custom radio btn to label el
-            $optionsContainer.append($label); // add label el to options container el 
+          const $customEl = document.createElement("span");
+          $customEl.classList.add(
+            `customize-table-body-radio-container-optionblock-custom`
+          );
 
+          const $option = document.createElement("input");
+          $option.classList.add(
+            `customize-table-body-radio-container-optionblock-option`
+          );
+          $option.id = cleanName(modName); // item specific
+          $option.name = cleanName(modCatName); // name of ENTIRE category
+          $option.type = "radio";
+          $option.value = modId; // item specific id
+
+          $label.append($option, $customEl); // add input el and custom radio btn to label el
+          $optionsContainer.append($label); // add label el to options container el
         }
-
-      })
+      });
 
       $field.append($optionsContainer); // add options container el to field el
       $customBody.append($field); // add entire field to custom body el
-
-    })
-    
+    });
   }
 
   const $customFoot = document.querySelector(".customize-foot");
-    $customFoot.innerHTML = ""; // clear on each populate
+  $customFoot.innerHTML = ""; // clear on each populate
 
   const $btn = document.createElement("a");
-    $btn.classList.add("btn-rect");
-    $btn.textContent = "add to cart";
-    $btn.onclick = async (e) => {
-      const $form = document.querySelector("form");
-      const valid = validateSubmission($form);
-      if (valid) {
-        // saveToLocalStorage($form);
-        buildScreensaver("customizing your cone...");
-        const formData = await getSubmissionData($form);
-        setTimeout(removeScreensaver, 8000);
-        console.log(`formData`, formData);
-      } else {
-        console.error("please fill out all required fields!");
-      }
+  $btn.classList.add("btn-rect");
+  $btn.textContent = "add to cart";
+  $btn.onclick = async (e) => {
+    const $form = document.querySelector("form");
+    const valid = validateSubmission($form);
+    if (valid) {
+      buildScreensaver("customizing your cone...");
+      const formData = await getSubmissionData($form);
+      await addConfigToCart(formData);
+      await hideCustomizationTool();
+      removeScreensaver();
+      // console.log(`formData`, formData);
+    } else {
+      console.error("please fill out all required fields!");
     }
+  };
 
   $customFoot.append($btn);
 
   showCustomizationTool();
-}
+};
 
 const showCustomizationTool = () => {
   const $customTool = document.querySelector(".customize");
   if ($customTool) {
     // console.log(`showing customization tool`);
     $customTool.classList.remove("hide");
+  }
+}
+
+const hideCustomizationTool = () => {
+  const $customTool = document.querySelector(".customize");
+  if ($customTool) {
+    // console.log(`hideing customization tool`);
+    $customTool.classList.add("hide");
   }
 }
 
@@ -1520,6 +1647,72 @@ const populateOptions = ($el, data) => {
 }
 
 /*==========================================================
+CHECKOUT TOOL
+==========================================================*/
+
+const buildCheckoutTool = () => {
+
+  const $main = document.querySelector("main");
+  const mainTheme = getMainTheme();
+
+  const $checkoutSection = document.createElement("section");
+    $checkoutSection.classList.add("checkout", mainTheme, "hide");
+
+  const $checkoutContainer = document.createElement("div");
+    $checkoutContainer.classList.add("checkout-container");
+
+  const $checkoutBack = document.createElement("aside");
+    $checkoutBack.classList.add("checkout-back", "btn-back");
+    $checkoutBack.innerHTML = `<p>back to ${getLastStore()}</p>`;
+    $checkoutBack.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-arrow-left">
+      <use href="/icons.svg#arrow-left"></use>
+    </svg>`;
+    $checkoutBack.onclick = (e) => {
+      const $checkoutScreen = document.querySelector(".checkout");
+      $checkoutScreen.classList.add("hide");
+    }
+
+  const $checkoutTable = document.createElement("table");
+    $checkoutTable.classList.add("checkout-table");
+
+  const $checkoutHead = document.createElement("thead");
+    $checkoutHead.classList.add("checkout-table-head");
+    $checkoutHead.innerHTML = `<tr>
+      <th colspan="3">
+        <h2>your ${getLastStore()} order</h2>
+      </th>
+    </tr>`
+
+  const $checkoutBody = document.createElement("tbody");
+    $checkoutBody.classList.add("checkout-table-body");
+  
+  const $checkoutFoot = document.createElement("tfoot");
+    $checkoutFoot.classList.add("checkout-table-foot");
+    $checkoutFoot.innerHTML = `<tr>
+      <td colspan="2">total</td>
+      <td id="checkout-foot-total"></td>
+    </tr>`
+
+  $checkoutTable.append($checkoutHead, $checkoutBody, $checkoutFoot);
+
+  $checkoutContainer.append($checkoutBack, $checkoutTable);
+
+  $checkoutSection.append($checkoutContainer);
+
+  $main.append($checkoutSection);
+
+  updateCart();
+}
+
+const showCheckoutTool = () => {
+  const $checkoutTool = document.querySelector(".checkout");
+  if ($checkoutTool) {
+    // console.log(`showing checkout tool`);
+    $checkoutTool.classList.remove("hide");
+  }
+}
+
+/*==========================================================
 SCREENSAVER
 ==========================================================*/
 const buildScreensaver = (message) => {
@@ -1554,10 +1747,22 @@ const removeScreensaver = () => {
 /*==========================================================
 HEADER
 ==========================================================*/
-const testCart = () => {
+const makeCartClickable = () => {
+  const $headerCart = document.querySelector(".header-cart");
+  if ($headerCart) {
+    $headerCart.onclick = (e) => {
+      updateCart();
+      showCheckoutTool();
+    }
+  }
+
+}
+
+const setCartTotal = () => {
   const $headerText = document.querySelector(".header-cart-text");
   if ($headerText) { 
-    $headerText.textContent = randomNum(0, 19);
+    cart.load();
+    $headerText.textContent = cart.totalItems() || 0;
   }
 };
 
@@ -1635,6 +1840,115 @@ function debounce(func, wait, immediate) {
 LEGACY
 ==========================================================*/
 
+var cart = {
+  line_items: [],
+  shipping_item: {},
+  remove: (fp) => {
+    var index = cart.line_items.findIndex((li) => fp == li.fp);
+    cart.line_items.splice(index, 1);
+    cart.store();
+  },
+  add: (variation, mods) => {
+    if (!mods) { mods = []; }
+    var li = cart.find(variation, mods);
+    if (li) {
+      li.quantity++;
+    } else {
+      var fp = variation;
+      var price =
+        catalog.byId[variation].item_variation_data.price_money.amount;
+      mods.forEach((m) => {
+        fp += "-" + m;
+        price += catalog.byId[m].modifier_data.price_money.amount;
+      });
+      cart.line_items.push({
+        fp: fp,
+        variation: variation,
+        mods: mods,
+        quantity: 1,
+        price: price,
+      });
+    }
+    cart.store();
+  },
+  addShipping: (variation) => {
+    var fp = variation;
+    var price = catalog.byId[variation].item_variation_data.price_money.amount;
+    cart.shipping_item = {
+      fp: fp,
+      variation: variation,
+      mods: [],
+      quantity: 1,
+      price: price,
+    };
+  },
+  find: (variation, mods) => {
+    var fp = variation;
+    mods.forEach((m) => {
+      fp += "-" + m;
+    });
+    return cart.line_items.find((li) => fp === li.fp);
+  },
+  setQuantity: (fp, q) => {
+    var index = cart.line_items.findIndex((li) => fp == li.fp);
+    cart.line_items[index].quantity = q;
+    cart.store();
+  },
+  totalAmount: () => {
+    var total = 0;
+    cart.line_items.forEach((li) => {
+      if (li.quantity > 0) {
+        total += li.price * li.quantity;
+      }
+    });
+    // add shipping to total on delivery orders
+    if (storeLocation === "delivery" && cart.shipping_item.price) {
+      total += cart.shipping_item.price;
+    }
+    return total;
+  },
+  totalItems: () => {
+    var total = 0;
+    cart.line_items.forEach((li) => {
+      // don't count out-of-stock
+      if (li.quantity) {
+        total += li.quantity;
+      }
+    });
+    return total;
+  },
+  clear: () => {
+    cart.line_items = [];
+    cart.shipping_item = {};
+    cart.store();
+  },
+  store: () => {
+    localStorage.setItem(
+      "cart-" + getCurrentStore(),
+      JSON.stringify({ lastUpdate: new Date(), line_items: cart.line_items })
+    );
+  },
+  load: () => {
+    
+    var cartObj = JSON.parse(localStorage.getItem("cart-" + getLastStore()));
+    cart.line_items = [];
+
+    if (cartObj && cartObj.line_items) {
+      // validate
+      cartObj.line_items.forEach((li) => {
+        if (catalog.byId[li.variation]) {
+          var push = true;
+          li.mods.forEach((m) => {
+            if (!catalog.byId[m]) { push = false };
+          });
+          if (push) { cart.line_items.push(li) };
+        }
+      });
+    }
+
+  }
+};
+
 function indexCatalog() {
   catalog = {
     byId: {},
@@ -1672,11 +1986,9 @@ function indexCatalog() {
 } 
 
 function addToCart(e) {
-  // console.log(`addToCart -> addToCart`, e);
   var id = e.getAttribute("data-id");
   if (id) {
     var obj = catalog.byId[id];
-    // console.log(`\naddToCart -> obj`, obj);
     if (obj.type === "ITEM") {
       if (
         obj.item_data.modifier_list_info ||
@@ -1693,6 +2005,27 @@ function addToCart(e) {
       updateCart();
     }
   }
+}
+
+function addConfigToCart(formData) {
+  let variation;
+  let mods = [];
+
+  for (const key in formData) {
+    if (!variation) {
+      variation = formData[key];
+    } else if (typeof formData[key] === "object") {
+      // push all checkboxes
+      formData[key].forEach((k) => {
+        mods.push(k);
+      });
+    } else {
+      mods.push(formData[key]);
+    }
+  }
+
+  cart.add(variation, mods)
+  updateCart();
 }
 
 // NOT WORKING in this environment -- necessary?
@@ -1712,57 +2045,210 @@ function findCallout($parent) {
 }
 
 function configItem(item, callout) {
-  // console.log(`\nconfigItem is running`);
-  // console.log(`  configItem -> item`, item);
-  // console.log(`  configItem -> callout`, callout);
-
   const itemName = item.item_data.name;
-
-  populateCustomizationToolSquare(`customize your ${removeStorefrontName(itemName)}`, item);
+  populateCustomizationToolSquare(`customize your ${removeStorefrontName(itemName).trim()}`, item);
   customizeToolforStore();
-
-  // var config=document.getElementById("config");
-  // config.classList.remove("hidden");
-  // document.body.classList.add("noscroll");
-  // var html='';
-  // var name=item.item_data.name;
-  // // console.log(`    configItem -> name`, name);
-  // if (name == "lab cone") {
-  //     html=getConeBuilderHTML(item, callout);
-  //     config.classList.add('cone-builder');
-  //     config.innerHTML=html;
-  //     document.querySelectorAll('#config .cb-selection').forEach(($cbs) => {
-  //         $cbs.addEventListener('touchstart', scrollSelection, true);
-  //         $cbs.addEventListener('touchmove', scrollSelection, true);
-  //         $cbs.addEventListener('touchcancel', scrollSelection, true);
-  //         $cbs.addEventListener('touchend', scrollSelection, true);
-  //     });
-  //     updateNumberOfToppings();
-  //     showConfig();
-  //     adjustScrolling(document.querySelector('#config.cone-builder .cb-options .selected'));
-  // } else {
-  //     html=getConfigHTML(item, callout);
-  //     config.classList.remove('cone-builder');
-  //     config.innerHTML=html;
-  // }
 }
 
-function addConfigToCart(e) {
-  console.log(`\nadd config to cart running`);
-  // hideConfig();
-  // var variation="";
-  // var mods=[];
-  // document.querySelectorAll(`#config select`).forEach((e, i) => {
-  //     if (!i) {
-  //         variation=e.value;
-  //     } else {
-  //         if (e.value) mods.push(e.value);
-  //     }
-  // })
-  // cart.add(variation, mods)
-  // updateCart();
-}
+function legacyupdateCart() {
+  const labels = window.labels;
 
+  var cartEl = document.getElementById("cart");
+
+  var count = cart.totalItems();
+
+  if (count > 0) {
+    cartEl.classList.remove("hidden");
+  } else {
+    cartEl.classList.add("hidden");
+    document.body.classList.remove("noscroll");
+  }
+
+  // check delivery cart
+  if (storeLocation === "delivery") {
+    const $zipSelect = document.getElementById("delivery-zip");
+    const zipValue = parseInt($zipSelect.value);
+    let match;
+
+    // convert dollar amount from google sheet to cents for comparison
+    const minOrder = parseInt(window.labels.delivery_free) * 100;
+    // check if zip is set and available
+    const deliveryDate = cartEl.querySelector("#delivery-date").value;
+    if (!zipValue) {
+      // if zip has not been selected yet
+    } else if (cart.totalAmount() - cart.shipping_item.price < minOrder) {
+      match = window.deliveryZips.find((zip) => {
+        return zip.zip === zipValue;
+      });
+      cartEl.querySelector(
+        ".freedelivery"
+      ).textContent = `${labels.checkout_minorder}${labels.delivery_free}.`;
+      cartEl.querySelector(".freedelivery").classList.remove("hidden");
+      cartEl.querySelector(".freedelivery").textContent += ` you're $${
+        (minOrder - (cart.totalAmount() - cart.shipping_item.price)) / 100
+      } away!`;
+    } else {
+      cartEl.querySelector(
+        ".freedelivery"
+      ).textContent = `${labels.checkout_minorder}${labels.delivery_free}.`;
+      cartEl.querySelector(".freedelivery").classList.add("hidden");
+    }
+    if (
+      deliveryDate.includes("SOLD OUT") ||
+      deliveryDate.includes("select your zip")
+    ) {
+      cartEl.querySelector("#orderBtn").disabled = true;
+      cartEl.querySelector("#orderBtn").classList.add("hidden");
+    } else {
+      cartEl.querySelector("#orderBtn").disabled = false;
+      cartEl.querySelector("#orderBtn").classList.remove("hidden");
+    }
+  }
+
+  var summaryEl = cartEl.querySelector(".summary");
+  summaryEl.innerHTML = `${count} item${
+    count == 1 ? "" : "s"
+  } in your cart ($${formatMoney(
+    cart.totalAmount()
+  )}) <button onclick="toggleCartDisplay()">check out</button>`;
+
+  var lineitemsEl = cartEl.querySelector(".lineitems");
+  let oosMessageDiv = document.createElement("div");
+  oosMessageDiv.className = "line item";
+  let oosMessage = document.createElement("div");
+  oosMessage.setAttribute("id", "oos");
+  oosMessage.className = "desc oos";
+
+  // placeholders for ALL out of stock items
+  var oosItems = [];
+  var oosItemStr = `oh no, we're out of `;
+
+  var html = ``;
+
+  cart.line_items.forEach((li) => {
+    var v = catalog.byId[li.variation];
+    var i = catalog.byId[v.item_variation_data.item_id];
+    var mods = "";
+    var cone = "";
+    if (i.item_data.name == "lab cone" && li.quantity > 0)
+      cone = `<div class="cone">${createConeFromConfig(li.mods)}</div>`;
+    li.mods.forEach(
+      (m, i) => (mods += ", " + catalog.byId[m].modifier_data.name)
+    );
+    if (li.quantity > 0) {
+      html += `<div class="line item" data-id="${li.fp}">
+          <div class="q"><span onclick="minus(this)" class="control">-</span> ${
+            li.quantity
+          } <span class="control" onclick="plus(this)">+</span></div>
+          <div class="desc">${cone} 
+          ${i.item_data.name} : ${v.item_variation_data.name} ${mods}</div>
+          <div class="amount">$${formatMoney(li.quantity * li.price)}</div>
+          </div>`;
+    } else if (li.quantity === "OUT OF STOCK") {
+      let oosItem;
+      if (i.item_data.name == "soft serve") {
+        oosItem = `${v.item_variation_data.name} ${i.item_data.name}`;
+        oosItems.push(oosItem);
+      } else {
+        oosItem = `${i.item_data.name}s`;
+        oosItems.push(oosItem);
+      }
+    }
+  });
+
+  if (storeLocation === "delivery") {
+    const shipping = cart.shipping_item;
+    const validShipping = Object.entries(shipping).length;
+    // display shipping info at the bottom of the cart
+    let shippingLi;
+    if (validShipping) {
+      const v = catalog.byId[shipping.variation];
+      const i = catalog.byId[v.item_variation_data.item_id];
+      const zip = document.getElementById("delivery-zip").value;
+
+      if (shipping.fp === "GTMQCMXMAHX4X6NFKDX5AYQC") {
+        // convert dollar amount from google sheet to cents for comparison
+        const minOrder = parseInt(window.labels.delivery_free) * 100;
+        shippingLi = `<div class="line shipping"><span class="desc">${
+          i.item_data.name
+        } (to ${zip} on orders over $${formatMoney(
+          minOrder
+        )})</span><span class="amount">$${formatMoney(
+          v.item_variation_data.price_money.amount
+        )}</span></div>`;
+      } else {
+        shippingLi = `<div class="line shipping"><span class="desc">${
+          i.item_data.name
+        } (to ${zip})</span><span class="amount">$${formatMoney(
+          v.item_variation_data.price_money.amount
+        )}</span></div>`;
+      }
+
+      // shippingLi = `<div class="line shipping"><span class="desc">${i.item_data.name} (to ${zip})</span><span class="amount">$${formatMoney(v.item_variation_data.price_money.amount)}</span></div>`
+    } else {
+      shippingLi = `<div class="line shipping"><span class="desc">shipping + handling</span><span class="amount">(calculated after you select your zip)</span></div>`;
+    }
+    html += shippingLi;
+  }
+
+  html += `<div class="line total"><div class="q"></div><div class="desc">total</div><div>$${formatMoney(
+    cart.totalAmount()
+  )}</div>`;
+
+  lineitemsEl.innerHTML = html;
+
+  // build oos item message, if items in cart are out of stock
+  if (oosItems.length) {
+    switch (oosItems.length) {
+      case 0:
+        break;
+      case 1:
+        oosItemStr += `${oosItems[0]} right now`;
+        break;
+      case 2:
+        oosItemStr += `${oosItems[0]} and ${oosItems[1]} right now`;
+        break;
+      default:
+        for (let i = 0; i < oosItems.length - 1; i++) {
+          oosItemStr += `${oosItems[i]}, `;
+        }
+        oosItemStr += `and ${oosItems[oosItems.length - 1]} right now`;
+        break;
+    }
+
+    oosMessage.innerHTML += `<div id="oos-close" onclick="removeOOS()"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-close"><use href="/icons.svg#close"></use></svg>`;
+    oosMessage.innerHTML += oosItemStr;
+    oosMessage.innerHTML += `<br />we've removed them from your cart`;
+    oosMessageDiv.append(oosMessage);
+    lineitemsEl.prepend(oosMessageDiv);
+  }
+
+  var checkoutItemsEl = cartEl.querySelector(".checkoutitems");
+  html = "";
+
+  var coCategory = catalog.categories.find(
+    (e) => e.category_data.name == "checkout items " + storeLocation
+  );
+  if (coCategory) {
+    var coItems = catalog.items.filter(
+      (i) => i.item_data.category_id == coCategory.id
+    );
+    if (coItems.length) {
+      html = `<div>${labels.checkout_addtoorder}</div>`;
+      coItems.forEach((i) => {
+        var price = formatMoney(
+          i.item_data.variations[0].item_variation_data.price_money.amount
+        );
+        var id = i.item_data.variations[0].id;
+        var name = i.item_data.name;
+        var checked = cart.find(id, []) ? "checked" : "";
+        html += `<div><input type="checkbox" ${checked} value="${id}" onclick="toggleCart(this)">${name} ($${price})</input></div>`;
+      });
+    }
+  }
+
+  checkoutItemsEl.innerHTML = html;
+}
 
 /*==========================================================
 INIT
@@ -1772,14 +2258,18 @@ window.onload = async (e) => {
 
   indexCatalog(); // legacy
 
-  setupHead();
+  // make page useable
   classify();
   codify();
   setPage();
+
+  // setup header
+  setCartTotal();
+  makeCartClickable();
   
   await fetchLabels();
-
-  testCart();
+  
+  setupHead();
   buildBackToTopBtn();
   updateCopyright();
 };

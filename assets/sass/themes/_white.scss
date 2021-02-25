@@ -57,6 +57,31 @@
         }
     }
 
+    & .checkout {
+        // border: 2px solid gold;
+        &-back {
+            background: $color-yellow-alt;
+            color: $color-blue;
+        }
+
+        &-table {
+            &-body {
+                background: $color-blue;
+                color: $color-white;
+                & tr {
+                    border-top: 1px solid $color-white;
+                    border-bottom: 1px solid $color-white;
+                }
+                &-quantity {
+                    & .quantity {
+                        background: $color-white;
+                        color: $color-blue;
+                    }
+                }
+            }
+        }
+    }
+
     & .menu {
         &-filled {
             background: $color-blue;
