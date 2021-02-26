@@ -28,22 +28,40 @@
         &::-webkit-scrollbar-thumb {
             background: $color-red;
         }
+        & .invalid-field {
+            animation-name: pink-error-blink;
+        }
         &-close {
             background: $color-pink;
         }
-        &-table-body-radio, &-table-body-checkbox {
-            background: $color-red;
-            color: $color-pink; 
-        
-            &-container {
-                background: $color-pink;
-                color: $color-red;
+        &-table {
+            &-body {
+                &-field, &-selectwrapper {
+                    &:hover, &:focus {
+                        background: $color-yellow;
+                    }
+                }
+                &-radio, &-checkbox {
+                    background: $color-red;
+                    color: $color-pink; 
+                
+                    &-container {
+                        background: $color-pink;
+                        color: $color-red;
+                    }
+                }
             }
         }
     }
 
     & .checkout {
         // border: 2px solid gold;
+        &::-webkit-scrollbar-thumb {
+            background: $color-red;
+        }
+        & .invalid-field {
+            animation-name: pink-error-blink;
+        }
         &-back {
             background: $color-yellow !important;
             color: $color-red !important;
@@ -59,6 +77,20 @@
                 }
                 &-quantity {
                     & .quantity {
+                        background: $color-pink;
+                        color: $color-red;
+                    }
+                }
+                &-field, &-selectwrapper {
+                    &:hover, &:focus {
+                        background: $color-yellow;
+                    }
+                }
+                &-radio, &-checkbox {
+                    background: $color-red;
+                    color: $color-pink; 
+                
+                    &-container {
                         background: $color-pink;
                         color: $color-red;
                     }

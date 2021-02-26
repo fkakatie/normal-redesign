@@ -28,16 +28,28 @@
         &::-webkit-scrollbar-thumb {
             background: $color-pink;
         }
+        & .invalid-field {
+            animation-name: bluepink-error-blink;
+        }
         &-close {
             background: $color-blue;
         }
-        &-table-body-radio, &-table-body-checkbox {
-            background: $color-pink;
-            color: $color-blue; 
-        
-            &-container {
-                background: $color-blue;
-                color: $color-pink;
+        &-table {
+            &-body {
+                &-field, &-selectwrapper {
+                    &:hover, &:focus {
+                        background: $color-white;
+                    }
+                }
+                &-radio, &-checkbox {
+                    background: $color-pink;
+                    color: $color-blue; 
+                
+                    &-container {
+                        background: $color-blue;
+                        color: $color-pink;
+                    }
+                }
             }
         }
     }
@@ -59,6 +71,15 @@
                 }
                 &-quantity {
                     & .quantity {
+                        background: $color-blue;
+                        color: $color-pink;
+                    }
+                }
+                &-radio, &-checkbox {
+                    background: $color-pink;
+                    color: $color-blue; 
+                
+                    &-container {
                         background: $color-blue;
                         color: $color-pink;
                     }
@@ -104,7 +125,7 @@
     }
 }
 
-@keyframes blue-error-blink {
+@keyframes bluepink-error-blink {
     0% { background: $color-blue; }
    50% { background: $color-pink; }
    99% { background: $color-blue; }

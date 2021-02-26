@@ -15,7 +15,6 @@
 
     &-container {
         position: relative;
-        border: 1px solid currentColor;
         @include container;
         padding: 0;
         margin-top: 16rem;
@@ -28,9 +27,11 @@
     }
 
     &-table {
-        width: calc(100% + 1px); //pixel perfect hack
+        width: 100%;
         border-collapse: collapse;
+        border: 1px solid currentColor;
         line-height: 1.2;
+        margin-bottom: 3rem;
 
         & th, & td {
             padding: 2rem; // cell spacing
@@ -84,6 +85,72 @@
                         
     }
 
+    &-form {
+        // background: red;
+        border: 1px solid currentColor;
+        border-top: 0;
+        margin-top: 3rem;
+    }
+
+    &-table-body {
+        &-field, &-selectwrapper, &-radio, &-checkbox {
+            text-align: left;
+            border-top: 1px solid currentColor;
+            display: block;
+            width: 100%;
+            
+            &::placeholder {
+                color: currentColor;
+            }
+        }
+        &-field, &-select {
+            padding: 1rem 4rem;
+            text-overflow: ellipsis;
+            transition: 0.2s all;             
+
+            &#pickupdate {
+                display: inline-block;
+                width: 50%;
+                border-right: 1px solid currentColor;
+            }
+            &wrapper {
+                display: inline-block;
+                width: 50%;
+            }
+        }
+        &-field {
+            &[type=text]:read-only {
+                cursor: not-allowed;
+
+                &:hover, &:focus {
+                    background: transparent;
+                }
+            }
+        }
+        &-selectwrapper {
+            position: relative;
+            &:after {
+                content: url("./svg/arrow-down-blue.svg");
+                position: absolute;
+                top: 50%;
+                right: 3.5rem;
+                // background: red;
+                height: 3.5rem;
+                width: 3.5rem;
+                transform: translateY(-50%);
+            }
+            
+            &-select {
+                appearance: none;
+                height: calc(6rem - 1px); // pixel perfect hack
+                padding: 1rem 8rem 1rem 4rem; 
+                line-height: 4rem;
+                width: 100%;
+            }
+            
+        }
+    }
+
 }
 
 @media only screen and (max-width: 76.8rem) {
@@ -115,11 +182,30 @@
         &-back { // inherit from .btn-back
             position: static;
             margin: 0 auto;
-            margin-top: 2rem;
+            // margin-top: 2rem;
+            margin-bottom: 4rem;
         }
 
         &-table {
             &-body {
+                &-field, &-select {
+                    padding: 1rem 2rem;
+                    &#pickupdate {
+                        width: 100%;
+                        display: block;
+                        border-right: 0;
+                    }
+                    &wrapper {
+                        width: 100%;
+                        display: block;
+                        &-select {
+                            padding: 1rem 2rem;
+                        }
+                        &:after {
+                            right: 1rem;
+                        }
+                    }
+                }
                 // background: pink;
                 &-quantity {
                     width: 25%;

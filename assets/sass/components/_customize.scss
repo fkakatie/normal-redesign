@@ -88,6 +88,10 @@
             &-field {
                 &[type=text]:read-only {
                     cursor: not-allowed;
+
+                    &:hover, &:focus {
+                        background: transparent;
+                    }
                 }
             }
             &-selectwrapper {

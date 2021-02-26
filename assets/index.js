@@ -42,7 +42,6 @@ const setPage = () => {
       break;
     case "store":
       setCurrentStore();
-      getCurrentStore();
       shopify();
       styleMenus();
       setupCarousels();
@@ -53,7 +52,6 @@ const setPage = () => {
       break;
     case "lab":
       setCurrentStore();
-      getCurrentStore();
       shopify();
       styleMenus();
       fixCart();
@@ -64,7 +62,6 @@ const setPage = () => {
       break;
     case "delivery":
       setCurrentStore();
-      getCurrentStore();
       shopify();
       styleMenus();
       fixCart();
@@ -283,6 +280,7 @@ const fetchLabels = async () => {
   json.forEach((j) => {
     window.labels[j.key] = j.value;
   });
+  console.log(`labels FETCHED`);
   return window.labels;
 };
 
@@ -398,9 +396,14 @@ const buildOrderPage = () => {
 STOREFRONT PAGES
 ==========================================================*/
 const getCurrentStore = () => {
-  const currentStore = getPage();
-  // console.log(`getCurrentStore -> currentStore`, currentStore);
-  return currentStore;
+  const page = getPage();
+  const configuredStores = [ "store", "lab", "delivery", "merch" ];
+
+  if (configuredStores.includes(page)) {
+    return page;
+  } else {
+    return getLastStore();
+  }
 }
 
 const shopify = () => {
@@ -512,6 +515,55 @@ const customizeToolforStore = (target) => {
 
 }
 
+const customizeCheckoutForStorefront = () => {
+  const currentStore = getCurrentStore();
+  const $checkoutForm = document.querySelector("checkout-form");
+  
+  const $pickupDate = document.getElementById("pickupdate");
+
+  const $pickupTimeDropdown = document.getElementById("pickuptime");
+
+  const pickupTimes = getPickupTimes();
+
+  populateDynamicOptions($pickupTimeDropdown, pickupTimes);
+}
+
+const getPickupTimes = () => {
+  console.log(`pickup times`);
+  const store = getCurrentStore();
+  const date = new Date();
+  const now = parseInt(`${date.getHours()}${date.getMinutes().toString().padStart(2, "0")}`);
+  const { open, close } = getHoursOfOp(store);
+
+  let pickupTimes = [];
+  let startTimeObj;
+
+  if (now < (open * 100)) { // BEFORE opening
+    // console.log(`before opening`);
+    startTimeObj = new Date(date.setHours(open, 0, 0));
+  } else { // AFTER opening
+    // console.log(`after opening`);
+    const currentMinutes = date.getMinutes();
+    const startMinutes = Math.ceil(currentMinutes / 10) * 10;
+    const diff = startMinutes - currentMinutes;
+    startTimeObj = new Date(date.getTime() + diff * 60000);
+  }
+
+  const closeTimeObj = new Date(date.setHours(close, 0, 0));
+  let currentTimeObj = new Date(startTimeObj.setSeconds(0, 0));
+
+  while (currentTimeObj <= closeTimeObj) {
+    const currentTimeHourFull = currentTimeObj.getHours(); // 24 hr time
+    const currentTimeHour = currentTimeHourFull > 12 ? currentTimeHourFull - 12 : currentTimeHourFull; // 12 hr time
+    const currentTimeMinutes = currentTimeObj.getMinutes().toString().padStart(2, "0");
+    const currentTimePeriod = currentTimeHourFull < 12 ? "am" : "pm";
+    const currentTimePrint = `${currentTimeHour}:${currentTimeMinutes}${currentTimePeriod}`;
+    pickupTimes.push({ text: currentTimePrint, value: currentTimeObj.toISOString() });
+    currentTimeObj = new Date(currentTimeObj.getTime() + 10 * 60000); // add ten minutes
+  } 
+  return pickupTimes;
+}
+
 /*==========================================================
 CART FUNCTIONALITY
 ==========================================================*/
@@ -522,7 +574,7 @@ const updateCart = () => {
   const $checkoutTable = document.querySelector(".checkout-table-body");
     $checkoutTable.innerHTML = ""; // clear on each update
 
-  if (cart.line_items) {
+  if (cart.line_items.length > 0) {
     cart.line_items.forEach((i) => {
       const variation = catalog.byId[i.variation];
       const variationName = variation.item_variation_data.name; // for use with mods
@@ -536,7 +588,7 @@ const updateCart = () => {
       const $quantity = document.createElement("td");
         $quantity.classList.add("checkout-table-body-quantity");
         $quantity.innerHTML = `<span onclick="minus(this)" class="quantity quantity-minus">-</span>
-          ${i.quantity}
+          <span class="quantity-num">${i.quantity}</span>
           <span onclick="plus(this)" class="quantity quantity-plus">+</span>`;
   
       const $item = document.createElement("td");
@@ -544,7 +596,7 @@ const updateCart = () => {
         if (mods.length >= 1) {
           $item.textContent = `${variationName} ${removeStorefrontName(itemName)}, ${mods.join(", ")}`;
         } else {
-          $item.textContent = removeStorefrontName(itemName);
+          $item.textContent = itemName;
         }
   
       const $price = document.createElement("td");
@@ -555,10 +607,27 @@ const updateCart = () => {
       $checkoutTable.append($row);
   
     });
+  } else {
+    const $row = document.createElement("tr"); 
 
-    const $checkoutTotal = document.getElementById("checkout-foot-total");
-      $checkoutTotal.textContent = `$${formatMoney(cart.totalAmount())}`;
+    const $quantity = document.createElement("td");
+      $quantity.classList.add("checkout-table-body-quantity");
+
+    const $item = document.createElement("td");
+      $item.classList.add("checkout-table-body-item");
+      $item.textContent = "your cart is empty! fill ’er up!";
+
+    const $price = document.createElement("td");
+      $price.classList.add("checkout-table-body-price");
+
+    $row.append($quantity, $item, $price);
+    $checkoutTable.append($row);
   }
+
+  const $checkoutTotal = document.getElementById("checkout-foot-total");
+      $checkoutTotal.textContent = `$${formatMoney(cart.totalAmount())}`;
+
+  // BUILD CO ITEMS DISPLAY
 
 }
 
@@ -577,22 +646,87 @@ const minus = (e) => {
   updateCart();
 }
 
+const buildCheckoutForm = () => {
+  const labels = window.labels;
+  const currentStore = getCurrentStore();
+  const storeOpen = labels[`${currentStore}_open`];
+  const storeOpenByTime = checkIfStorefrontOpen();
+  // console.log(currentStore, storeOpen, storeOpenByTime);
+  if (storeOpen && storeOpenByTime) { // if store is open, let users check out
+    console.log("and we're live");
+    customizeCheckoutForStorefront();
+    const $btn = document.createElement("a");
+      $btn.classList.add("btn-rect");
+      $btn.textContent = "place order";
+      $btn.onclick = (e) => {
+        console.log(`place this order yo`);
+      }
+  } else { // if store is NOT open, DO NOT let users check out
+    console.log("store closed rn")
+  }
+}
+
+
+// move to utilities
+const checkIfStorefrontOpen = () => {
+  const currentStore = getCurrentStore();
+  const date = new Date();
+  const now = parseInt(`${date.getHours()}${date.getMinutes().toString().padStart(2, "0")}`);
+  const close = getHoursOfOp(currentStore, "close");
+  return now < (close * 100);
+}
+
+/* TO DO
+const getDaysOfOp = () => {
+  // check if storefront is open today
+} */
+
+// move this to utilities
+const getHoursOfOp = (store, type) => {
+  const labels = window.labels;
+  const date = new Date();
+  const today = date.toString().substring(0,3).toLowerCase();
+  let todayHours;
+
+  if (today.includes("sat") || today.includes("sun")) {
+    todayHours = labels[`${store}_weekendhours`];
+  } else {
+    todayHours = labels[`${store}_weekdayhours`];
+  }
+
+  let [openHour, closeHour] = todayHours.split(" - ");
+
+  openHour.replace(/am|AM|pm|PM/g, "");
+    openHour = parseInt(openHour);
+    if (openHour < 12) { openHour += 12 };
+
+  closeHour.replace(/am|AM|pm|PM/g, "");
+    closeHour = parseInt(closeHour);
+    if (closeHour < 12) { closeHour += 12 };
+
+  if (type === "open") {
+    return openHour;
+  } else if (type === "close") {
+    return closeHour;
+  } else {
+    return { open: openHour, close: closeHour };
+  }
+  
+}
+
 /*==========================================================
 STOREFRONT CAROUSELS
 ==========================================================*/
 const resetCarousels = debounce(function() {
   // console.log(`reseting carousels`);
   const currentStore = getCurrentStore();
-  const configuredStores = [ "store", "lab", "delivery", "merch" ];
-
-  if (configuredStores.includes(currentStore)) {
-    const $carousels = document.querySelectorAll(`.embed-internal-${currentStore}menus`);
-    if ($carousels) {
-      $carousels.forEach((c) => {
-        c.scrollLeft = 0;
-      })
-    }
+  const $carousels = document.querySelectorAll(`.embed-internal-${currentStore}menus`);
+  if ($carousels) {
+    $carousels.forEach((c) => {
+      c.scrollLeft = 0;
+    })
   }
+  
 }, 500); // half second
 
 const setupCarousels = () => {
@@ -719,6 +853,7 @@ const buildLocationsGrid = () => {
   $locationsBlock.append($flexContainer);
 };
 
+// move to setup or utilities
 const setupDownAnchors = () => {
   const $downArrows = document.querySelectorAll("svg.icon-arrow-down");
   if ($downArrows) {
@@ -915,19 +1050,19 @@ const customizeToolforClub = (target) => {
   }
 
   // trigger address field on local delivery
-  const $localDeliveryOpt = document.getElementById("localdelivery");
+  const $deliveryOpt = document.getElementById("localdelivery");
   const $pickupOpt = document.getElementById("pickup");
 
-  if ($localDeliveryOpt && $pickupOpt) {
+  if ($deliveryOpt && $pickupOpt) {
 
-    $localDeliveryOpt.onclick = async (e) => {
+    $deliveryOpt.onclick = async (e) => {
       const $customBody = document.querySelector(".customize-table-body");
       const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
 
       if (!$addrFields.length) {
         let fields = getFields([ "address" ]);
         fields.forEach((f) => {
-          $customBody.append(buildFields(f));
+          $customBody.append(buildFields("customize", f));
         });
         getAddressFromLocalStorage();
 
@@ -1028,7 +1163,7 @@ const buildCustomizationTool = () => {
     $customHead.classList.add("customize-table-head");
     $customHead.textContent = "customize your ...";
   const $customBody = document.createElement("form");
-    $customBody.classList.add("customize-table-body");
+    $customBody.classList.add("customize-table-body", "customize-form");
   
   const $customFoot = document.createElement("div");
     $customFoot.classList.add("customize-foot");
@@ -1040,7 +1175,20 @@ const buildCustomizationTool = () => {
   $main.append($customSection);
 }
 
-const populateCustomizationTool = (title, fields, obj) => {
+const clearCustomizationTool = () => {
+  const $customTool = document.querySelector(".customize-table");
+  if ($customTool) {
+    const $customBody = $customTool.querySelector(".customize-table-body");
+      $customBody.innerHTML = ""; 
+  
+    const $customFoot = document.querySelector(".customize-foot");
+      $customFoot.innerHTML = ""; 
+  }
+}
+
+const populateCustomizationTool = (title, fields) => {
+
+  clearCustomizationTool();
 
   const $customTool = document.querySelector(".customize-table");
 
@@ -1048,18 +1196,16 @@ const populateCustomizationTool = (title, fields, obj) => {
     $customHead.textContent = title;
   
   const $customBody = $customTool.querySelector(".customize-table-body");
-    $customBody.innerHTML = ""; // clear on each populate
 
-  let allFields = getFields(fields, obj);
+  let allFields = getFields(fields);
 
   allFields.forEach((f) => {
-    $customBody.append(buildFields(f));
+    $customBody.append(buildFields("customize", f));
   })
 
   getContactFromLocalStorage();
 
   const $customFoot = document.querySelector(".customize-foot");
-    $customFoot.innerHTML = ""; // clear on each populate
   
   const $btn = document.createElement("a");
     $btn.classList.add("btn-rect");
@@ -1071,6 +1217,7 @@ const populateCustomizationTool = (title, fields, obj) => {
         buildScreensaver("sending in your subscription...");
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
+        await clearCustomizationTool();
         await hideCustomizationTool();
         removeScreensaver();
       } else {
@@ -1121,7 +1268,7 @@ const populateCustomizationToolSquare = (title, item) => {
     };
 
     if (itemData.name.includes("soft serve")) {
-      $title.textContent = "flavor (select 1)"; // this needs to be dynamic
+      $title.textContent = "flavor (select 1)"; 
     } else if (itemVariations[0].item_variation_data.name.includes("oz") || itemVariations[0].item_variation_data.name.includes("size")) {
       $title.textContent = "select your size";
     } else if (itemVariations[0].item_variation_data.name.includes("shot")) {
@@ -1129,7 +1276,7 @@ const populateCustomizationToolSquare = (title, item) => {
     } else {
       $title.textContent = "make a selection";
       console.log("hey normal, here's a new scenario:");
-      console.log(itemData.name, itemVariations);
+      console.log(" >", itemData.name, itemVariations);
     }
 
     $field.append($title);
@@ -1332,28 +1479,29 @@ const populateCustomizationToolSquare = (title, item) => {
   }
 
   const $customFoot = document.querySelector(".customize-foot");
-  $customFoot.innerHTML = ""; // clear on each populate
+    $customFoot.innerHTML = ""; // clear on each populate
 
   const $btn = document.createElement("a");
-  $btn.classList.add("btn-rect");
-  $btn.textContent = "add to cart";
-  $btn.onclick = async (e) => {
-    const $form = document.querySelector("form");
-    const valid = validateSubmission($form);
-    if (valid) {
-      buildScreensaver("customizing your cone...");
-      const formData = await getSubmissionData($form);
-      await addConfigToCart(formData);
-      await hideCustomizationTool();
-      removeScreensaver();
-      // console.log(`formData`, formData);
-    } else {
-      console.error("please fill out all required fields!");
-    }
-  };
+    $btn.classList.add("btn-rect");
+    $btn.id = "customize-form";
+    $btn.textContent = "add to cart";
+    $btn.onclick = async (e) => {
+      const targetClass =  e.target.closest("a").id;
+      const $form = document.querySelector(`.${targetClass}`);
+      const valid = validateSubmission($form);
+      if (valid) {
+        buildScreensaver("customizing your cone...");
+        const formData = await getSubmissionData($form);
+        await addConfigToCart(formData);
+        await clearCustomizationTool();
+        await hideCustomizationTool();
+        removeScreensaver();
+      } else {
+        console.error("please fill out all required fields!");
+      }
+    };
 
   $customFoot.append($btn);
-
   showCustomizationTool();
 };
 
@@ -1510,23 +1658,35 @@ const getFields = (fields) => {
           { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
           { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ], required: true },
           { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
-          { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "local delivery" ], required: true }
+          { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "delivery" ], required: true }
         );
         break;
+      case "pick-up":
+        allFields.push(
+          { title: "pickup-date", type: "text", value: "today", readonly: true },
+          { title: "pickup-time", type: "select", placeholder: "select your pickup time", src: "hoursOfOp", required: true }
+        )
+        break;
+      case "discount-code":
+        allFields.push(
+          { title: "discount", type: "text", placeholder: "discount code" }
+        )
+        break;
       default:
+        console.error("hey normal, you tried to build a form with an invalid field");
         break;
     }
   })
   return allFields;
 }
 
-const buildFields = (field) => {
+const buildFields = (formType, field) => {
   let $field;
 
   if (field.type === "radio" || field.type === "checkbox") {
     //setup options
     $field = document.createElement("div");
-      $field.classList.add(`customize-table-body-${field.type}`);
+      $field.classList.add(`${formType}-table-body-${field.type}`);
       $field.id = `${field.type}-${cleanName(field.title)}`;
 
     const $title = document.createElement("h3");
@@ -1552,20 +1712,20 @@ const buildFields = (field) => {
     $field.append($title); 
 
     const $optionsContainer = document.createElement("div");
-      $optionsContainer.classList.add(`customize-table-body-${field.type}-container`, "hide");
+      $optionsContainer.classList.add(`${formType}-table-body-${field.type}-container`, "hide");
     
     field.options.forEach((o) => {
       
       const $label = document.createElement("label");
-        $label.classList.add(`customize-table-body-${field.type}-container-optionblock`);
+        $label.classList.add(`${formType}-table-body-${field.type}-container-optionblock`);
         $label.setAttribute("for", cleanName(o));
         $label.textContent = o;
 
       const $customEl = document.createElement("span");
-        $customEl.classList.add(`customize-table-body-${field.type}-container-optionblock-custom`);
+        $customEl.classList.add(`${formType}-table-body-${field.type}-container-optionblock-custom`);
       
       const $option = document.createElement("input");
-        $option.classList.add(`customize-table-body-${field.type}-container-optionblock-option`);
+        $option.classList.add(`${formType}-table-body-${field.type}-container-optionblock-option`);
         $option.id = cleanName(o);
         $option.name = field.title;
         $option.type = field.type;
@@ -1581,14 +1741,14 @@ const buildFields = (field) => {
   else if (field.type === "select") {
 
     $field = document.createElement("div"); // wrapper
-      $field.classList.add("customize-table-body-selectwrapper");
+      $field.classList.add(`${formType}-table-body-selectwrapper`);
     if (field.data) {
       for (dataType in field.data) {
         $field.setAttribute(`data-${dataType}`, field.data[dataType]);
       }
     }
     $select = document.createElement(field.type);
-      $select.classList.add("customize-table-body-selectwrapper-select");
+      $select.classList.add(`${formType}-table-body-selectwrapper-select`);
       $select.id = cleanName(field.title);
       $select.name = cleanName(field.title);
     
@@ -1602,7 +1762,7 @@ const buildFields = (field) => {
     $field.append($select);
   } else {
     $field = document.createElement("input");
-      $field.classList.add("customize-table-body-field");
+      $field.classList.add(`${formType}-table-body-field`);
       $field.id = cleanName(field.title);
       $field.name = cleanName(field.title);
       $field.type = field.type || "text";
@@ -1646,6 +1806,15 @@ const populateOptions = ($el, data) => {
   })
 }
 
+const populateDynamicOptions = ($el, data) => {
+  data.forEach((d) => {
+    const $option = document.createElement("option");
+      $option.value = d.value;
+      $option.textContent = d.text;
+    $el.append($option);
+  })
+}
+
 /*==========================================================
 CHECKOUT TOOL
 ==========================================================*/
@@ -1679,7 +1848,7 @@ const buildCheckoutTool = () => {
     $checkoutHead.classList.add("checkout-table-head");
     $checkoutHead.innerHTML = `<tr>
       <th colspan="3">
-        <h2>your ${getLastStore()} order</h2>
+        <h2>your ${getCurrentStore()} order</h2>
       </th>
     </tr>`
 
@@ -1696,6 +1865,52 @@ const buildCheckoutTool = () => {
   $checkoutTable.append($checkoutHead, $checkoutBody, $checkoutFoot);
 
   $checkoutContainer.append($checkoutBack, $checkoutTable);
+
+  const labels = window.labels;
+  const currentStore = getCurrentStore();
+  const storeOpen = labels[`${currentStore}_open`];
+  const storeOpenByTime = checkIfStorefrontOpen();
+
+  if (storeOpen && storeOpenByTime) { // if store is open, build checkout form
+    console.log("and we're live");
+    const $checkoutForm = document.createElement("form");
+    $checkoutForm.classList.add("checkout-form");
+  
+    let allFields = getFields([ "contact", "pick-up", "discount-code" ]);
+
+    allFields.forEach((f) => {
+      $checkoutForm.append(buildFields("checkout", f));
+    })
+
+    getContactFromLocalStorage();
+    
+    
+    customizeCheckoutForStorefront();
+    const $btn = document.createElement("a");
+      $btn.classList.add("btn-rect");
+      $btn.textContent = "place order";
+      $btn.onclick = (e) => {
+        console.log(`place this order yo`);
+      }
+
+    console.log($btn);
+
+    $checkoutContainer.append($checkoutForm);
+
+  } else { // if store is NOT open, DO NOT let users check out
+    console.log("store closed rn")
+    const labels = window.labels;
+    const tooLateMsg = labels.checkout_toolate || "you're too late! message here";
+
+    const $messageContainer = document.createElement("div");
+      $messageContainer.classList.add("checkout-disabled");
+    const $messageText = document.createElement("p");
+      $messageText.classList.add("checkout-disabled-message");
+      $messageText.textContent = tooLateMsg;
+
+    $messageContainer.append($messageText);
+    $checkoutContainer.append($messageContainer);
+  }
 
   $checkoutSection.append($checkoutContainer);
 
@@ -2250,11 +2465,173 @@ function legacyupdateCart() {
   checkoutItemsEl.innerHTML = html;
 }
 
+async function submitOrder() {
+  // console.log(`submitOrder running`);
+  removeOOS();
+  var alertEl=document.getElementById("alert").remove();
+  var cartEl=document.getElementById("cart");
+
+  var orderParams={};
+  var now=false;
+  orderParams.pickup_at=document.getElementById("pickup-time").value || "delivery";
+  if (orderParams.pickup_at=="now") {
+      now=true;
+      orderParams.pickup_at=new Date().toISOString();
+      orderParams.now="yes";
+  } else if (orderParams.pickup_at === "delivery") {
+      delete orderParams.pickup_at; // remove pickup from delivery orders
+      orderParams.email_address = document.getElementById("email").value;
+
+      const deliveryDate = document.getElementById("delivery-date").getAttribute("data-date");
+      orderParams.deliver_at = new Date(deliveryDate).toISOString();
+
+      const deliveryAddress = document.getElementById("delivery-address").value;
+      const deliveryCity = document.getElementById("delivery-city").value; 
+      const deliveryState = document.getElementById("delivery-state").value; 
+      const deliveryZip = document.getElementById("delivery-zip").value;
+      const deliveryFullAddress = [deliveryAddress, deliveryCity, deliveryState, deliveryZip];
+      // if the address is missing any piece
+      if (deliveryFullAddress.includes("")) {
+          document.getElementById("delivery-address").focus();
+          return;
+      }
+      orderParams.address = deliveryAddress;
+      orderParams.city = deliveryCity;
+      orderParams.state = deliveryState;
+      orderParams.zip = deliveryZip;
+  }
+  orderParams.display_name=document.getElementById("name").value;
+  orderParams.cell=document.getElementById("cell").value;
+  orderParams.reference_id=generateId();
+  orderParams.discount_name=document.getElementById("discount").value;
+  orderParams.discount=document.getElementById("discount").getAttribute("data-id");
+
+  // console.log(`  submitOrder -> orderParams`, orderParams);
+
+  if (cart.itemCount==0) return;
+  if (orderParams.display_name=="") {
+      document.getElementById("name").focus();
+      return;
+  }
+  if (orderParams.cell=="") {
+      document.getElementById("cell").focus();
+      return;
+  }
+  if (orderParams.email_address=="") { // if the email address is missing
+      document.getElementById("email").focus();
+      return;
+  }
+  if (orderParams.discount=="" && orderParams.discount_name) {
+      document.getElementById("discount").focus();
+      alert("we don't recognize this discount anymore, typo?");
+      return;
+  }
+
+  localStorage.setItem("name",orderParams.display_name);
+  localStorage.setItem("cell",orderParams.cell);
+  localStorage.setItem("address",orderParams.address);
+  localStorage.setItem("email",orderParams.email_address);
+
+  cartEl.querySelector(".lineitems").classList.add("hidden");
+  cartEl.querySelector(".checkoutitems").classList.add("hidden");
+  cartEl.querySelector(".info").classList.add("hidden");
+  var orderEl=cartEl.querySelector(".order");
+  orderEl.classList.remove("hidden");
+  orderEl.innerHTML=`<div class="ordering"><svg><use href="/icons.svg#normal"></use></svg></div>`;
+
+  var nomore = await checkCart();
+  // console.log(`submitOrder -> nomore`, nomore);
+
+  if (nomore.length>0) {
+      var sorry="we are so sorry we just ran out of "
+      nomore.forEach((li, i) => {
+      // console.log(`submitOrder -> li`, li);
+          var v=catalog.byId[li.variation];
+          var item=catalog.byId[v.item_variation_data.item_id];
+              sorry+=(i?", ":"")+item.item_data.name+" : "+v.item_variation_data.name;
+          cart.remove(li.fp);
+      })
+      sorry+=". we will refresh the store so you can look for alternatives. so sorry.";
+      alert(sorry);
+      window.location.reload();
+      return;
+  }
+  
+  orderParams.line_items=[];
+  cart.line_items.forEach((li) => { 
+      // console.log(`submitOrder -> li`, li);
+      var mods=[];
+      li.mods.forEach((m) => mods.push({"catalog_object_id": m}));
+      var line_item = {
+          "catalog_object_id": li.variation,
+          "quantity": ""+li.quantity 
+      };    
+      if (mods.length) {
+          line_item.modifiers=mods;
+      }
+      orderParams.line_items.push(line_item);       
+  });
+
+  if (storeLocation === "delivery") {
+      orderParams.line_items.push({
+          "catalog_object_id": cart.shipping_item.variation,
+          "quantity": ""  + cart.shipping_item.quantity
+      });
+  }
+      
+  var qs="";
+  for (var a in orderParams) {
+      if (a=="line_items") {
+          qs+=a+"="+encodeURIComponent(JSON.stringify(orderParams[a]));
+      } else {
+          qs+=a+"="+encodeURIComponent(orderParams[a]);
+      }
+      qs+="&";
+  }
+
+  // console.log ("order qs: "+qs);
+
+  fetch(storeLocations[storeLocation].endpoint + "?" + qs, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  })
+  .catch((err) => {
+      alert("Network error: " + err);
+  })
+  .then((response) => {
+      // console.log(`\n  submitOrder -> response`, response);
+      // console.log(`\n  submitOrder -> response.url`, response.url);
+      if (!response.ok) {
+        return response.text().then((errorInfo) => Promise.reject(errorInfo));
+      }
+      // console.log(`  submitOrder -> response.text()`, response.text());
+      return response.text();
+  })
+  .then((data) => {
+      // console.log(`\n    submitOrder -> data`);
+      // console.log(data);
+      var obj = JSON.parse(data);
+      // console.log(`    submitOrder -> obj`, obj);
+      if (typeof obj.order != "undefined") {
+        displayOrder(obj.order);
+      } else {
+        alert("order submission failed. sorry.");
+      }
+  })
+  .catch((err) => {
+      console.error(err);
+  });       
+}
+
 /*==========================================================
 INIT
 ==========================================================*/
 
 window.onload = async (e) => {
+
+  await fetchLabels();
 
   indexCatalog(); // legacy
 
@@ -2263,11 +2640,10 @@ window.onload = async (e) => {
   codify();
   setPage();
 
+  
   // setup header
   setCartTotal();
   makeCartClickable();
-  
-  await fetchLabels();
   
   setupHead();
   buildBackToTopBtn();

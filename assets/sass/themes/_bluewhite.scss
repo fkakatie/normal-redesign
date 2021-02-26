@@ -28,22 +28,35 @@
         &::-webkit-scrollbar-thumb {
             background: $color-white;
         }
+        & .invalid-field {
+            animation-name: bluewhite-error-blink;
+        }
         &-close {
             background: $color-blue;
         }
-        &-table-body-radio, &-table-body-checkbox {
-            background: $color-white;
-            color: $color-blue; 
-        
-            &-container {
-                background: $color-blue;
-                color: $color-white;
+        &-table {
+            &-body {
+                &-radio, &-checkbox {
+                    background: $color-white;
+                    color: $color-blue; 
+            
+                    &-container {
+                        background: $color-blue;
+                        color: $color-white;
+                    }
+                }
             }
         }
     }
 
     & .checkout {
         // border: 2px solid gold;
+        &::-webkit-scrollbar-thumb {
+            background: $color-white;
+        }
+        & .invalid-field {
+            animation-name: bluewhite-error-blink;
+        }
         &-back {
             background: $color-red !important;
             color: $color-white !important;
@@ -104,7 +117,7 @@
     }
 }
 
-@keyframes blue-error-blink {
+@keyframes bluewhite-error-blink {
     0% { background: $color-blue; }
    50% { background: $color-white; }
    99% { background: $color-blue; }

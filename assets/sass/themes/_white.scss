@@ -59,6 +59,12 @@
 
     & .checkout {
         // border: 2px solid gold;
+        &::-webkit-scrollbar-thumb {
+            background: $color-blue;
+        }
+        & .invalid-field {
+            animation-name: white-error-blink;
+        }
         &-back {
             background: $color-yellow-alt;
             color: $color-blue;
@@ -74,6 +80,20 @@
                 }
                 &-quantity {
                     & .quantity {
+                        background: $color-white;
+                        color: $color-blue;
+                    }
+                }
+                &-field, &-selectwrapper {
+                    &:hover, &:focus {
+                        background: $color-pink;
+                    }
+                }
+                &-radio, &-checkbox {
+                    background: $color-blue;
+                    color: $color-white; 
+                
+                    &-container {
                         background: $color-white;
                         color: $color-blue;
                     }
