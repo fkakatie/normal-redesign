@@ -9,6 +9,11 @@
     overflow: auto;
     z-index: 9;
 
+    & .invalid-field {
+        animation-duration: 0.3s;
+        animation-iteration-count: 3;
+    }
+
     &::-webkit-scrollbar {
         width: 1rem;
     }
@@ -75,14 +80,12 @@
         }
 
         &-foot {
-            border-top: 1px solid currentColor;
             text-align: right;    
-
-            & #checkout-foot-total {
-                // background: cornflowerblue;
+            
+            & tr {
+                border-top: 1px solid currentColor;
             }
-        }
-                        
+        }                        
     }
 
     &-form {
@@ -150,7 +153,10 @@
             
         }
     }
+}
 
+#checkout-form {
+    margin-top: 4rem;
 }
 
 @media only screen and (max-width: 76.8rem) {

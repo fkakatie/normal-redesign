@@ -256,6 +256,9 @@ a {
   width: calc(100vw - (100vw - 100%));
   overflow: auto;
   z-index: 9; }
+  .checkout .invalid-field {
+    animation-duration: 0.3s;
+    animation-iteration-count: 3; }
   .checkout::-webkit-scrollbar {
     width: 1rem; }
   .checkout-container {
@@ -305,8 +308,9 @@ a {
       width: 15%;
       text-align: right; }
     .checkout-table-foot {
-      border-top: 1px solid currentColor;
       text-align: right; }
+      .checkout-table-foot tr {
+        border-top: 1px solid currentColor; }
   .checkout-form {
     border: 1px solid currentColor;
     border-top: 0;
@@ -349,6 +353,9 @@ a {
       padding: 1rem 8rem 1rem 4rem;
       line-height: 4rem;
       width: 100%; }
+
+#checkout-form {
+  margin-top: 4rem; }
 
 @media only screen and (max-width: 76.8rem) {
   .checkout-table-body-quantity {
@@ -660,6 +667,14 @@ svg {
       font-size: 60%;
       line-height: 1.4;
       margin-top: 0.4rem; }
+      .embed-internal-storemenus div p img {
+        margin-top: 1rem;
+        height: 20rem;
+        transition: 0.2s all;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden; }
+        .embed-internal-storemenus div p img:hover, .embed-internal-storemenus div p img:focus {
+          transform: translateY(0.5rem) scale(1.2) rotate(-3deg); }
       .embed-internal-storemenus div p strong {
         font-family: "Poppins", sans-serif;
         font-weight: 700;
@@ -718,6 +733,27 @@ svg {
 @keyframes bounceY {
   100% {
     transform: translateY(calc(100vh - 12rem)); } }
+
+.sq-table-body-selectwrapper {
+  position: relative;
+  border: 1px solid currentColor; }
+  .sq-table-body-selectwrapper:after {
+    content: url("./svg/arrow-down-blue.svg");
+    position: absolute;
+    top: 50%;
+    right: 3.5rem;
+    height: 3.5rem;
+    width: 3.5rem;
+    transform: translateY(-50%); }
+  .sq-table-body-selectwrapper-select {
+    appearance: none;
+    height: calc(6rem - 1px);
+    padding: 1rem 8rem 1rem 4rem;
+    line-height: 4rem;
+    width: 100%; }
+
+.sq-form {
+  border-top: 1px solid currentColor; }
 
 h1#normalreg {
   font-size: 9.9rem; }
@@ -980,23 +1016,31 @@ main#order {
   main#order div.p-pickup, main#order div.p-shipping {
     display: none; }
 
-h2#soft-serve ~ h3, h2#drinks-drinks-drinks ~ h3, h2#pints ~ h3, h2#bars ~ h3, h2#composed-cones ~ h3, h2#pizza ~ h3, h2#choco-taco ~ h3, h2#ice-cream-cake ~ h3 {
+h2#soft-serve ~ h3, h2#drinks-drinks-drinks ~ h3, h2#pints ~ h3, h2#bars ~ h3, h2#sandos ~ h3, h2#composed-cones ~ h3, h2#pizza ~ h3, h2#choco-taco ~ h3, h2#norm-cores ~ h3, h2#ice-cream-cake ~ h3 {
   margin-top: 2rem;
   margin-bottom: 0.2rem; }
 
-h2#soft-serve ~ p, h2#drinks-drinks-drinks ~ p, h2#pints ~ p, h2#bars ~ p, h2#composed-cones ~ p, h2#pizza ~ p, h2#choco-taco ~ p, h2#ice-cream-cake ~ p {
+h2#soft-serve ~ p, h2#drinks-drinks-drinks ~ p, h2#pints ~ p, h2#bars ~ p, h2#sandos ~ p, h2#composed-cones ~ p, h2#pizza ~ p, h2#choco-taco ~ p, h2#norm-cores ~ p, h2#ice-cream-cake ~ p {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   font-style: normal;
   font-size: 60%;
   line-height: 1.4;
   margin-top: 0.4rem; }
-  h2#soft-serve ~ p strong, h2#drinks-drinks-drinks ~ p strong, h2#pints ~ p strong, h2#bars ~ p strong, h2#composed-cones ~ p strong, h2#pizza ~ p strong, h2#choco-taco ~ p strong, h2#ice-cream-cake ~ p strong {
+  h2#soft-serve ~ p img, h2#drinks-drinks-drinks ~ p img, h2#pints ~ p img, h2#bars ~ p img, h2#sandos ~ p img, h2#composed-cones ~ p img, h2#pizza ~ p img, h2#choco-taco ~ p img, h2#norm-cores ~ p img, h2#ice-cream-cake ~ p img {
+    margin-top: 1rem;
+    height: 20rem;
+    transition: 0.2s all;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden; }
+    h2#soft-serve ~ p img:hover, h2#soft-serve ~ p img:focus, h2#drinks-drinks-drinks ~ p img:hover, h2#drinks-drinks-drinks ~ p img:focus, h2#pints ~ p img:hover, h2#pints ~ p img:focus, h2#bars ~ p img:hover, h2#bars ~ p img:focus, h2#sandos ~ p img:hover, h2#sandos ~ p img:focus, h2#composed-cones ~ p img:hover, h2#composed-cones ~ p img:focus, h2#pizza ~ p img:hover, h2#pizza ~ p img:focus, h2#choco-taco ~ p img:hover, h2#choco-taco ~ p img:focus, h2#norm-cores ~ p img:hover, h2#norm-cores ~ p img:focus, h2#ice-cream-cake ~ p img:hover, h2#ice-cream-cake ~ p img:focus {
+      transform: translateY(0.5rem) scale(1.2) rotate(-3deg); }
+  h2#soft-serve ~ p strong, h2#drinks-drinks-drinks ~ p strong, h2#pints ~ p strong, h2#bars ~ p strong, h2#sandos ~ p strong, h2#composed-cones ~ p strong, h2#pizza ~ p strong, h2#choco-taco ~ p strong, h2#norm-cores ~ p strong, h2#ice-cream-cake ~ p strong {
     font-family: "Poppins", sans-serif;
     font-weight: 700;
     font-style: normal;
     font-size: 120%; }
-  h2#soft-serve ~ p a, h2#drinks-drinks-drinks ~ p a, h2#pints ~ p a, h2#bars ~ p a, h2#composed-cones ~ p a, h2#pizza ~ p a, h2#choco-taco ~ p a, h2#ice-cream-cake ~ p a {
+  h2#soft-serve ~ p a, h2#drinks-drinks-drinks ~ p a, h2#pints ~ p a, h2#bars ~ p a, h2#sandos ~ p a, h2#composed-cones ~ p a, h2#pizza ~ p a, h2#choco-taco ~ p a, h2#norm-cores ~ p a, h2#ice-cream-cake ~ p a {
     font-family: acumin-pro-extra-condensed, sans-serif;
     font-weight: 600;
     font-style: normal;
@@ -1416,6 +1460,23 @@ main#icons .p-logos svg {
     padding: 0.5rem 0 2rem;
     border-bottom: 1px solid currentColor; }
 
+.theme-error {
+  background: #F94F0D !important;
+  color: #FFFCF3 !important; }
+  .theme-error .screensaver-btn {
+    background: #FFFCF3;
+    color: #F94F0D;
+    position: absolute;
+    padding: 1rem 2rem;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: 0.2s all;
+    cursor: pointer; }
+    .theme-error .screensaver-btn:hover, .theme-error .screensaver-btn:focus {
+      background: #FBFF5C;
+      letter-spacing: 1.5px; }
+
 .theme-bluepink {
   background: #0D26F9;
   color: #FFD4CC; }
@@ -1684,6 +1745,8 @@ main#icons .p-logos svg {
       .theme-white .checkout-table-body-radio-container, .theme-white .checkout-table-body-checkbox-container {
         background: #FFFCF3;
         color: #0D26F9; }
+  .theme-white .checkout-table-foot-total {
+    background: #FBFF5C; }
   .theme-white .menu-filled {
     background: #0D26F9;
     color: #FFFCF3; }

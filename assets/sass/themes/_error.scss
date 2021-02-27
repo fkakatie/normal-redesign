@@ -1,0 +1,21 @@
+.theme-error {
+    background: $color-red !important;
+    color: $color-white !important;
+
+    & .screensaver-btn {
+        background: $color-white;
+        color: $color-red;
+        position: absolute;
+        padding: 1rem 2rem;
+        bottom: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: 0.2s all;
+        cursor: pointer;
+
+        &:hover, &:focus {
+            background: $color-yellow-alt;
+            letter-spacing: 1.5px;
+        }
+    }
+}

@@ -1,5 +1,8 @@
 h2 {
-    &#soft-serve, &#drinks-drinks-drinks, &#pints, &#bars, &#composed-cones, &#pizza, &#choco-taco, &#ice-cream-cake { // STORE HEADINGS
+    &#soft-serve, &#drinks-drinks-drinks, 
+    &#pints, &#bars, &#sandos,
+    &#composed-cones, &#pizza, 
+    &#choco-taco, &#norm-cores, &#ice-cream-cake { // STORE HEADINGS
         // color: red;
         & ~ h3 {
             // color: red;
@@ -11,6 +14,16 @@ h2 {
             font-size: 60%;
             line-height: 1.4;
             margin-top: 0.4rem;
+            & img {
+                margin-top: 1rem;
+                height: 20rem;
+                transition: 0.2s all;
+                @include bfv;
+
+                &:hover, &:focus {
+                    transform: translateY(0.5rem) scale(1.2) rotate(-3deg);
+                }
+            }
             & strong {
                 @include font-poppins-black;
                 font-size: 120%;

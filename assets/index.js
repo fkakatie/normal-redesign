@@ -6,7 +6,7 @@ UNIVERSAL SETUP
 ==========================================================*/
 const setupHead = () => {
   const title = getPage();
-  document.title = `normal® ${title === "home" ? "" : `- ${title}`}`;
+  document.title = `normal® ${title === "home" ? "" : ` ${title.split("-").join(" ")}`}`;
 }
 
 const getPage = () => {
@@ -22,7 +22,7 @@ const getPage = () => {
   } else if (path.includes("about")) {
     return "about";
   } else if (path.includes("pint-club")) {
-    return "pint club";
+    return "pint-club";
   } else if (path.includes("cone-builder")) {
     return "cone builder";
   } else if (path.includes("merch")) {
@@ -47,7 +47,6 @@ const setPage = () => {
       setupCarousels();
       fixCart();
       buildCustomizationTool();
-      buildCheckoutTool();
       // drinksStarburst();
       break;
     case "lab":
@@ -56,7 +55,6 @@ const setPage = () => {
       styleMenus();
       fixCart();
       buildCustomizationTool();
-      buildCheckoutTool();
       // drinksStarburst();
       // setupCarousels();
       break;
@@ -66,7 +64,6 @@ const setPage = () => {
       styleMenus();
       fixCart();
       buildCustomizationTool();
-      buildCheckoutTool();
       // drinksStarburst();
       // setupCarousels();
       break;
@@ -75,7 +72,8 @@ const setPage = () => {
       fetchProductLocations();
       setupDownAnchors();
       break;
-    case "pint club":
+    case "pint-club":
+      setCurrentStore();
       floatPintLogo();
       buildPintBanner();
       setupPintSubOptions();
@@ -89,7 +87,6 @@ const setPage = () => {
     case "merch":
       setCurrentStore();
       buildCustomizationTool();
-      buildCheckoutTool();
       break;
     case "home":
       buildIndexCarousel();
@@ -136,8 +133,12 @@ const codify = () => {
       } else if (key === "style") {
         setBlockStyle(c, values);
       } else if (key === "color") {
-        console.log(values);
+        // console.log(values);
         setBlockTheme(c, values); // set theme class on parent
+      } else if (key === "starburst") {
+        // console.log("starburst", values);
+      } else if (key === "starburst-collapse") {
+        // console.log("starburst collapse", values);
       } else if (key === "code") {
         switch (values) {
           case "search":
@@ -280,7 +281,6 @@ const fetchLabels = async () => {
   json.forEach((j) => {
     window.labels[j.key] = j.value;
   });
-  console.log(`labels FETCHED`);
   return window.labels;
 };
 
@@ -397,7 +397,7 @@ STOREFRONT PAGES
 ==========================================================*/
 const getCurrentStore = () => {
   const page = getPage();
-  const configuredStores = [ "store", "lab", "delivery", "merch" ];
+  const configuredStores = [ "store", "lab", "delivery", "pint club", "merch" ];
 
   if (configuredStores.includes(page)) {
     return page;
@@ -428,14 +428,15 @@ const styleMenus = () => {
   const $main = document.querySelector("main");
   const $divs = [ ...$main.querySelectorAll("div")];
   $divs.forEach((d) => {
-    // console.log(d.firstElementChild, d.firstElementChild.nodeName);
-    if (d.firstElementChild.nodeName === "H2" && d.firstElementChild.id !== "contact-us") {
-      d.classList.add("menu");
-      const $embed = d.querySelector(".embed");
-      if ($embed) {
-        d.classList.add("menu-carousel", "theme-outline");
-      } else {
-        d.classList.add("menu-filled", "theme-filled");
+    if (d.firstElementChild) {
+      if (d.firstElementChild.nodeName === "H2" && d.firstElementChild.id !== "contact-us") {
+        d.classList.add("menu");
+        const $embed = d.querySelector(".embed");
+        if ($embed) {
+          d.classList.add("menu-carousel", "theme-outline");
+        } else {
+          d.classList.add("menu-filled", "theme-filled");
+        }
       }
     }
   })
@@ -516,20 +517,58 @@ const customizeToolforStore = (target) => {
 }
 
 const customizeCheckoutForStorefront = () => {
-  const currentStore = getCurrentStore();
-  const $checkoutForm = document.querySelector("checkout-form");
-  
-  const $pickupDate = document.getElementById("pickupdate");
 
+  // this is setting the pickup times
+  // const $pickupDate = document.getElementById("pickupdate");
   const $pickupTimeDropdown = document.getElementById("pickuptime");
-
+    $pickupTimeDropdown.innerHTML = ""; // clear on each customize
   const pickupTimes = getPickupTimes();
 
   populateDynamicOptions($pickupTimeDropdown, pickupTimes);
+
+  // decide whether or not to show checkout form
+  const labels = window.labels;
+  const currentStore = getCurrentStore();
+  const storeOpen = labels[`${currentStore}_open`];
+  // console.log(`customizeCheckoutForStorefront -> storeOpen`, storeOpen);
+  const storeOpenByTime = currentStore !== "pint-club" ? checkIfStorefrontOpen() : true; // pint club is always open
+  // console.log(`customizeCheckoutForStorefront -> storeOpenByTime`, storeOpenByTime);
+
+  const itemsInCart = cart.totalItems();
+  
+  const $checkoutFormContainer = document.querySelector(".checkoutform-container");
+
+  if (storeOpen && storeOpenByTime && itemsInCart > 0) { // store is open, items in the cart
+    $checkoutFormContainer.classList.remove("hide"); 
+    const $checkoutDisabledMessage = document.querySelector(".checkout-disabled");
+    if ($checkoutDisabledMessage) { $checkoutDisabledMessage.remove() };
+  } else if (storeOpen && storeOpenByTime) { // store is open, but nothing in the cart
+    hideCheckoutForm();
+    const $checkoutDisabledMessage = document.querySelector(".checkout-disabled");
+    if ($checkoutDisabledMessage) { $checkoutDisabledMessage.remove() };
+  } else { // store is CLOSED
+    hideCheckoutForm();
+
+    const messageExists = document.querySelector(".checkout-disabled");
+    
+    if (!messageExists) {
+      const $messageContainer = document.createElement("div");
+        $messageContainer.classList.add("checkout-disabled");
+  
+      const $messageText = document.createElement("p");
+        $messageText.classList.add("checkout-disabled-message");
+        $messageText.textContent = labels.checkout_toolate;
+  
+      $messageContainer.append($messageText);
+  
+      const $checkoutContainer = document.querySelector(".checkout-container");
+      $checkoutContainer.append($messageContainer)
+    }
+
+  }
 }
 
 const getPickupTimes = () => {
-  console.log(`pickup times`);
   const store = getCurrentStore();
   const date = new Date();
   const now = parseInt(`${date.getHours()}${date.getMinutes().toString().padStart(2, "0")}`);
@@ -564,12 +603,21 @@ const getPickupTimes = () => {
   return pickupTimes;
 }
 
+const getISODates = (date) => {
+  console.log(date);
+  if (date === "today") {
+    return new Date();
+  }
+}
+
 /*==========================================================
 CART FUNCTIONALITY
 ==========================================================*/
 const updateCart = () => {
   // console.log(`updating cart where it counts`);
   setCartTotal();
+  getContactFromLocalStorage();
+  customizeCheckoutForStorefront();
 
   const $checkoutTable = document.querySelector(".checkout-table-body");
     $checkoutTable.innerHTML = ""; // clear on each update
@@ -646,27 +694,6 @@ const minus = (e) => {
   updateCart();
 }
 
-const buildCheckoutForm = () => {
-  const labels = window.labels;
-  const currentStore = getCurrentStore();
-  const storeOpen = labels[`${currentStore}_open`];
-  const storeOpenByTime = checkIfStorefrontOpen();
-  // console.log(currentStore, storeOpen, storeOpenByTime);
-  if (storeOpen && storeOpenByTime) { // if store is open, let users check out
-    console.log("and we're live");
-    customizeCheckoutForStorefront();
-    const $btn = document.createElement("a");
-      $btn.classList.add("btn-rect");
-      $btn.textContent = "place order";
-      $btn.onclick = (e) => {
-        console.log(`place this order yo`);
-      }
-  } else { // if store is NOT open, DO NOT let users check out
-    console.log("store closed rn")
-  }
-}
-
-
 // move to utilities
 const checkIfStorefrontOpen = () => {
   const currentStore = getCurrentStore();
@@ -687,6 +714,10 @@ const getHoursOfOp = (store, type) => {
   const date = new Date();
   const today = date.toString().substring(0,3).toLowerCase();
   let todayHours;
+
+  if (store === "pint-club") {
+    return "pint-club";
+  }
 
   if (today.includes("sat") || today.includes("sun")) {
     todayHours = labels[`${store}_weekendhours`];
@@ -715,6 +746,154 @@ const getHoursOfOp = (store, type) => {
 }
 
 /*==========================================================
+CHECKOUT FUNCTIONALITY
+==========================================================*/
+
+const submitOrder = async (store, formData) => {
+  let orderParams = {};
+
+  for (prop in formData) {
+    switch (prop) {
+      case "name":
+        orderParams.display_name = formData[prop];
+        break;
+      case "cell":
+        orderParams.cell = formData[prop];
+        break;
+      case "email":
+        orderParams.email_address = formData[prop];
+        break;
+      case "addr1":
+        orderParams.address = formData[prop];
+        break;
+      case "city":
+        orderParams.city = formData[prop];
+        break;
+      case "state":
+        orderParams.state = formData[prop];
+        break;
+      case "zip":
+        orderParams.zip = formData[prop];
+        break;
+      case "deliverydate":
+        orderParams.delivery_at = formData[prop];
+          break;
+      case "pickuptime":
+        orderParams.pickup_at = formData[prop];
+        break;
+      default:
+        // console.log(`${prop} ${formData[prop]} doesn't fit on your order obj`);
+        break;
+    }
+  }
+
+  orderParams.reference_id = generateId();
+  
+  if (formData.discount) {
+    console.log(formData.discount);
+  } else {
+    console.log(`no discount`);
+  }
+
+  orderParams.line_items = [];
+
+  cart.line_items.forEach((i) => {
+    const mods = i.mods.map((m) => { return { "catalog_object_id": m }});
+    const lineItem = {
+      catalog_object_id: i.variation,
+      quantity: i.quantity.toString()
+    };
+    if (mods.length) { lineItem.modifiers = mods };
+    orderParams.line_items.push(lineItem); 
+  });
+  
+  let qs = "";
+  for (prop in orderParams) {
+      if (prop === "line_items") {
+        qs += prop + "=" + encodeURIComponent(JSON.stringify(orderParams[prop]));
+      } else {
+        qs += prop + "=" + encodeURIComponent(orderParams[prop]);
+      }
+      qs += "&";
+  }
+
+  const credentials = getStorefrontCheckoutCred(store);
+
+  const orderObj = await fetch(credentials.endpoint + "?" + qs, {
+    method: "GET",
+    headers: {
+      Accept: "application/json"
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+    return makeScreensaverError("something went wrong and your order didn't go through. try again?");
+  })
+  .then((resp) => {
+    if (!resp.ok) {
+      return resp.text().then((errorInfo) => { Promise.reject(errorInfo) });
+    }
+    return resp.text();
+  }).then((data) => {
+    const obj = JSON.parse(data);
+    if (typeof obj.order != "undefined") {
+      return obj.order;
+    } else {
+      console.error("errors:", data);
+      return makeScreensaverError("something went wrong and your order didn't go through. try again?");
+    }
+  })
+
+  return orderObj;
+}
+
+const getStorefrontCheckoutCred = (storefront) => {
+  // console.log(`get storefront credentials`);
+  switch (storefront) {
+    case "store":
+      // console.log("store", storefront);
+      return {
+        name: storefront,
+        endpoint: "https://script.google.com/macros/s/AKfycbzPFOTS5HT-Vv1mAYv3ktpZfNhGtRPdHz00Qi9Alw/exec",
+        locationId: "6EXJXZ644ND0E"
+      };
+    case "lab":
+      // console.log("lab", storefront);
+      return {
+        name: storefront,
+        endpoint: "https://script.google.com/macros/s/AKfycbyQ1tQesQanw1Dd13t0c7KLxBRwKTesCfbHJQdHMMvc02aWiLGZ/exec",
+        locationId: "3HQZPV73H8BHM"
+      };
+    case "delivery":
+      // console.log("delivery", storefront);
+      return {
+        name: storefront,
+        endpoint: "https://script.google.com/macros/s/AKfycbwXsVa_i4JBUjyH7DyWVizeU3h5Rg5efYTtf4pcF4FXxy6zJOU/exec",
+        locationId: "WPBKJEG0HRQ9F"
+      };
+    case "pint-club":
+      // console.log("pint-club", storefront);
+      return {
+        name: storefront,
+        endpoint: "https://script.google.com/macros/s/AKfycbwXsVa_i4JBUjyH7DyWVizeU3h5Rg5efYTtf4pcF4FXxy6zJOU/exec",
+        locationId: "WPBKJEG0HRQ9F"
+      };
+    case "merch":
+      // console.log("merch", storefront);
+      return {
+        name: storefront,
+        endpoint: "https://script.google.com/macros/s/AKfycbzPFOTS5HT-Vv1mAYv3ktpZfNhGtRPdHz00Qi9Alw/exec",
+        locationId: "6EXJXZ644ND0E"
+      };
+    default:
+      console.error(`location ${storefront} is not configured`);
+      return {
+        name: storefront
+      };
+  }
+}
+
+/*==========================================================
 STOREFRONT CAROUSELS
 ==========================================================*/
 const resetCarousels = debounce(function() {
@@ -734,10 +913,8 @@ const setupCarousels = () => {
   const $carouselWrappers = document.querySelectorAll(".menu-carousel");
 
   if ($carouselWrappers) {
-
     $carouselWrappers.forEach((w) => {
       const $carousel = w.querySelector(`div.embed-internal-${getPage()}menus`);
-
       if ($carousel) {
         // build btns
         const $leftBtn = document.createElement("aside");
@@ -1035,6 +1212,7 @@ const setupPintSubOptions = () => {
 }
 
 const customizeToolforClub = (target) => {
+  getContactFromLocalStorage();
   // set payment option
   const $parent = document.getElementById("radio-paymentoption");
   if ($parent) {
@@ -1050,7 +1228,7 @@ const customizeToolforClub = (target) => {
   }
 
   // trigger address field on local delivery
-  const $deliveryOpt = document.getElementById("localdelivery");
+  const $deliveryOpt = document.getElementById("delivery");
   const $pickupOpt = document.getElementById("pickup");
 
   if ($deliveryOpt && $pickupOpt) {
@@ -1203,8 +1381,6 @@ const populateCustomizationTool = (title, fields) => {
     $customBody.append(buildFields("customize", f));
   })
 
-  getContactFromLocalStorage();
-
   const $customFoot = document.querySelector(".customize-foot");
   
   const $btn = document.createElement("a");
@@ -1217,6 +1393,7 @@ const populateCustomizationTool = (title, fields) => {
         buildScreensaver("sending in your subscription...");
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
+        console.log(`$btn.onclick= -> formData`, formData);
         await clearCustomizationTool();
         await hideCustomizationTool();
         removeScreensaver();
@@ -1273,6 +1450,8 @@ const populateCustomizationToolSquare = (title, item) => {
       $title.textContent = "select your size";
     } else if (itemVariations[0].item_variation_data.name.includes("shot")) {
       $title.textContent = "shots";
+    } else if (itemVariations[0].item_variation_data.name.includes("varietal")) {
+      $title.textContent = "select your varietal";
     } else {
       $title.textContent = "make a selection";
       console.log("hey normal, here's a new scenario:");
@@ -1289,6 +1468,21 @@ const populateCustomizationToolSquare = (title, item) => {
     );
 
     itemVariations.forEach((v) => {
+
+      if (
+        v.item_variation_data.name.includes("select topping") || 
+        v.item_variation_data.name.includes("select a") || 
+        v.item_variation_data.name.includes("select an") ||
+        v.item_variation_data.name.includes("select your") ||
+        v.item_variation_data.name.includes("choose topping") || 
+        v.item_variation_data.name.includes("choose a") || 
+        v.item_variation_data.name.includes("choose an") ||
+        v.item_variation_data.name.includes("choose your") ||
+        v.item_variation_data.name.includes("make it")
+      ) {
+        return; // do not display "make..." or "select..." or "choose..." options
+      }
+      
       const $label = document.createElement("label");
       $label.classList.add(`customize-table-body-radio-container-optionblock`);
       $label.setAttribute("for", cleanName(v.item_variation_data.name));
@@ -1324,9 +1518,6 @@ const populateCustomizationToolSquare = (title, item) => {
       const modCatData = modCat.modifier_list_data; // this is a single modifer category WITH DATA I CARE ABOUT (obj)
       const modCatName = modCatData.name; // this is the single modifier category NAME (str)
       const modCatModifiers = modCatData.modifiers; // these are all the modifiers in a category (arr);
-
-      // console.log(modCatName);
-      // console.log("> ", modCatModifiers);
 
       if (
         modCatName.includes("topping 2") ||
@@ -1386,15 +1577,12 @@ const populateCustomizationToolSquare = (title, item) => {
         "hide"
       );
 
-      // console.log(`\n`, modCatName, modCatData);
       modCatModifiers.forEach((mod) => {
-        // console.log(mod);
+        // console.log(`modCatModifiers.forEach -> mod`, mod);
         const modId = mod.id;
         const modData = mod.modifier_data;
         const modName = modData.name;
         const modPrice = formatMoney(modData.price_money.amount);
-
-        // console.log(`  > ${modName} (${modId}): ${modPrice}`);
 
         if (
           modName.includes("select topping") || 
@@ -1404,9 +1592,10 @@ const populateCustomizationToolSquare = (title, item) => {
           modName.includes("choose topping") || 
           modName.includes("choose a") || 
           modName.includes("choose an") ||
-          modName.includes("choose your")
+          modName.includes("choose your") ||
+          modName.includes("make it")
         ) {
-          return; // do not display "select..." or "choose..." options
+          return; // do not display "make..." or "select..." or "choose..." options
         }
 
         // do something special for soft serve toppings
@@ -1672,6 +1861,11 @@ const getFields = (fields) => {
           { title: "discount", type: "text", placeholder: "discount code" }
         )
         break;
+      case "tip":
+        allFields.push(
+          { title: "tip", type: "select", placeholder: "no tip", src: "tipPercentages" }
+        )
+        break;
       default:
         console.error("hey normal, you tried to build a form with an invalid field");
         break;
@@ -1807,6 +2001,9 @@ const populateOptions = ($el, data) => {
 }
 
 const populateDynamicOptions = ($el, data) => {
+  // console.log(`populate dynamic options`);
+  // console.log($el)
+  // console.log(data);
   data.forEach((d) => {
     const $option = document.createElement("option");
       $option.value = d.value;
@@ -1820,103 +2017,113 @@ CHECKOUT TOOL
 ==========================================================*/
 
 const buildCheckoutTool = () => {
+  // console.log(`build checkout tool`);
 
   const $main = document.querySelector("main");
-  const mainTheme = getMainTheme();
+    const mainTheme = getMainTheme();
 
+  // this is the background
   const $checkoutSection = document.createElement("section");
     $checkoutSection.classList.add("checkout", mainTheme, "hide");
 
+  // this is the container to hold all the checkout stuff
   const $checkoutContainer = document.createElement("div");
     $checkoutContainer.classList.add("checkout-container");
 
+  // this is the back btn
   const $checkoutBack = document.createElement("aside");
     $checkoutBack.classList.add("checkout-back", "btn-back");
-    $checkoutBack.innerHTML = `<p>back to ${getLastStore()}</p>`;
+    $checkoutBack.innerHTML = `<p>back to ${getLastStore().split("-").join(" ")}</p>`;
     $checkoutBack.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-arrow-left">
       <use href="/icons.svg#arrow-left"></use>
     </svg>`;
     $checkoutBack.onclick = (e) => {
-      const $checkoutScreen = document.querySelector(".checkout");
-      $checkoutScreen.classList.add("hide");
+      hideCheckoutTool();
     }
 
+  // this is the CHECKOUT CART (all the items)
   const $checkoutTable = document.createElement("table");
     $checkoutTable.classList.add("checkout-table");
 
+    // this is the HEAD of the checkout cart (the title)
   const $checkoutHead = document.createElement("thead");
-    $checkoutHead.classList.add("checkout-table-head");
-    $checkoutHead.innerHTML = `<tr>
-      <th colspan="3">
-        <h2>your ${getCurrentStore()} order</h2>
-      </th>
-    </tr>`
+  $checkoutHead.classList.add("checkout-table-head");
+  $checkoutHead.innerHTML = `<tr>
+    <th colspan="3">
+      <h2>your ${getCurrentStore().split("-").join(" ")} order</h2>
+    </th>
+  </tr>`;
 
+  // this is the BODY of the checkout cart (all the items)
   const $checkoutBody = document.createElement("tbody");
     $checkoutBody.classList.add("checkout-table-body");
   
+  // this is the FOOTER of the checkout cart (total amount)
   const $checkoutFoot = document.createElement("tfoot");
     $checkoutFoot.classList.add("checkout-table-foot");
-    $checkoutFoot.innerHTML = `<tr>
+    $checkoutFoot.innerHTML = `<tr class="checkout-table-foot-total">
       <td colspan="2">total</td>
       <td id="checkout-foot-total"></td>
-    </tr>`
+    </tr>`;
 
   $checkoutTable.append($checkoutHead, $checkoutBody, $checkoutFoot);
 
-  $checkoutContainer.append($checkoutBack, $checkoutTable);
+  // this is the CHECKOUT FORM CONTAINER
+  const $checkoutFormContainer = document.createElement("div");
+    $checkoutFormContainer.classList.add("checkoutform-container", "hide");
 
-  const labels = window.labels;
-  const currentStore = getCurrentStore();
-  const storeOpen = labels[`${currentStore}_open`];
-  const storeOpenByTime = checkIfStorefrontOpen();
-
-  if (storeOpen && storeOpenByTime) { // if store is open, build checkout form
-    console.log("and we're live");
-    const $checkoutForm = document.createElement("form");
+  // this is the CHECKOUT FORM
+  const $checkoutForm = document.createElement("form");
     $checkoutForm.classList.add("checkout-form");
-  
-    let allFields = getFields([ "contact", "pick-up", "discount-code" ]);
 
-    allFields.forEach((f) => {
-      $checkoutForm.append(buildFields("checkout", f));
-    })
+  let allFields = getFields(["contact", "pick-up", "discount-code"]);
 
-    getContactFromLocalStorage();
-    
-    
-    customizeCheckoutForStorefront();
-    const $btn = document.createElement("a");
-      $btn.classList.add("btn-rect");
-      $btn.textContent = "place order";
-      $btn.onclick = (e) => {
-        console.log(`place this order yo`);
+  allFields.forEach((f) => {
+    $checkoutForm.append(buildFields("checkout", f));
+  });
+
+  getContactFromLocalStorage();
+
+  // this is the CHECKOUT BTN
+  const $checkoutBtn = document.createElement("a");
+    $checkoutBtn.classList.add("btn-rect");
+    $checkoutBtn.id = "checkout-form";
+    $checkoutBtn.textContent = "place order";
+    $checkoutBtn.onclick = async (e) => {
+      const $form = document.querySelector(".checkout-form");
+      const valid = validateSubmission($form);
+      if (valid) {
+        buildScreensaver("checking your order...");
+        await saveToLocalStorage($form);
+        const formData = await getSubmissionData($form);
+        const currentStore = getCurrentStore();
+        const orderObj = await submitOrder(currentStore, formData);
+
+        if (orderObj) {
+          // await hideCheckoutTool();
+          await disableCartEdits();
+          await displayOrderObjInfo(orderObj, formData);
+          await hideCheckoutForm();
+          await buildSquarePaymentForm();
+          // await initPaymentForm(currentStore);
+          removeScreensaver();
+        } else {
+          console.error("something went wrong and your order didn't go through. try again?");
+          makeScreensaverError("something went wrong and your order didn't go through. try again?")
+        }
+      } else {
+        console.error("please fill out all required fields!");
       }
+    };
 
-    console.log($btn);
+  $checkoutFormContainer.append($checkoutForm, $checkoutBtn);
 
-    $checkoutContainer.append($checkoutForm);
-
-  } else { // if store is NOT open, DO NOT let users check out
-    console.log("store closed rn")
-    const labels = window.labels;
-    const tooLateMsg = labels.checkout_toolate || "you're too late! message here";
-
-    const $messageContainer = document.createElement("div");
-      $messageContainer.classList.add("checkout-disabled");
-    const $messageText = document.createElement("p");
-      $messageText.classList.add("checkout-disabled-message");
-      $messageText.textContent = tooLateMsg;
-
-    $messageContainer.append($messageText);
-    $checkoutContainer.append($messageContainer);
-  }
-
+  //////////////////////////////////////////////////////////
+  $checkoutContainer.append($checkoutBack, $checkoutTable, $checkoutFormContainer);
   $checkoutSection.append($checkoutContainer);
 
   $main.append($checkoutSection);
 
-  updateCart();
 }
 
 const showCheckoutTool = () => {
@@ -1924,6 +2131,128 @@ const showCheckoutTool = () => {
   if ($checkoutTool) {
     // console.log(`showing checkout tool`);
     $checkoutTool.classList.remove("hide");
+  }
+}
+
+const hideCheckoutTool = () => {
+  const $checkoutTool = document.querySelector(".checkout");
+  if ($checkoutTool) {
+    // console.log(`hiding checkout tool`);
+    $checkoutTool.classList.add("hide");
+  }
+}
+
+const hideCheckoutForm = () => {
+  const $checkoutFormContainer = document.querySelector(".checkoutform-container");
+  if ($checkoutFormContainer) {
+    $checkoutFormContainer.classList.add("hide");
+  }
+}
+
+const disableCartEdits = () => {
+  const $quantityBtns = document.querySelectorAll(".quantity");
+  if ($quantityBtns) {
+    $quantityBtns.forEach((b) => {
+      b.remove();
+    })
+  }
+}
+
+const displayOrderObjInfo = (orderObj, formData) => {
+  console.log(orderObj);
+  console.log(formData);
+
+  const $checkoutTableBody = document.querySelector(".checkout-table-body");
+  
+  const $checkoutTableFooter = document.querySelector(".checkout-table-foot");
+
+  // TAX INFO
+  const $taxRow = document.createElement("tr");
+
+  const $taxTitle = document.createElement("td");
+    $taxTitle.colSpan = 2;
+    $taxTitle.textContent = "prepared food tax (included)";
+
+  const $taxAmount = document.createElement("td");
+    $taxAmount.id = "checkout-foot-tax";
+    $taxAmount.textContent = `$${formatMoney(orderObj.total_tax_money.amount)}`;
+
+  $taxRow.append($taxTitle, $taxAmount);
+
+  // TIP INFO
+  const $tipRow = document.createElement("tr");
+
+  const $tipTitle = document.createElement("td");
+    $tipTitle.colSpan = 2;
+    $tipTitle.textContent = "tip";
+
+  const $tipAmount = document.createElement("td");
+    $tipAmount.id = "checkout-foot-tip";
+    $tipAmount.textContent = `$${formatMoney(0)}`;
+
+  $tipRow.append($tipTitle, $tipAmount);  
+
+  $checkoutTableFooter.prepend($taxRow, $tipRow);
+}
+
+const buildSquarePaymentForm = () => {
+  const $checkoutContainer = document.querySelector(".checkout-container");
+  if ($checkoutContainer) {
+
+    const $sqContainer = document.createElement("div");
+      $sqContainer.classList.add("sq-container");
+
+    const fields = getFields( [ "tip" ] );
+
+    fields.forEach((f) => {
+      $sqContainer.append(buildFields("sq", f));
+    })
+
+    const $tipDropdown = $sqContainer.querySelector("#tip");
+    const tipArr = [ 
+      { text: "no tip", value: 0 },
+      { text: "10%", value: 10 },
+      { text: "15%", value: 15 },
+      { text: "20%", value: 20 },
+      { text: "25%", value: 25 }
+    ];
+
+    populateDynamicOptions($tipDropdown, tipArr);
+
+    const $tipWrapper = $sqContainer.querySelector(".sq-table-body-selectwrapper");
+      $tipWrapper.append($tipDropdown);
+
+    const $sqForm = document.createElement("div");
+      $sqForm.id = "form-container";
+      $sqForm.classList.add("sq-form");
+
+    const $sqCard = document.createElement("div");
+      $sqCard.id = "sq-card-number";
+      $sqCard.classList.add("sq-form-field");
+
+    const $sqExp = document.createElement("div");
+      $sqExp.id = "sq-expiration-date";
+      $sqExp.classList.add("sq-form-field");
+
+    const $sqCVV = document.createElement("div");
+      $sqCVV.id = "sq-cvv";
+      $sqCVV.classList.add("sq-form-field");
+
+    const $sqZip = document.createElement("div");
+      $sqZip.id = "sq-postal-code";
+      $sqZip.classList.add("sq-form-field");
+
+    const $sqBtn = document.createElement("button");
+      $sqBtn.id = "sq-creditcard";
+      $sqBtn.classList.add("sq-form-btn");
+      $sqBtn.textContent = "pay";
+      $sqBtn.onclick = (e) => {
+        onGetCardNonce(e);
+      }
+
+    $sqForm.append($sqCard, $sqExp, $sqCVV, $sqZip, $sqBtn);
+    $sqContainer.append($tipWrapper, $sqForm);
+    $checkoutContainer.append($sqContainer);
   }
 }
 
@@ -1956,6 +2285,22 @@ const removeScreensaver = () => {
   const $screensaver = document.querySelector(".screensaver");
   if ($screensaver) {
     $screensaver.remove();
+  }
+}
+
+const makeScreensaverError = (error) => {
+  const $screensaver = document.querySelector(".screensaver");
+  if ($screensaver) {
+    $screensaver.classList.add("theme-error");
+    const $message = document.querySelector(".screensaver-message");
+      $message.textContent = error;
+    const $refreshBtn = document.createElement("button");
+      $refreshBtn.classList.add("screensaver-btn");
+      $refreshBtn.textContent = "refresh the page";
+      $refreshBtn.onclick = (e) => {
+        location.reload();
+      }
+    $screensaver.append($refreshBtn);
   }
 }
 
@@ -2465,7 +2810,7 @@ function legacyupdateCart() {
   checkoutItemsEl.innerHTML = html;
 }
 
-async function submitOrder() {
+async function legacysubmitOrder() {
   // console.log(`submitOrder running`);
   removeOOS();
   var alertEl=document.getElementById("alert").remove();
@@ -2625,6 +2970,146 @@ async function submitOrder() {
   });       
 }
 
+function generateId() {
+  var id = "";
+  var chars = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for (var i = 0; i < 4; i++) {
+    id += chars[randomNum(0, chars.length - 1)];
+  }
+  return id;
+}
+
+function initPaymentForm(currentStore) {
+  const credentials = getStorefrontCheckoutCred(currentStore);
+  // Create and initialize a payment form object
+  let paymentForm = new SqPaymentForm({
+    // Initialize the payment form elements
+
+    applicationId: "sq0idp-q-NmavFwDX6MRLzzd5q-sg",
+    locationId: credentials.locationId,
+    inputClass: "sq-input",
+    autoBuild: false,
+    // Customize the CSS for SqPaymentForm iframe elements
+    // inputStyles: [
+    //   {
+    //     fontFamily: "sans-serif",
+    //     fontSize: "16px",
+    //     lineHeight: "24px",
+    //     padding: "16px",
+    //     placeholderColor: "#a0a0a0",
+    //     color: getComputedStyle(document.documentElement)
+    //       .getPropertyValue("--text-color")
+    //       .trim(),
+    //     backgroundColor: "transparent",
+    //   },
+    // ],
+    // Initialize the credit card placeholders
+    cardNumber: {
+      elementId: "sq-card-number",
+      placeholder: "card number",
+    },
+    cvv: {
+      elementId: "sq-cvv",
+      placeholder: "cvv",
+    },
+    expirationDate: {
+      elementId: "sq-expiration-date",
+      placeholder: "mm/yy",
+    },
+    postalCode: {
+      elementId: "sq-postal-code",
+      placeholder: "zip",
+    },
+
+    // SqPaymentForm callback functions
+    callbacks: {
+      /*
+       * callback function: cardNonceResponseReceived
+       * Triggered when: SqPaymentForm completes a card nonce request
+       */
+      cardNonceResponseReceived: function (errors, nonce, cardData) {
+        if (errors) {
+          // Log errors from nonce generation to the browser developer console.
+          console.error("Encountered errors:");
+          errors.forEach(function (error) {
+            alert(error.message);
+            console.error("  " + error.message);
+          });
+          submittingPayment = false;
+          return;
+        }
+        //    console.log(`The generated nonce is:\n${nonce}`);
+
+        var tipAmount = getTip();
+
+        var qs = `nonce=${encodeURIComponent(
+          nonce
+        )}&order_id=${encodeURIComponent(
+          order.id
+        )}&reference_id=${encodeURIComponent(
+          order.reference_id
+        )}&order_amount=${order.total_money.amount}&tip_amount=${tipAmount}`;
+
+        fetch(storeLocations[storeLocation].endpoint + "?" + qs, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        })
+          .catch((err) => {
+            alert("Network error: " + err);
+            submittingPayment = false;
+          })
+          .then((response) => {
+            if (!response.ok) {
+              return response
+                .text()
+                .then((errorInfo) => Promise.reject(errorInfo));
+            }
+            return response.text();
+          })
+          .then((data) => {
+            //   console.log(data);
+            var obj = JSON.parse(data);
+            if (typeof obj.errors != "undefined") {
+              var message =
+                "Payment failed to complete!\nCheck browser developer console for more details";
+              if (obj.errors[0].category == "PAYMENT_METHOD_ERROR") {
+                message = "Credit Card declined, please check your entries";
+              }
+              if (obj.errors[0].code == "CVV_FAILURE") {
+                message = "Credit Card declined, please check your CVV";
+              }
+              if (obj.errors[0].code == "PAN_FAILURE") {
+                message = "Credit Card declined, please check your card number";
+              }
+
+              if (obj.errors[0].code == "VOICE_FAILURE") {
+                message =
+                  "Credit Card declined, issuer requires voice authorization, try a different card";
+              }
+
+              if (obj.errors[0].code == "TRANSACTION_LIMIT") {
+                message = "Credit Card declined, limit exceeded";
+              }
+
+              alert(message);
+              submittingPayment = false;
+            } else {
+              // console.log(`initPaymentForm -> obj`, obj);
+              displayThanks(obj.payment);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      },
+    },
+  });
+
+  paymentForm.build();
+}
+
 /*==========================================================
 INIT
 ==========================================================*/
@@ -2639,7 +3124,7 @@ window.onload = async (e) => {
   classify();
   codify();
   setPage();
-
+  buildCheckoutTool(); // needs to be on all the pages
   
   // setup header
   setCartTotal();
