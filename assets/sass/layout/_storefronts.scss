@@ -2,7 +2,10 @@ h2 {
     &#soft-serve, &#drinks-drinks-drinks, 
     &#pints, &#bars, &#sandos,
     &#composed-cones, &#pizza, 
-    &#choco-taco, &#norm-cores, &#ice-cream-cake { // STORE HEADINGS
+    &#choco-taco, &#specials, 
+    &#norm-cores, &#ice-cream-cake,
+    &#gift-cards, &#tops, &#accessories,
+    &#delivery-zips { // STORE HEADINGS
         // color: red;
         & ~ h3 {
             // color: red;
@@ -48,6 +51,10 @@ h2 {
     // border: 2px solid red;
     margin-top: 4rem;
     padding: 2rem 0;
+
+    & img {
+        height: 20rem;
+    }
 
     &-filled {
         & > * {

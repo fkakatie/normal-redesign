@@ -33,11 +33,10 @@ const getPage = () => {
 }
 
 const setPage = () => {
-  const page = getPage();
-  // console.log(`setPage -> page`, page);
-  
+  const page = getPage();  
   switch (page) {
     case "order":
+      hideCart();
       buildOrderPage();
       break;
     case "store":
@@ -53,6 +52,7 @@ const setPage = () => {
       setCurrentStore();
       shopify();
       styleMenus();
+      setupCarousels();
       fixCart();
       buildCustomizationTool();
       // drinksStarburst();
@@ -62,12 +62,14 @@ const setPage = () => {
       setCurrentStore();
       shopify();
       styleMenus();
+      setupCarousels();
       fixCart();
       buildCustomizationTool();
       // drinksStarburst();
       // setupCarousels();
       break;
     case "about":
+      setAboutTextClass();
       buildLocationsGrid();
       fetchProductLocations();
       setupDownAnchors();
@@ -78,6 +80,7 @@ const setPage = () => {
       buildPintBanner();
       setupPintSubOptions();
       buildClubFAQ();
+      fixCart();
       buildCustomizationTool();
       setupDownAnchors();
       break;
@@ -86,6 +89,10 @@ const setPage = () => {
       break;
     case "merch":
       setCurrentStore();
+      shopify();
+      styleMenus();
+      setupCarousels();
+      fixCart();
       buildCustomizationTool();
       break;
     case "home":
@@ -112,7 +119,6 @@ const classify = () => {
 
   $headings.forEach((headings) => {
     if (headings) {
-      // console.log(`$headings.forEach -> headings`, headings);
       headings.forEach((h) => {
         const text = cleanName(h.textContent);
         h.setAttribute("class", text); // attach class to heading
@@ -127,13 +133,11 @@ const codify = () => {
   if ($code) {
     $code.forEach((c, i) => {
       const [key, values] = c.textContent.split(": ");
-      // console.log(`$code.forEach -> key, values`, key, values);
       if (key === "theme") {
         setPageTheme(values); // set theme class on body
       } else if (key === "style") {
         setBlockStyle(c, values);
       } else if (key === "color") {
-        // console.log(values);
         setBlockTheme(c, values); // set theme class on parent
       } else if (key === "starburst") {
         // console.log("starburst", values);
@@ -209,7 +213,6 @@ const buildBackToTopBtn = () => {
 }
 
 const showBackToTopBtn = debounce(function() {
-  // console.log(`showing back to top`);
   const $btn = document.getElementById("back-to-top");
   if ($btn) {
     if (window.scrollY > 0) {
@@ -333,7 +336,6 @@ ORDER PAGE
 ==========================================================*/
 const buildOrderPage = () => {
   const showOrderBlock = (e) => {
-    // console.log(`show order block running`);
     const $parent = e.target.closest("p");
     if ($parent) {
       const target = $parent.getAttribute("data-target");
@@ -408,6 +410,8 @@ const getCurrentStore = () => {
 
 const shopify = () => {
   const squarePrefix = "https://squareup.com/dashboard/items/library/";
+  const giftcardPrefix = "https://squareup.com/gift/";
+  // <a href="B2VEJFJ1DYV7B/order">e-gift card</a>
   const $as = document.querySelectorAll("main a");
   if ($as) {
     $as.forEach((a) => {
@@ -418,13 +422,15 @@ const shopify = () => {
         a.setAttribute("onclick", "addToCart(this)");
         a.removeAttribute("href");
         a.classList.add("btn-rect");
+      } else if (href.includes(giftcardPrefix)) {
+        a.classList.add("btn-rect");
+        a.target = "_blank";
       }
     });
   }
 };
 
 const styleMenus = () => {
-  // console.log(`building menus`);
   const $main = document.querySelector("main");
   const $divs = [ ...$main.querySelectorAll("div")];
   $divs.forEach((d) => {
@@ -478,10 +484,8 @@ const drinksStarburst = () => {
 const customizeToolforStore = (target) => {
   // limit soft serve toppings
   const $toppingCheckboxes = document.querySelectorAll("input[name=topping]");
-  // console.log($toppingCheckboxes);
   if ($toppingCheckboxes) {
     $toppingCheckboxes.forEach((c) => {
-      // console.log(c);
       c.onchange = (e) => {
         const max = 3;
         const $cbs =  [ ...document.querySelectorAll("input[name=topping]")];
@@ -500,39 +504,42 @@ const customizeToolforStore = (target) => {
 
     })
   }
-
-  // set payment option
-  // if ($parent) {
-  //   const $paymentOption = $parent.querySelector("div");
-  //   const $sibling = $parent.querySelector("h3");
-  //   const $radio = document.getElementById(target);
-  
-  //   $paymentOption.classList.remove("hide");
-  //   $parent.setAttribute("data-open", true);
-  //   $sibling.setAttribute("data-open", true);
-  //   $paymentOption.setAttribute("data-open", true);
-  //   $radio.checked = true;
-  // }
-
 }
 
-const customizeCheckoutForStorefront = () => {
+const customizeCheckoutForStorefront = async () => {
 
   // this is setting the pickup times
-  // const $pickupDate = document.getElementById("pickupdate");
   const $pickupTimeDropdown = document.getElementById("pickuptime");
-    $pickupTimeDropdown.innerHTML = ""; // clear on each customize
-  const pickupTimes = getPickupTimes();
 
-  populateDynamicOptions($pickupTimeDropdown, pickupTimes);
+  if ($pickupTimeDropdown) {
+    $pickupTimeDropdown.innerHTML = ""; // clear on each customize
+    const pickupTimes = getPickupTimes();
+    populateDynamicOptions($pickupTimeDropdown, pickupTimes);
+  }
+
+  // this is populating the zip field 
+  const $zipDropdown = document.getElementById("zip");
+
+  if ($zipDropdown) {
+    // $zipDropdown.innerHTML = ""; // clear on each customize
+    if ($zipDropdown.children.length <= 1) {
+      const deliveryZips = await fetchDeliveryZips();
+      const zipArr = deliveryZips.map((z) => z.zip);        
+      populateOptions($zipDropdown, zipArr);
+    }
+  }
 
   // decide whether or not to show checkout form
   const labels = window.labels;
-  const currentStore = getCurrentStore();
+  const currentStore = getCurrentStore() === "merch" ? "store" : getCurrentStore(); // merch hours are store hours
   const storeOpen = labels[`${currentStore}_open`];
-  // console.log(`customizeCheckoutForStorefront -> storeOpen`, storeOpen);
-  const storeOpenByTime = currentStore !== "pint-club" ? checkIfStorefrontOpen() : true; // pint club is always open
-  // console.log(`customizeCheckoutForStorefront -> storeOpenByTime`, storeOpenByTime);
+  let storeOpenByTime;
+
+  if (currentStore === "pint-club" || currentStore === "delivery") {
+    storeOpenByTime = true; // pint club & delivery are always accepting orders
+  } else {
+    storeOpenByTime = checkIfStorefrontOpen(); 
+  }
 
   const itemsInCart = cart.totalItems();
   
@@ -572,16 +579,15 @@ const getPickupTimes = () => {
   const store = getCurrentStore();
   const date = new Date();
   const now = parseInt(`${date.getHours()}${date.getMinutes().toString().padStart(2, "0")}`);
+  
   const { open, close } = getHoursOfOp(store);
 
   let pickupTimes = [];
   let startTimeObj;
 
   if (now < (open * 100)) { // BEFORE opening
-    // console.log(`before opening`);
     startTimeObj = new Date(date.setHours(open, 0, 0));
   } else { // AFTER opening
-    // console.log(`after opening`);
     const currentMinutes = date.getMinutes();
     const startMinutes = Math.ceil(currentMinutes / 10) * 10;
     const diff = startMinutes - currentMinutes;
@@ -604,7 +610,6 @@ const getPickupTimes = () => {
 }
 
 const getISODates = (date) => {
-  console.log(date);
   if (date === "today") {
     return new Date();
   }
@@ -614,13 +619,15 @@ const getISODates = (date) => {
 CART FUNCTIONALITY
 ==========================================================*/
 const updateCart = () => {
-  // console.log(`updating cart where it counts`);
   setCartTotal();
   getContactFromLocalStorage();
   customizeCheckoutForStorefront();
 
   const $checkoutTable = document.querySelector(".checkout-table-body");
     $checkoutTable.innerHTML = ""; // clear on each update
+
+  const $checkoutFoot = document.querySelector(".checkout-table-foot");
+    $checkoutFoot.innerHTML = ""; // clear on each update
 
   if (cart.line_items.length > 0) {
     cart.line_items.forEach((i) => {
@@ -672,8 +679,10 @@ const updateCart = () => {
     $checkoutTable.append($row);
   }
 
-  const $checkoutTotal = document.getElementById("checkout-foot-total");
-      $checkoutTotal.textContent = `$${formatMoney(cart.totalAmount())}`;
+  $checkoutFoot.innerHTML = `<tr>
+    <td colspan="2">total</td>
+    <td id="checkout-foot-total">${formatMoney(cart.totalAmount())}</td>
+  </tr>`;
 
   // BUILD CO ITEMS DISPLAY
 
@@ -717,6 +726,14 @@ const getHoursOfOp = (store, type) => {
 
   if (store === "pint-club") {
     return "pint-club";
+  }
+
+  if (store === "delivery") {
+    return "delivery";
+  }
+
+  if (store === "merch") {
+    store = "store"; // use store hours for merch
   }
 
   if (today.includes("sat") || today.includes("sun")) {
@@ -781,19 +798,20 @@ const submitOrder = async (store, formData) => {
       case "pickuptime":
         orderParams.pickup_at = formData[prop];
         break;
+      case "discount":
+        orderParams.discount_name = formData[prop];
+        const $discountField = document.querySelector("#discount");
+        const discountId = $discountField.getAttribute("data-id");
+        if (discountId) {
+          orderParams.discount = discountId;
+        }
+        break;
       default:
-        // console.log(`${prop} ${formData[prop]} doesn't fit on your order obj`);
         break;
     }
   }
 
   orderParams.reference_id = generateId();
-  
-  if (formData.discount) {
-    console.log(formData.discount);
-  } else {
-    console.log(`no discount`);
-  }
 
   orderParams.line_items = [];
 
@@ -848,38 +866,32 @@ const submitOrder = async (store, formData) => {
 }
 
 const getStorefrontCheckoutCred = (storefront) => {
-  // console.log(`get storefront credentials`);
   switch (storefront) {
     case "store":
-      // console.log("store", storefront);
       return {
         name: storefront,
         endpoint: "https://script.google.com/macros/s/AKfycbzPFOTS5HT-Vv1mAYv3ktpZfNhGtRPdHz00Qi9Alw/exec",
         locationId: "6EXJXZ644ND0E"
       };
     case "lab":
-      // console.log("lab", storefront);
       return {
         name: storefront,
         endpoint: "https://script.google.com/macros/s/AKfycbyQ1tQesQanw1Dd13t0c7KLxBRwKTesCfbHJQdHMMvc02aWiLGZ/exec",
         locationId: "3HQZPV73H8BHM"
       };
     case "delivery":
-      // console.log("delivery", storefront);
       return {
         name: storefront,
         endpoint: "https://script.google.com/macros/s/AKfycbwXsVa_i4JBUjyH7DyWVizeU3h5Rg5efYTtf4pcF4FXxy6zJOU/exec",
         locationId: "WPBKJEG0HRQ9F"
       };
     case "pint-club":
-      // console.log("pint-club", storefront);
       return {
         name: storefront,
         endpoint: "https://script.google.com/macros/s/AKfycbwXsVa_i4JBUjyH7DyWVizeU3h5Rg5efYTtf4pcF4FXxy6zJOU/exec",
         locationId: "WPBKJEG0HRQ9F"
       };
     case "merch":
-      // console.log("merch", storefront);
       return {
         name: storefront,
         endpoint: "https://script.google.com/macros/s/AKfycbzPFOTS5HT-Vv1mAYv3ktpZfNhGtRPdHz00Qi9Alw/exec",
@@ -897,7 +909,6 @@ const getStorefrontCheckoutCred = (storefront) => {
 STOREFRONT CAROUSELS
 ==========================================================*/
 const resetCarousels = debounce(function() {
-  // console.log(`reseting carousels`);
   const currentStore = getCurrentStore();
   const $carousels = document.querySelectorAll(`.embed-internal-${currentStore}menus`);
   if ($carousels) {
@@ -998,6 +1009,18 @@ const reorgSlides = ($carousel, direction) => {
 /*==========================================================
 ABOUT PAGE
 ==========================================================*/
+const setAboutTextClass = () => {
+  const $aboutBlock = document.querySelector(".p-about");
+  if ($aboutBlock) {
+    const $ps = $aboutBlock.querySelectorAll("p");
+    if ($ps) {
+      $ps.forEach((p) => {
+        p.classList.add("about-text");
+      })
+    }
+  }
+}
+
 const buildLocationsGrid = () => {
   const $locationsBlock = document.querySelector(".p-locations");
   const locationsChildren = [ ...$locationsBlock.children];
@@ -1036,7 +1059,6 @@ const setupDownAnchors = () => {
   if ($downArrows) {
     $downArrows.forEach((a) => {
       const $next = a.parentNode.parentNode.parentNode.nextElementSibling;
-      // console.log(`$downArrows.forEach -> $next`, $next);
       const $anchor = a.parentNode;
       if ($next && $anchor && $next.classList[0]) {
         const classList = $next.classList[0].split("p-")[1];
@@ -1159,9 +1181,7 @@ const buildLocationBlock = (location) => {
 PINT CLUB PAGE
 ==========================================================*/
 const floatPintLogo = () => {
-  // console.log(`float pint logo'`);
   const $pintLogo = document.querySelector("svg.icon-pint-club");
-  // console.log(`floatPintLogo -> $pintLogo`, $pintLogo);
   if ($pintLogo) {
     const $parent = $pintLogo.parentNode;
     $parent.classList.add("pintclub-logo");
@@ -1191,7 +1211,6 @@ const buildPintClubCheckout = ($code) => {
 const setupPintSubOptions = () => {
   const $pintclubOptions = document.querySelector(".p-options");
   if ($pintclubOptions) {
-    // console.log(`pint sub options`);
     const $options = $pintclubOptions.querySelectorAll("a");
     if ($options) {
       $options.forEach((o) => {
@@ -1207,7 +1226,6 @@ const setupPintSubOptions = () => {
         }
       })
     }
-    // console.log($options);
   }
 }
 
@@ -1225,43 +1243,92 @@ const customizeToolforClub = (target) => {
     $sibling.setAttribute("data-open", true);
     $paymentOption.setAttribute("data-open", true);
     $radio.checked = true;
+    
+    if ($radio.value === "prepay") {
+      let allFields = getFields( ["prepay-months"] );
+      allFields.forEach((f) => {
+        $parent.after(buildFields("customize", f));
+      });
+    }
+    
+  }
+  
+  const $monthlyOpt = document.getElementById("monthly");
+  const $prepayOpt = document.getElementById("prepay");
+
+  $monthlyOpt.onclick = (e) => {
+    const $prepayMonths = document.getElementById("radio-prepaymonths");
+    if ($prepayMonths) {
+      $prepayMonths.remove();
+    }
   }
 
-  // trigger address field on local delivery
+  $prepayOpt.onclick = (e) => {
+    const $prepayMonths = document.getElementById("radio-prepaymonths");
+    if (!$prepayMonths) {
+      let allFields = getFields( ["prepay-months"] );
+      const $parent = document.getElementById("radio-paymentoption");
+      allFields.forEach((f) => {
+        $parent.after(buildFields("customize", f));
+      });
+    }
+  }
+
   const $deliveryOpt = document.getElementById("delivery");
   const $pickupOpt = document.getElementById("pickup");
 
-  if ($deliveryOpt && $pickupOpt) {
+  // disable delivery for now
+  const $deliveryParent = $deliveryOpt.parentNode;
+    $deliveryParent.prepend("coming soon! - ");
+    $deliveryOpt.disabled = true;
+  ///////////////////////////
 
-    $deliveryOpt.onclick = async (e) => {
-      const $customBody = document.querySelector(".customize-table-body");
-      const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
+  $deliveryOpt.onclick = async (e) => {
+    const $customBody = document.querySelector(".customize-table-body");
+    const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
 
-      if (!$addrFields.length) {
-        let fields = getFields([ "address" ]);
-        fields.forEach((f) => {
-          $customBody.append(buildFields("customize", f));
-        });
-        getAddressFromLocalStorage();
+    if (!$addrFields.length) {
+      let fields = getFields([ "address" ]);
+      fields.forEach((f) => {
+        $customBody.append(buildFields("customize", f));
+      });
+      getAddressFromLocalStorage();
 
-        const $zipDropdown = $customBody.querySelector("#zip");
-        const deliveryZips = await fetchDeliveryZips();
-        const zipArr = deliveryZips.map((z) => z.zip);        
-        populateOptions($zipDropdown, zipArr);
-      }
-    }
-
-    $pickupOpt.onclick = (e) => {
-      const $customBody = document.querySelector(".customize-table-body");
-      const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
-      if ($addrFields.length) {
-        $addrFields.forEach((f) => {
-          f.remove();
-        })
-      }
-
+      const $zipDropdown = $customBody.querySelector("#zip");
+      const deliveryZips = await fetchDeliveryZips();
+      const zipArr = deliveryZips.map((z) => z.zip);        
+      populateOptions($zipDropdown, zipArr);
     }
   }
+
+  $pickupOpt.onclick = (e) => {
+    const $customBody = document.querySelector(".customize-table-body");
+    const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
+    if ($addrFields.length) {
+      $addrFields.forEach((f) => {
+        f.remove();
+      })
+    }
+
+  }
+
+}
+
+const addClubToCart = (formData) => {
+  // console.log("add club to cart");
+  const paymentOption = formData["payment-option"];
+  const monthsToPay = formData["prepay-months"] || "1";
+
+  const clubObj = catalog.byId["DONYA6SLBFMWSSJIPK5YRK32"];
+  const clubVars = clubObj.item_data.variations;
+
+  const clubItem = clubVars.filter((v) => {
+    if (v.item_variation_data.name.includes(monthsToPay)) {
+      return v;
+    }
+  })[0];
+  cart.add(clubItem.id);
+  updateCart();
 }
 
 const buildClubFAQ = () => {
@@ -1294,7 +1361,6 @@ const buildClubFAQ = () => {
         if (item[i].nodeName === "H3") {
           item[i].onclick = (e) => {
             const $parent = e.target.parentNode;
-            // console.log(`flexItems.forEach -> $parent`, $parent);
             const status = $parent.getAttribute("data-clicked");
             if (status === "true") { //already clicked
               $parent.classList.remove("show-block");
@@ -1394,7 +1460,9 @@ const populateCustomizationTool = (title, fields) => {
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
         console.log(`$btn.onclick= -> formData`, formData);
+        await addClubToCart(formData);
         await clearCustomizationTool();
+        await showCheckoutTool();
         await hideCustomizationTool();
         removeScreensaver();
       } else {
@@ -1452,6 +1520,8 @@ const populateCustomizationToolSquare = (title, item) => {
       $title.textContent = "shots";
     } else if (itemVariations[0].item_variation_data.name.includes("varietal")) {
       $title.textContent = "select your varietal";
+    } else if (itemVariations[0].item_variation_data.name.includes("gift card")) {
+      $title.textContent = "select your amount";
     } else {
       $title.textContent = "make a selection";
       console.log("hey normal, here's a new scenario:");
@@ -1510,9 +1580,6 @@ const populateCustomizationToolSquare = (title, item) => {
   }
 
   if (itemModifiers) { // except for soft serve toppings, these are ALL RADIOS!
-    // console.log(``);
-    // console.log(itemData.name);
-
     itemModifiers.forEach((m) => {
       const modCat = catalog.byId[m.modifier_list_id]; // this is a single modifier category (obj)
       const modCatData = modCat.modifier_list_data; // this is a single modifer category WITH DATA I CARE ABOUT (obj)
@@ -1578,7 +1645,6 @@ const populateCustomizationToolSquare = (title, item) => {
       );
 
       modCatModifiers.forEach((mod) => {
-        // console.log(`modCatModifiers.forEach -> mod`, mod);
         const modId = mod.id;
         const modData = mod.modifier_data;
         const modName = modData.name;
@@ -1679,7 +1745,7 @@ const populateCustomizationToolSquare = (title, item) => {
       const $form = document.querySelector(`.${targetClass}`);
       const valid = validateSubmission($form);
       if (valid) {
-        buildScreensaver("customizing your cone...");
+        buildScreensaver("customizing your item...");
         const formData = await getSubmissionData($form);
         await addConfigToCart(formData);
         await clearCustomizationTool();
@@ -1697,7 +1763,6 @@ const populateCustomizationToolSquare = (title, item) => {
 const showCustomizationTool = () => {
   const $customTool = document.querySelector(".customize");
   if ($customTool) {
-    // console.log(`showing customization tool`);
     $customTool.classList.remove("hide");
   }
 }
@@ -1705,7 +1770,6 @@ const showCustomizationTool = () => {
 const hideCustomizationTool = () => {
   const $customTool = document.querySelector(".customize");
   if ($customTool) {
-    // console.log(`hideing customization tool`);
     $customTool.classList.add("hide");
   }
 }
@@ -1845,9 +1909,14 @@ const getFields = (fields) => {
       case "pint-club":
         allFields.push(
           { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
-          { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ], required: true },
+          { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ] },
           { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
           { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "delivery" ], required: true }
+        );
+        break;
+      case "prepay-months": 
+        allFields.push(
+          { title: "prepay-months", type: "radio", label: "how many months?", options: [ "3", "6", "12" ], required: true }
         );
         break;
       case "pick-up":
@@ -1866,6 +1935,10 @@ const getFields = (fields) => {
           { title: "tip", type: "select", placeholder: "no tip", src: "tipPercentages" }
         )
         break;
+      case "payment-option":
+        allFields.push(
+          { title: "payment-option", type: "checkbox", label: "pay with gift card?", options: [ "pay with gift card?" ]}
+        )
       default:
         console.error("hey normal, you tried to build a form with an invalid field");
         break;
@@ -1992,7 +2065,6 @@ const buildFields = (formType, field) => {
 
 const populateOptions = ($el, data) => {
   data.forEach((d) => {
-    // console.log(d);
     const $option = document.createElement("option");
       $option.value = d;
       $option.textContent = d;
@@ -2001,9 +2073,6 @@ const populateOptions = ($el, data) => {
 }
 
 const populateDynamicOptions = ($el, data) => {
-  // console.log(`populate dynamic options`);
-  // console.log($el)
-  // console.log(data);
   data.forEach((d) => {
     const $option = document.createElement("option");
       $option.value = d.value;
@@ -2017,7 +2086,6 @@ CHECKOUT TOOL
 ==========================================================*/
 
 const buildCheckoutTool = () => {
-  // console.log(`build checkout tool`);
 
   const $main = document.querySelector("main");
     const mainTheme = getMainTheme();
@@ -2061,7 +2129,7 @@ const buildCheckoutTool = () => {
   // this is the FOOTER of the checkout cart (total amount)
   const $checkoutFoot = document.createElement("tfoot");
     $checkoutFoot.classList.add("checkout-table-foot");
-    $checkoutFoot.innerHTML = `<tr class="checkout-table-foot-total">
+    $checkoutFoot.innerHTML = `<tr>
       <td colspan="2">total</td>
       <td id="checkout-foot-total"></td>
     </tr>`;
@@ -2076,11 +2144,32 @@ const buildCheckoutTool = () => {
   const $checkoutForm = document.createElement("form");
     $checkoutForm.classList.add("checkout-form");
 
-  let allFields = getFields(["contact", "pick-up", "discount-code"]);
+  let fieldsArr = [ "contact" ];
+  const currentStore = getCurrentStore();
+
+  if (currentStore === "store" || currentStore === "lab" || currentStore === "merch") {
+    fieldsArr.push("pick-up");
+  } else if (currentStore === "delivery") {
+    fieldsArr.push("address");
+  }
+  
+  fieldsArr.push("discount-code");
+
+  let allFields = getFields(fieldsArr);
 
   allFields.forEach((f) => {
     $checkoutForm.append(buildFields("checkout", f));
   });
+
+  const $discountField = $checkoutForm.querySelector("#discount");
+  if ($discountField) {
+    $discountField.onkeyup = (e) => {
+      const value = e.target.value.toLowerCase().trim();
+      if (catalog.discounts[value]) {
+        $discountField.setAttribute("data-id", catalog.discounts[value].id);
+      } 
+    }
+  }
 
   getContactFromLocalStorage();
 
@@ -2093,19 +2182,19 @@ const buildCheckoutTool = () => {
       const $form = document.querySelector(".checkout-form");
       const valid = validateSubmission($form);
       if (valid) {
-        buildScreensaver("checking your order...");
+        buildScreensaver("submitting your order...");
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
         const currentStore = getCurrentStore();
-        const orderObj = await submitOrder(currentStore, formData);
+        orderObj = await submitOrder(currentStore, formData);
 
         if (orderObj) {
           // await hideCheckoutTool();
           await disableCartEdits();
           await displayOrderObjInfo(orderObj, formData);
           await hideCheckoutForm();
-          await buildSquarePaymentForm();
-          // await initPaymentForm(currentStore);
+          await buildSquarePaymentForm("creditcard", currentStore, orderObj);
+          // await initPaymentForm("creditcard", currentStore, orderObj);
           removeScreensaver();
         } else {
           console.error("something went wrong and your order didn't go through. try again?");
@@ -2129,7 +2218,6 @@ const buildCheckoutTool = () => {
 const showCheckoutTool = () => {
   const $checkoutTool = document.querySelector(".checkout");
   if ($checkoutTool) {
-    // console.log(`showing checkout tool`);
     $checkoutTool.classList.remove("hide");
   }
 }
@@ -2137,7 +2225,6 @@ const showCheckoutTool = () => {
 const hideCheckoutTool = () => {
   const $checkoutTool = document.querySelector(".checkout");
   if ($checkoutTool) {
-    // console.log(`hiding checkout tool`);
     $checkoutTool.classList.add("hide");
   }
 }
@@ -2158,13 +2245,27 @@ const disableCartEdits = () => {
   }
 }
 
-const displayOrderObjInfo = (orderObj, formData) => {
-  console.log(orderObj);
-  console.log(formData);
-
-  const $checkoutTableBody = document.querySelector(".checkout-table-body");
-  
+const displayOrderObjInfo = (orderObj, formData) => {  
   const $checkoutTableFooter = document.querySelector(".checkout-table-foot");
+    $checkoutTableFooter.innerHTML = ""; // clear on display
+
+  // DISCOUNT INFO
+  const discountName = document.querySelector("#discount").value;
+  const $discountRow = document.createElement("tr");
+
+  if (discountName && orderObj.total_discount_money.amount > 0) {
+
+    const $discountTitle = document.createElement("td");
+      $discountTitle.colSpan = 2;
+      $discountTitle.textContent = `${discountName.split("-").join(" ")} (discount)`;
+
+    const $discountAmount = document.createElement("td");
+      $discountAmount.id = "checkout-foot-discount";
+      $discountAmount.textContent = `- $${formatMoney(orderObj.total_discount_money.amount)}`;
+
+    $discountRow.append($discountTitle, $discountAmount);
+
+  }
 
   // TAX INFO
   const $taxRow = document.createElement("tr");
@@ -2192,7 +2293,27 @@ const displayOrderObjInfo = (orderObj, formData) => {
 
   $tipRow.append($tipTitle, $tipAmount);  
 
-  $checkoutTableFooter.prepend($taxRow, $tipRow);
+  // TOTAL ROW
+  const $totalRow = document.createElement("tr");
+    $totalRow.classList.add("highlight");
+
+  const $totalTitle = document.createElement("td");
+    $totalTitle.colSpan = 2;
+    $totalTitle.textContent = "total";
+
+  const $totalAmount = document.createElement("td");
+    $totalAmount.id = "checkout-foot-total";
+    $totalAmount.setAttribute("data-total", orderObj.total_money.amount);
+    $totalAmount.textContent = `$${formatMoney(orderObj.total_money.amount)}`;
+
+  $totalRow.append($totalTitle, $totalAmount);
+
+  //////////////////////////////////////////////////////////////
+  $checkoutTableFooter.prepend($taxRow, $tipRow, $totalRow);
+  
+  if (discountName && orderObj.total_discount_money.amount > 0) {
+    $checkoutTableFooter.prepend($discountRow);
+  }
 }
 
 const buildSquarePaymentForm = () => {
@@ -2202,6 +2323,7 @@ const buildSquarePaymentForm = () => {
     const $sqContainer = document.createElement("div");
       $sqContainer.classList.add("sq-container");
 
+    // TIP FIELD
     const fields = getFields( [ "tip" ] );
 
     fields.forEach((f) => {
@@ -2216,44 +2338,253 @@ const buildSquarePaymentForm = () => {
       { text: "20%", value: 20 },
       { text: "25%", value: 25 }
     ];
+      $tipDropdown.onchange = (e) => {
+        const currentTotal = parseInt(document.querySelector("#checkout-foot-total").getAttribute("data-total"));
+        const tipPercentage = parseInt(e.target.value);
+        const tipAmount = Math.round(currentTotal * (tipPercentage / 100));
+        const tipValue = formatMoney(tipAmount);
+        // update tip field
+        const $tipField = document.querySelector("#checkout-foot-tip");
+          $tipField.setAttribute("data-value", tipAmount);
+          $tipField.textContent = `$${tipValue}`;
+        // update total field
+        const $totalField = document.querySelector("#checkout-foot-total");
+          $totalField.setAttribute("data-value", (currentTotal + tipAmount));
+          $totalField.textContent = `$${formatMoney(currentTotal + tipAmount)}`;
+      }
 
     populateDynamicOptions($tipDropdown, tipArr);
 
     const $tipWrapper = $sqContainer.querySelector(".sq-table-body-selectwrapper");
       $tipWrapper.append($tipDropdown);
 
-    const $sqForm = document.createElement("div");
+    // GIFT CARD FIELD
+    const $giftcardWrapper = document.createElement("div");
+      $giftcardWrapper.classList.add("sq-table-body-checkbox-container");
+    
+    const $giftcardLabel = document.createElement("label");
+      $giftcardLabel.classList.add("sq-table-body-checkbox-container-optionblock");
+      $giftcardLabel.setAttribute("for", "payment-option");
+      $giftcardLabel.textContent = "pay with giftcard";
+      
+    const $giftcardOption = document.createElement("input");
+      $giftcardOption.classList.add("sq-table-body-checkbox-container-optionblock-option");
+      $giftcardOption.type = "checkbox";
+      $giftcardOption.id = "payment-option";
+      $giftcardOption.name = "payment-option";
+      $giftcardOption.value = "giftcard";
+      $giftcardOption.onchange = (e) => {
+        const payWithGiftcard = e.target.checked;
+        const $sqForm = document.querySelector(".sq-form");
+        const sqFormType = $sqForm.getAttribute("data-card-type");
+
+      const currentStore = getCurrentStore();
+
+        if (payWithGiftcard && sqFormType === "sq-creditcard") {
+          const $sqForm = document.querySelector(".sq-form");
+            $sqForm.remove();
+            resetSqForm("giftcard", currentStore);
+        } else if (!payWithGiftcard && sqFormType === "sq-giftcard") {
+          const $sqForm = document.querySelector(".sq-form");
+            $sqForm.remove();
+            $sqForm.setAttribute("data-card-type", "sq-creditcard");
+            resetSqForm("creditcard", currentStore);
+        } 
+      }
+
+    const $giftcardCustom = document.createElement("span");
+      $giftcardCustom.classList.add("sq-table-body-checkbox-container-optionblock-custom");
+
+    $giftcardLabel.append($giftcardOption, $giftcardCustom);
+    $giftcardWrapper.append($giftcardLabel);
+
+    const $sqForm = buildSqForm("creditcard");
+
+    $sqContainer.append($tipWrapper, $giftcardWrapper, $sqForm);
+    $checkoutContainer.append($sqContainer);
+
+    const currentStore = getCurrentStore();
+    initPaymentForm("creditcard", currentStore, orderObj)
+
+  }
+}
+
+const buildSqForm = (type) => {
+  const $sqForm = document.createElement("div");
       $sqForm.id = "form-container";
       $sqForm.classList.add("sq-form");
-
+      $sqForm.setAttribute("data-card-type", `sq-${type}`);
+      
+  if (type === "creditcard") {
     const $sqCard = document.createElement("div");
       $sqCard.id = "sq-card-number";
       $sqCard.classList.add("sq-form-field");
-
+  
     const $sqExp = document.createElement("div");
       $sqExp.id = "sq-expiration-date";
-      $sqExp.classList.add("sq-form-field");
-
+      $sqExp.classList.add("sq-form-field", "sq-form-field-third");
+  
     const $sqCVV = document.createElement("div");
       $sqCVV.id = "sq-cvv";
-      $sqCVV.classList.add("sq-form-field");
-
+      $sqCVV.classList.add("sq-form-field", "sq-form-field-third");
+  
     const $sqZip = document.createElement("div");
       $sqZip.id = "sq-postal-code";
-      $sqZip.classList.add("sq-form-field");
+      $sqZip.classList.add("sq-form-field", "sq-form-field-third");
 
-    const $sqBtn = document.createElement("button");
-      $sqBtn.id = "sq-creditcard";
-      $sqBtn.classList.add("sq-form-btn");
-      $sqBtn.textContent = "pay";
-      $sqBtn.onclick = (e) => {
-        onGetCardNonce(e);
-      }
+    $sqForm.append($sqCard, $sqExp, $sqCVV, $sqZip);
 
-    $sqForm.append($sqCard, $sqExp, $sqCVV, $sqZip, $sqBtn);
-    $sqContainer.append($tipWrapper, $sqForm);
-    $checkoutContainer.append($sqContainer);
+  } else if (type === "giftcard") {
+    const $sqGiftcard = document.createElement("div");
+      $sqGiftcard.id = "sq-giftcard";
+      $sqGiftcard.classList.add("sq-form-field");
+
+    $sqForm.append($sqGiftcard);
+
   }
+
+  const $sqBtn = document.createElement("button");
+    $sqBtn.id = `sq-${type}-btn`;
+    $sqBtn.classList.add("sq-form-btn");
+    $sqBtn.textContent = "pay";
+    $sqBtn.onclick = (e) => {
+      onGetCardNonce(e);
+    }
+
+  $sqForm.append($sqBtn);
+  return $sqForm;
+}
+
+const resetSqForm = (type, currentStore) => {
+  const $sqContainer = document.querySelector(".sq-container");
+  const $newSqForm = buildSqForm(type);
+  $sqContainer.append($newSqForm);
+  initPaymentForm(type, currentStore)
+}
+
+const removeSqContainer = () => {
+  const $sqContainer = document.querySelector(".sq-container");
+  if ($sqContainer) {
+    $sqContainer.remove();
+  }
+}
+
+const onGetCardNonce = (e) => {
+  e.preventDefault();
+  paymentForm.requestCardNonce();
+  buildScreensaver("submitting your payment...");
+}
+
+const successfulOrderConfirmation = async (orderInfo) => {
+
+  if (orderInfo.receipt_url) {
+    const currentStore = getCurrentStore();
+
+    if (currentStore === "pint-club") {
+      // TODO: pint club things
+      console.log('pint club things');
+      // create customer
+      // create invoice
+
+
+    } else {
+      // send confirmation email
+      const $form = document.querySelector(".checkout-form");
+      const formData = await getSubmissionData($form);
+      if (formData.addr1) { // form data has address
+        const formAddr = `${formData.addr1}, ${formData.city}, ${formData.state}, ${formData.zip}`;
+        const formAddr2 = formData.addr2 || null;
+        // TODO: collect delivery date on delivery orders
+        await sendConfirmationEmail(
+          currentStore, // store 
+          encodeURIComponent(formData.name), // name
+          encodeURIComponent(formData.email), // email
+          encodeURIComponent(formAddr), // addr
+          encodeURIComponent(formAddr2), // comments
+          null, // date
+          encodeURIComponent(orderInfo.receipt_url) // receipt
+        ); 
+      } else { // form data does not have address
+        // TODO: add pickup date to pickup orders
+        let formDate;
+
+        if (currentStore === "delivery") {
+          // get delivery date
+          formDate = null;
+        } else {
+          formDate = prettyPrintDate(formData.pickuptime);
+        }
+
+        await sendConfirmationEmail(
+          currentStore, // store
+          encodeURIComponent(formData.name), // name
+          encodeURIComponent(formData.email), // email
+          null, // addr
+          null, // comments
+          encodeURIComponent(formDate), // date
+          encodeURIComponent(orderInfo.receipt_url) // receipt
+        ); 
+      }
+      // remove sq form
+      await removeSqContainer();
+      // clear cart
+      await cart.clear();
+      // display thank you message
+      const $confirmationMsg = await createConfirmationMsg(currentStore, orderInfo.receipt_url);
+      const $checkoutContainer = document.querySelector(".checkout-container");
+      $checkoutContainer.append($confirmationMsg);
+      // remove screensaver
+      removeScreensaver();
+    }
+  } else {
+    console.error(orderInfo);
+    makeScreensaverError("something went wrong and your payment was not submitted. try again?");
+  }
+
+}
+
+const sendConfirmationEmail = async (store, name, email, address, comments, date, receipt) => {
+  let params = `?type=${store}&name=${name}&email=${email}&address=${address}&date=${date}&receipt=${receipt}`;
+  if (comments) { params += `&comments=${comments}` };
+  const url = `https://script.google.com/macros/s/AKfycbybZ1eHJUJoyyDX41m6cekPho9LaZgucH8yA3hnP1wzmqL9u4c5i7GUdw/exec${params}`;
+  let resp = await fetch(url);
+  let data = await resp.json();
+  if (!data.sent) {
+    console.error(`Email confirmation was NOT sent`);  
+  }
+  return data.sent;
+}
+
+const createConfirmationMsg = (store, receiptUrl) => {
+
+  const $thankYouContainer = document.createElement("div");
+    $thankYouContainer.classList.add("checkout-confirmed");
+
+  const $thankYouMsg = document.createElement("p");
+    $thankYouMsg.classList.add("checkout-confirmed-message");
+    $thankYouMsg.textContent = window.labels[`${store}_thankyou`] || "thank you for placing an order! (:";
+
+  const $btnContainer = document.createElement("div");
+    $btnContainer.classList.add("checkout-confirmed-btnContainer");
+
+  const $phoneBtn = document.createElement("a");
+    $phoneBtn.id = "phone-btn";
+    $phoneBtn.classList.add("checkout-confirmed-btnContainer-btn", "btn-rect");
+    $phoneBtn.textContent = window.labels.phone || "(801)244-1991";
+    $phoneBtn.href = `sms://+1${cleanName(window.labels.phone)}/`;
+
+  const $receiptBtn = document.createElement("a");
+    $receiptBtn.id = "receipt-btn";
+    $receiptBtn.classList.add("checkout-confirmed-btnContainer-btn", "btn-rect");
+    $receiptBtn.textContent = "show receipt";
+    $receiptBtn.href = receiptUrl;
+    $receiptBtn.target = "_blank";
+
+  $btnContainer.append($phoneBtn, $receiptBtn);
+  $thankYouContainer.append($thankYouMsg, $btnContainer);
+
+  return $thankYouContainer;
+
 }
 
 /*==========================================================
@@ -2313,9 +2644,20 @@ const makeCartClickable = () => {
     $headerCart.onclick = (e) => {
       updateCart();
       showCheckoutTool();
+      const $sqContainer = document.querySelector(".sq-container");
+      if ($sqContainer) { $sqContainer.remove() };
+      const $checkoutConfirmed = document.querySelector(".checkout-confirmed");
+      if ($checkoutConfirmed) { $checkoutConfirmed.remove() };
     }
   }
 
+}
+
+const hideCart = () => {
+  const $headerCart = document.querySelector(".header-cart");
+  if ($headerCart) {
+    $headerCart.classList.add("hide");
+  }
 }
 
 const setCartTotal = () => {
@@ -2372,12 +2714,57 @@ const getMainTheme = () => {
   return "theme-white";
 }
 
+const getComplementHex = () => {
+  const mainColor = getMainTheme().split("theme-")[1];
+  let complement;
+  switch (mainColor) {
+    case "white":
+      complement = "blue";
+      break;
+    case "yellow":
+      complement = "green";
+      break;
+    case "pink":
+      complement = "red";
+      break;
+    case "bluepink":
+      complement = "white";
+      break;
+    case "bluewhite":
+      complement = "pink";
+      break;
+    default:
+      complement = "blue";
+      break;
+  }
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${complement}`).trim();
+}
+
 const randomNum = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 const formatMoney = (num) => {
   return Number(num / 100).toFixed(2);
+}
+
+const prettyPrintDate = (date) => {
+  const dateObj = new Date(date);
+  const months = [ 
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December" 
+  ];
+  const days = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ];
+
+  const day = days[dateObj.getDay()];
+  const month = months[dateObj.getMonth()];
+  const dayNum = dateObj.getDate();
+
+  const hour = dateObj.getHours() > 12 ? dateObj.getHours() - 12 : dateObj.getHours();
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  const period = dateObj.getHours() < 12 ? "am" : "pm";
+
+  return `${day}, ${month} ${dayNum} @ ${hour}:${minutes}${period}`;
 }
 
 /* from underscore.js */
@@ -2530,7 +2917,6 @@ function indexCatalog() {
       if (e.modifier_list_data.modifiers)
         e.modifier_list_data.modifiers.forEach((m) => {
           m.modifier_data.modifier_list_id = e.id;
-          // console.log(m.modifier_data.modifier_list_id);
           catalog.byId[m.id] = m;
         });
     }
@@ -2554,8 +2940,7 @@ function addToCart(e) {
         obj.item_data.modifier_list_info ||
         obj.item_data.variations.length > 1
       ) {
-        var callout = findCallout(e.parentNode);
-        configItem(obj, callout);
+        configItem(obj);
       } else {
         cart.add(obj.item_data.variations[0].id);
         updateCart();
@@ -2583,391 +2968,14 @@ function addConfigToCart(formData) {
       mods.push(formData[key]);
     }
   }
-
-  cart.add(variation, mods)
+  cart.add(variation, mods);
   updateCart();
 }
 
-// NOT WORKING in this environment -- necessary?
-function findCallout($parent) { 
-  // console.log(`findCallout is running`);
-  // console.log(`\nfindCallout -> $parent`, $parent);
-  var callout="";
-  var $e=$parent.nextSibling;
-  while ($e && $e.tagName != $parent.tagName) {
-    if ($e.tagName === "P" && $e.textContent.indexOf("*") === 0) {
-        callout += `<p>${$e.textContent}</p>`;        
-    }
-    $e = $e.nextSibling;
-  }
-  // console.log(`\nfindCallout -> callout`, callout);
-  return callout;
-}
-
-function configItem(item, callout) {
+function configItem(item) {
   const itemName = item.item_data.name;
   populateCustomizationToolSquare(`customize your ${removeStorefrontName(itemName).trim()}`, item);
   customizeToolforStore();
-}
-
-function legacyupdateCart() {
-  const labels = window.labels;
-
-  var cartEl = document.getElementById("cart");
-
-  var count = cart.totalItems();
-
-  if (count > 0) {
-    cartEl.classList.remove("hidden");
-  } else {
-    cartEl.classList.add("hidden");
-    document.body.classList.remove("noscroll");
-  }
-
-  // check delivery cart
-  if (storeLocation === "delivery") {
-    const $zipSelect = document.getElementById("delivery-zip");
-    const zipValue = parseInt($zipSelect.value);
-    let match;
-
-    // convert dollar amount from google sheet to cents for comparison
-    const minOrder = parseInt(window.labels.delivery_free) * 100;
-    // check if zip is set and available
-    const deliveryDate = cartEl.querySelector("#delivery-date").value;
-    if (!zipValue) {
-      // if zip has not been selected yet
-    } else if (cart.totalAmount() - cart.shipping_item.price < minOrder) {
-      match = window.deliveryZips.find((zip) => {
-        return zip.zip === zipValue;
-      });
-      cartEl.querySelector(
-        ".freedelivery"
-      ).textContent = `${labels.checkout_minorder}${labels.delivery_free}.`;
-      cartEl.querySelector(".freedelivery").classList.remove("hidden");
-      cartEl.querySelector(".freedelivery").textContent += ` you're $${
-        (minOrder - (cart.totalAmount() - cart.shipping_item.price)) / 100
-      } away!`;
-    } else {
-      cartEl.querySelector(
-        ".freedelivery"
-      ).textContent = `${labels.checkout_minorder}${labels.delivery_free}.`;
-      cartEl.querySelector(".freedelivery").classList.add("hidden");
-    }
-    if (
-      deliveryDate.includes("SOLD OUT") ||
-      deliveryDate.includes("select your zip")
-    ) {
-      cartEl.querySelector("#orderBtn").disabled = true;
-      cartEl.querySelector("#orderBtn").classList.add("hidden");
-    } else {
-      cartEl.querySelector("#orderBtn").disabled = false;
-      cartEl.querySelector("#orderBtn").classList.remove("hidden");
-    }
-  }
-
-  var summaryEl = cartEl.querySelector(".summary");
-  summaryEl.innerHTML = `${count} item${
-    count == 1 ? "" : "s"
-  } in your cart ($${formatMoney(
-    cart.totalAmount()
-  )}) <button onclick="toggleCartDisplay()">check out</button>`;
-
-  var lineitemsEl = cartEl.querySelector(".lineitems");
-  let oosMessageDiv = document.createElement("div");
-  oosMessageDiv.className = "line item";
-  let oosMessage = document.createElement("div");
-  oosMessage.setAttribute("id", "oos");
-  oosMessage.className = "desc oos";
-
-  // placeholders for ALL out of stock items
-  var oosItems = [];
-  var oosItemStr = `oh no, we're out of `;
-
-  var html = ``;
-
-  cart.line_items.forEach((li) => {
-    var v = catalog.byId[li.variation];
-    var i = catalog.byId[v.item_variation_data.item_id];
-    var mods = "";
-    var cone = "";
-    if (i.item_data.name == "lab cone" && li.quantity > 0)
-      cone = `<div class="cone">${createConeFromConfig(li.mods)}</div>`;
-    li.mods.forEach(
-      (m, i) => (mods += ", " + catalog.byId[m].modifier_data.name)
-    );
-    if (li.quantity > 0) {
-      html += `<div class="line item" data-id="${li.fp}">
-          <div class="q"><span onclick="minus(this)" class="control">-</span> ${
-            li.quantity
-          } <span class="control" onclick="plus(this)">+</span></div>
-          <div class="desc">${cone} 
-          ${i.item_data.name} : ${v.item_variation_data.name} ${mods}</div>
-          <div class="amount">$${formatMoney(li.quantity * li.price)}</div>
-          </div>`;
-    } else if (li.quantity === "OUT OF STOCK") {
-      let oosItem;
-      if (i.item_data.name == "soft serve") {
-        oosItem = `${v.item_variation_data.name} ${i.item_data.name}`;
-        oosItems.push(oosItem);
-      } else {
-        oosItem = `${i.item_data.name}s`;
-        oosItems.push(oosItem);
-      }
-    }
-  });
-
-  if (storeLocation === "delivery") {
-    const shipping = cart.shipping_item;
-    const validShipping = Object.entries(shipping).length;
-    // display shipping info at the bottom of the cart
-    let shippingLi;
-    if (validShipping) {
-      const v = catalog.byId[shipping.variation];
-      const i = catalog.byId[v.item_variation_data.item_id];
-      const zip = document.getElementById("delivery-zip").value;
-
-      if (shipping.fp === "GTMQCMXMAHX4X6NFKDX5AYQC") {
-        // convert dollar amount from google sheet to cents for comparison
-        const minOrder = parseInt(window.labels.delivery_free) * 100;
-        shippingLi = `<div class="line shipping"><span class="desc">${
-          i.item_data.name
-        } (to ${zip} on orders over $${formatMoney(
-          minOrder
-        )})</span><span class="amount">$${formatMoney(
-          v.item_variation_data.price_money.amount
-        )}</span></div>`;
-      } else {
-        shippingLi = `<div class="line shipping"><span class="desc">${
-          i.item_data.name
-        } (to ${zip})</span><span class="amount">$${formatMoney(
-          v.item_variation_data.price_money.amount
-        )}</span></div>`;
-      }
-
-      // shippingLi = `<div class="line shipping"><span class="desc">${i.item_data.name} (to ${zip})</span><span class="amount">$${formatMoney(v.item_variation_data.price_money.amount)}</span></div>`
-    } else {
-      shippingLi = `<div class="line shipping"><span class="desc">shipping + handling</span><span class="amount">(calculated after you select your zip)</span></div>`;
-    }
-    html += shippingLi;
-  }
-
-  html += `<div class="line total"><div class="q"></div><div class="desc">total</div><div>$${formatMoney(
-    cart.totalAmount()
-  )}</div>`;
-
-  lineitemsEl.innerHTML = html;
-
-  // build oos item message, if items in cart are out of stock
-  if (oosItems.length) {
-    switch (oosItems.length) {
-      case 0:
-        break;
-      case 1:
-        oosItemStr += `${oosItems[0]} right now`;
-        break;
-      case 2:
-        oosItemStr += `${oosItems[0]} and ${oosItems[1]} right now`;
-        break;
-      default:
-        for (let i = 0; i < oosItems.length - 1; i++) {
-          oosItemStr += `${oosItems[i]}, `;
-        }
-        oosItemStr += `and ${oosItems[oosItems.length - 1]} right now`;
-        break;
-    }
-
-    oosMessage.innerHTML += `<div id="oos-close" onclick="removeOOS()"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-close"><use href="/icons.svg#close"></use></svg>`;
-    oosMessage.innerHTML += oosItemStr;
-    oosMessage.innerHTML += `<br />we've removed them from your cart`;
-    oosMessageDiv.append(oosMessage);
-    lineitemsEl.prepend(oosMessageDiv);
-  }
-
-  var checkoutItemsEl = cartEl.querySelector(".checkoutitems");
-  html = "";
-
-  var coCategory = catalog.categories.find(
-    (e) => e.category_data.name == "checkout items " + storeLocation
-  );
-  if (coCategory) {
-    var coItems = catalog.items.filter(
-      (i) => i.item_data.category_id == coCategory.id
-    );
-    if (coItems.length) {
-      html = `<div>${labels.checkout_addtoorder}</div>`;
-      coItems.forEach((i) => {
-        var price = formatMoney(
-          i.item_data.variations[0].item_variation_data.price_money.amount
-        );
-        var id = i.item_data.variations[0].id;
-        var name = i.item_data.name;
-        var checked = cart.find(id, []) ? "checked" : "";
-        html += `<div><input type="checkbox" ${checked} value="${id}" onclick="toggleCart(this)">${name} ($${price})</input></div>`;
-      });
-    }
-  }
-
-  checkoutItemsEl.innerHTML = html;
-}
-
-async function legacysubmitOrder() {
-  // console.log(`submitOrder running`);
-  removeOOS();
-  var alertEl=document.getElementById("alert").remove();
-  var cartEl=document.getElementById("cart");
-
-  var orderParams={};
-  var now=false;
-  orderParams.pickup_at=document.getElementById("pickup-time").value || "delivery";
-  if (orderParams.pickup_at=="now") {
-      now=true;
-      orderParams.pickup_at=new Date().toISOString();
-      orderParams.now="yes";
-  } else if (orderParams.pickup_at === "delivery") {
-      delete orderParams.pickup_at; // remove pickup from delivery orders
-      orderParams.email_address = document.getElementById("email").value;
-
-      const deliveryDate = document.getElementById("delivery-date").getAttribute("data-date");
-      orderParams.deliver_at = new Date(deliveryDate).toISOString();
-
-      const deliveryAddress = document.getElementById("delivery-address").value;
-      const deliveryCity = document.getElementById("delivery-city").value; 
-      const deliveryState = document.getElementById("delivery-state").value; 
-      const deliveryZip = document.getElementById("delivery-zip").value;
-      const deliveryFullAddress = [deliveryAddress, deliveryCity, deliveryState, deliveryZip];
-      // if the address is missing any piece
-      if (deliveryFullAddress.includes("")) {
-          document.getElementById("delivery-address").focus();
-          return;
-      }
-      orderParams.address = deliveryAddress;
-      orderParams.city = deliveryCity;
-      orderParams.state = deliveryState;
-      orderParams.zip = deliveryZip;
-  }
-  orderParams.display_name=document.getElementById("name").value;
-  orderParams.cell=document.getElementById("cell").value;
-  orderParams.reference_id=generateId();
-  orderParams.discount_name=document.getElementById("discount").value;
-  orderParams.discount=document.getElementById("discount").getAttribute("data-id");
-
-  // console.log(`  submitOrder -> orderParams`, orderParams);
-
-  if (cart.itemCount==0) return;
-  if (orderParams.display_name=="") {
-      document.getElementById("name").focus();
-      return;
-  }
-  if (orderParams.cell=="") {
-      document.getElementById("cell").focus();
-      return;
-  }
-  if (orderParams.email_address=="") { // if the email address is missing
-      document.getElementById("email").focus();
-      return;
-  }
-  if (orderParams.discount=="" && orderParams.discount_name) {
-      document.getElementById("discount").focus();
-      alert("we don't recognize this discount anymore, typo?");
-      return;
-  }
-
-  localStorage.setItem("name",orderParams.display_name);
-  localStorage.setItem("cell",orderParams.cell);
-  localStorage.setItem("address",orderParams.address);
-  localStorage.setItem("email",orderParams.email_address);
-
-  cartEl.querySelector(".lineitems").classList.add("hidden");
-  cartEl.querySelector(".checkoutitems").classList.add("hidden");
-  cartEl.querySelector(".info").classList.add("hidden");
-  var orderEl=cartEl.querySelector(".order");
-  orderEl.classList.remove("hidden");
-  orderEl.innerHTML=`<div class="ordering"><svg><use href="/icons.svg#normal"></use></svg></div>`;
-
-  var nomore = await checkCart();
-  // console.log(`submitOrder -> nomore`, nomore);
-
-  if (nomore.length>0) {
-      var sorry="we are so sorry we just ran out of "
-      nomore.forEach((li, i) => {
-      // console.log(`submitOrder -> li`, li);
-          var v=catalog.byId[li.variation];
-          var item=catalog.byId[v.item_variation_data.item_id];
-              sorry+=(i?", ":"")+item.item_data.name+" : "+v.item_variation_data.name;
-          cart.remove(li.fp);
-      })
-      sorry+=". we will refresh the store so you can look for alternatives. so sorry.";
-      alert(sorry);
-      window.location.reload();
-      return;
-  }
-  
-  orderParams.line_items=[];
-  cart.line_items.forEach((li) => { 
-      // console.log(`submitOrder -> li`, li);
-      var mods=[];
-      li.mods.forEach((m) => mods.push({"catalog_object_id": m}));
-      var line_item = {
-          "catalog_object_id": li.variation,
-          "quantity": ""+li.quantity 
-      };    
-      if (mods.length) {
-          line_item.modifiers=mods;
-      }
-      orderParams.line_items.push(line_item);       
-  });
-
-  if (storeLocation === "delivery") {
-      orderParams.line_items.push({
-          "catalog_object_id": cart.shipping_item.variation,
-          "quantity": ""  + cart.shipping_item.quantity
-      });
-  }
-      
-  var qs="";
-  for (var a in orderParams) {
-      if (a=="line_items") {
-          qs+=a+"="+encodeURIComponent(JSON.stringify(orderParams[a]));
-      } else {
-          qs+=a+"="+encodeURIComponent(orderParams[a]);
-      }
-      qs+="&";
-  }
-
-  // console.log ("order qs: "+qs);
-
-  fetch(storeLocations[storeLocation].endpoint + "?" + qs, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-  })
-  .catch((err) => {
-      alert("Network error: " + err);
-  })
-  .then((response) => {
-      // console.log(`\n  submitOrder -> response`, response);
-      // console.log(`\n  submitOrder -> response.url`, response.url);
-      if (!response.ok) {
-        return response.text().then((errorInfo) => Promise.reject(errorInfo));
-      }
-      // console.log(`  submitOrder -> response.text()`, response.text());
-      return response.text();
-  })
-  .then((data) => {
-      // console.log(`\n    submitOrder -> data`);
-      // console.log(data);
-      var obj = JSON.parse(data);
-      // console.log(`    submitOrder -> obj`, obj);
-      if (typeof obj.order != "undefined") {
-        displayOrder(obj.order);
-      } else {
-        alert("order submission failed. sorry.");
-      }
-  })
-  .catch((err) => {
-      console.error(err);
-  });       
 }
 
 function generateId() {
@@ -2979,135 +2987,220 @@ function generateId() {
   return id;
 }
 
-function initPaymentForm(currentStore) {
+let paymentForm; // TODO: find a way to NOT globalize these
+let orderObj; // TODO: find a way to NOT globalize these
+
+function initPaymentForm(type, currentStore) {
   const credentials = getStorefrontCheckoutCred(currentStore);
-  // Create and initialize a payment form object
-  let paymentForm = new SqPaymentForm({
-    // Initialize the payment form elements
 
-    applicationId: "sq0idp-q-NmavFwDX6MRLzzd5q-sg",
-    locationId: credentials.locationId,
-    inputClass: "sq-input",
-    autoBuild: false,
-    // Customize the CSS for SqPaymentForm iframe elements
-    // inputStyles: [
-    //   {
-    //     fontFamily: "sans-serif",
-    //     fontSize: "16px",
-    //     lineHeight: "24px",
-    //     padding: "16px",
-    //     placeholderColor: "#a0a0a0",
-    //     color: getComputedStyle(document.documentElement)
-    //       .getPropertyValue("--text-color")
-    //       .trim(),
-    //     backgroundColor: "transparent",
-    //   },
-    // ],
-    // Initialize the credit card placeholders
-    cardNumber: {
-      elementId: "sq-card-number",
-      placeholder: "card number",
-    },
-    cvv: {
-      elementId: "sq-cvv",
-      placeholder: "cvv",
-    },
-    expirationDate: {
-      elementId: "sq-expiration-date",
-      placeholder: "mm/yy",
-    },
-    postalCode: {
-      elementId: "sq-postal-code",
-      placeholder: "zip",
-    },
+  if (type === "creditcard") {
 
-    // SqPaymentForm callback functions
-    callbacks: {
-      /*
-       * callback function: cardNonceResponseReceived
-       * Triggered when: SqPaymentForm completes a card nonce request
-       */
-      cardNonceResponseReceived: function (errors, nonce, cardData) {
-        if (errors) {
-          // Log errors from nonce generation to the browser developer console.
-          console.error("Encountered errors:");
-          errors.forEach(function (error) {
-            alert(error.message);
-            console.error("  " + error.message);
-          });
-          submittingPayment = false;
-          return;
-        }
-        //    console.log(`The generated nonce is:\n${nonce}`);
+    // Create and initialize a payment form object for CREDITCARD
+    paymentForm = new SqPaymentForm({
+      // Initialize the payment form elements
 
-        var tipAmount = getTip();
+      applicationId: "sq0idp-q-NmavFwDX6MRLzzd5q-sg", // production
+      // applicationId: "sandbox-sq0idb-507QVzPRaOnfhedziBERcg", // sandbox
+      locationId: credentials.locationId,
+      inputClass: "sq-input",
+      autoBuild: false,
+      // Customize the CSS for SqPaymentForm iframe elements
+      inputStyles: [
+        {
+          fontFamily: "monospace",
+          fontSize: "20px",
+          lineHeight: "40px",
+          padding: "10px 40px",
+          placeholderColor: getComplementHex(),
+          color: getComplementHex(),
+          backgroundColor: "transparent",
+        },
+      ],
+      // Initialize the credit card placeholders
+      cardNumber: {
+        elementId: "sq-card-number",
+        placeholder: "card number",
+      },
+      cvv: {
+        elementId: "sq-cvv",
+        placeholder: "cvv",
+      },
+      expirationDate: {
+        elementId: "sq-expiration-date",
+        placeholder: "mm/yy",
+      },
+      postalCode: {
+        elementId: "sq-postal-code",
+        placeholder: "zip",
+      },
+      // SqPaymentForm callback functions
+      callbacks: {
+        /*
+        * callback function: cardNonceResponseReceived
+        * Triggered when: SqPaymentForm completes a card nonce request
+        */
+        cardNonceResponseReceived: function (errors, nonce, cardData) {
 
-        var qs = `nonce=${encodeURIComponent(
-          nonce
-        )}&order_id=${encodeURIComponent(
-          order.id
-        )}&reference_id=${encodeURIComponent(
-          order.reference_id
-        )}&order_amount=${order.total_money.amount}&tip_amount=${tipAmount}`;
+          if (errors) {
+            // Log errors from nonce generation to the browser developer console.
+            console.error("Encountered errors:");
+            errors.forEach(function (error) {
+              alert(error.message);
+              console.error("> " + error.message);
+            });
+            // submittingPayment = false;
+            return;
+          }
 
-        fetch(storeLocations[storeLocation].endpoint + "?" + qs, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        })
-          .catch((err) => {
-            alert("Network error: " + err);
-            submittingPayment = false;
-          })
-          .then((response) => {
-            if (!response.ok) {
-              return response
-                .text()
-                .then((errorInfo) => Promise.reject(errorInfo));
+          const tipAmount = document.querySelector("#checkout-foot-tip").getAttribute("data-value") || 0;
+
+          const qs = `nonce=${encodeURIComponent(nonce)}` + 
+            `&order_id=${encodeURIComponent(orderObj.id)}` + 
+            `&reference_id=${encodeURIComponent(orderObj.reference_id)}` + 
+            `&order_amount=${orderObj.total_money.amount}` + 
+            `&tip_amount=${tipAmount}`;
+
+          const thisFetch = fetch(credentials.endpoint + "?" + qs, {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
             }
-            return response.text();
+          })
+          .catch((error) => {
+            console.error(error);
+            return makeScreensaverError("something went wrong and your payment didn't go through. try again?")
+          })
+          .then((resp) => {
+            if (!resp.ok) {
+              return resp.text().then((errorInfo) => { Promise.reject(errorInfo) });
+            }
+            return resp.text();
           })
           .then((data) => {
-            //   console.log(data);
-            var obj = JSON.parse(data);
-            if (typeof obj.errors != "undefined") {
-              var message =
-                "Payment failed to complete!\nCheck browser developer console for more details";
-              if (obj.errors[0].category == "PAYMENT_METHOD_ERROR") {
-                message = "Credit Card declined, please check your entries";
-              }
-              if (obj.errors[0].code == "CVV_FAILURE") {
-                message = "Credit Card declined, please check your CVV";
-              }
-              if (obj.errors[0].code == "PAN_FAILURE") {
-                message = "Credit Card declined, please check your card number";
-              }
+            const obj = JSON.parse(data);
 
-              if (obj.errors[0].code == "VOICE_FAILURE") {
-                message =
-                  "Credit Card declined, issuer requires voice authorization, try a different card";
+            if (typeof obj.errors != "undefined") { // failure of any kind
+              makeScreensaverError("payment declined");
+              console.error(obj.errors);
+              switch (obj.errors[0]) {
+                case "PAYMENT_METHOD_ERROR":
+                  alert("payment declined. please check your info.");
+                  break;
+                case "PAN_FAILURE":
+                  alert("payment declined. please check your card number.");
+                  break;
+                case "CVV_FAILURE":
+                  alert("payment declined. please check your cvv.");
+                  break;
+                case "VOICE_FAILURE":
+                  alert("payment declined because issuer requires voice authorization. please try a different card.");
+                  break;
+                case "TRANSACTION_LIMIT":
+                  alert("payment declined because issuer limit has been exceeded. please try a different card.");
+                  break;
+                default:
+                  alert("payment declined. please try a different card.");
+                  break;
               }
-
-              if (obj.errors[0].code == "TRANSACTION_LIMIT") {
-                message = "Credit Card declined, limit exceeded";
-              }
-
-              alert(message);
-              submittingPayment = false;
+              removeScreensaver();
             } else {
-              // console.log(`initPaymentForm -> obj`, obj);
-              displayThanks(obj.payment);
+              successfulOrderConfirmation(obj.payment);
             }
           })
-          .catch((err) => {
-            console.error(err);
-          });
-      },
-    },
-  });
+        }
+      }
+    });
 
-  paymentForm.build();
+  } else if (type === "giftcard") {
+    // Create and initialize a payment form object for GIFTCARD
+    paymentForm = new SqPaymentForm({
+      // Initialize the payment form elements
+      applicationId: "sq0idp-q-NmavFwDX6MRLzzd5q-sg", // production
+      // applicationId: "sandbox-sq0idb-507QVzPRaOnfhedziBERcg", // sandbox
+      locationId: credentials.locationId,
+      inputClass: "sq-input",
+      // Initialize the gift card placeholders
+      giftCard: {
+        elementId: "sq-giftcard",
+        placeholder: "**** **** **** ****"
+      },
+      // Customize the CSS for SqPaymentForm iframe elements
+      inputStyles: [
+        {
+          fontFamily: "monospace",
+          fontSize: "20px",
+          lineHeight: "40px",
+          padding: "10px 40px",
+          placeholderColor: getComplementHex(),
+          color: getComplementHex(),
+          backgroundColor: "transparent",
+        },
+      ],
+      // SqPaymentForm callback functions
+      callbacks: {
+        /*
+        * callback function: cardNonceResponseReceived
+        * Triggered when: SqPaymentForm completes a card nonce request
+        */
+        cardNonceResponseReceived: function (errors, nonce, paymentData, contacts) {
+
+          if (errors) {
+            // Log errors from nonce generation to the browser developer console.
+            console.error("Encountered errors:");
+            errors.forEach(function (error) {
+              alert(error.message);
+              console.error("> " + error.message);
+            });
+            removeScreensaver();
+            return;
+          }
+
+          const tipAmount = document.querySelector("#checkout-foot-tip").getAttribute("data-value") || 0;
+
+          const qs = `nonce=${encodeURIComponent(nonce)}` + 
+            `&order_id=${encodeURIComponent(orderObj.id)}` + 
+            `&reference_id=${encodeURIComponent(orderObj.reference_id)}` + 
+            `&order_amount=${orderObj.total_money.amount}` + 
+            `&tip_amount=${tipAmount}`;
+
+          const thisFetch = fetch(credentials.endpoint + "?" + qs, {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            return makeScreensaverError("something went wrong and your payment didn't go through. try again?")
+          })
+          .then((resp) => {
+            if (!resp.ok) {
+              return resp.text().then((errorInfo) => { Promise.reject(errorInfo) });
+            }
+            return resp.text();
+            // TO DO: handle incomplete gift card payments, collect additional card info
+          })
+          .then((data) => {
+            const obj = JSON.parse(data);
+
+            if (typeof obj.errors != "undefined") { // failure of any kind
+              makeScreensaverError("payment declined");
+              console.error(obj.errors);
+              alert("gift card declined. please try a different card.");
+              removeScreensaver();
+            } else {
+              successfulOrderConfirmation(obj.payment);
+            }
+          })
+
+
+        }
+      }
+    });
+
+  }
+
+  return paymentForm.build();
 }
 
 /*==========================================================
@@ -3117,13 +3210,12 @@ INIT
 window.onload = async (e) => {
 
   await fetchLabels();
-
-  indexCatalog(); // legacy
+  await indexCatalog(); // legacy
 
   // make page useable
-  classify();
-  codify();
-  setPage();
+  await classify();
+  await codify();
+  await setPage();
   buildCheckoutTool(); // needs to be on all the pages
   
   // setup header

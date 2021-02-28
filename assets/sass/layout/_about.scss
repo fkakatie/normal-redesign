@@ -117,6 +117,9 @@ h3 {
 
 // AFTER CLASSES & IDS ARE ADDED
 #about {
+    & .about-text {
+        @include font-acumin-semibold;
+    }
     & .locations-container {
         // border: 2px solid gold;
         // display: flex;

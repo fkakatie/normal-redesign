@@ -1,14 +1,25 @@
 .theme-white {
     background: $color-white;
     color: $color-blue;
+
+    & .highlight {
+        background: $color-yellow-alt;
+    }
     
-    input {
+    & input {
         &:-webkit-autofill {
             -webkit-box-shadow: 0 0 0px 5rem $color-white inset;
             -webkit-text-fill-color: $color-blue;
             &:hover, &:focus {
                 -webkit-box-shadow: 0 0 0px 5rem $color-pink inset;
             }
+        }
+    }
+
+    & input, & select {
+        transition: 0.2s all;
+        &:hover, &:focus {
+            background: $color-pink;
         }
     }
 
@@ -135,6 +146,20 @@
                         color: $color-white;
                     }
                 }
+            }
+        }
+    }
+
+    & .sq {
+        &-form {
+            &-btn {
+                background: $color-blue;
+                color: $color-white; 
+            }
+        }
+        &-input {
+            &:hover, &:focus {
+                background: $color-pink;
             }
         }
     }

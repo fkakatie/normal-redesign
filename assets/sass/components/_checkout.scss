@@ -93,6 +93,23 @@
         border: 1px solid currentColor;
         border-top: 0;
         margin-top: 3rem;
+
+        & #city {
+            display: inline-block;
+            width: calc(100% / 3);
+        }
+        & #state {
+            display: inline-block;
+            width: calc(100% / 3);
+            border-left: 1px solid currentColor;
+            border-right: 1px solid currentColor;
+        }
+        & .checkout-table-body-selectwrapper {
+            display: inline-block;
+            &[data-fieldtype=address] {
+                width: calc(100% / 3);
+            }
+        }
     }
 
     &-table-body {
@@ -153,6 +170,29 @@
             
         }
     }
+
+    &-confirmed {
+        // border: 2px solid red;
+        @include font-poppins-bold;
+        font-size: 65%;
+
+        &-btnContainer {
+            // border: 2px solid red;
+            margin: 4rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            &-btn {
+                width: 50%;
+                min-width: 28rem;
+                text-decoration: none;
+                @include font-acumin;
+                font-size: 180%;
+                padding: 1rem 0;
+            }
+        }
+    }
 }
 
 #checkout-form {
@@ -173,6 +213,19 @@
                 }
                 &-price {
                     width: 20%;
+                }
+            }
+        }
+        &-form {   
+            & #city {
+                width: 40%;
+            }
+            & #state {
+                width: 20%;
+            }
+            & .checkout-table-body-selectwrapper {
+                &[data-fieldtype=address] {
+                    width: 40%;
                 }
             }
         }
@@ -221,6 +274,21 @@
                 }
                 &-price {
                     width: 25%;
+                }
+            }
+        }
+        &-form {   
+            & #city {
+                width: 100%;
+                display: block;
+            }
+            & #state {
+                width: 50%;
+                border-left: 0;
+            }
+            & .checkout-table-body-selectwrapper {
+                &[data-fieldtype=address] {
+                    width: 50%;
                 }
             }
         }

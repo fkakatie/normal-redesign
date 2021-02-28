@@ -150,6 +150,9 @@ h3 {
   font-weight: 600;
   font-style: normal;
   font-size: 3.3rem; }
+  h3 svg.icon-reg {
+    vertical-align: baseline;
+    margin-left: -3px; }
 
 h4 {
   font-family: acumin-pro-extra-condensed, sans-serif;
@@ -315,6 +318,18 @@ a {
     border: 1px solid currentColor;
     border-top: 0;
     margin-top: 3rem; }
+    .checkout-form #city {
+      display: inline-block;
+      width: calc(100% / 3); }
+    .checkout-form #state {
+      display: inline-block;
+      width: calc(100% / 3);
+      border-left: 1px solid currentColor;
+      border-right: 1px solid currentColor; }
+    .checkout-form .checkout-table-body-selectwrapper {
+      display: inline-block; }
+      .checkout-form .checkout-table-body-selectwrapper[data-fieldtype=address] {
+        width: calc(100% / 3); }
   .checkout-table-body-field, .checkout-table-body-selectwrapper, .checkout-table-body-radio, .checkout-table-body-checkbox {
     text-align: left;
     border-top: 1px solid currentColor;
@@ -353,6 +368,25 @@ a {
       padding: 1rem 8rem 1rem 4rem;
       line-height: 4rem;
       width: 100%; }
+  .checkout-confirmed {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 65%; }
+    .checkout-confirmed-btnContainer {
+      margin: 4rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center; }
+      .checkout-confirmed-btnContainer-btn {
+        width: 50%;
+        min-width: 28rem;
+        text-decoration: none;
+        font-family: acumin-pro-extra-condensed, sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 180%;
+        padding: 1rem 0; }
 
 #checkout-form {
   margin-top: 4rem; }
@@ -363,7 +397,13 @@ a {
   .checkout-table-body-item {
     width: 60%; }
   .checkout-table-body-price {
-    width: 20%; } }
+    width: 20%; }
+  .checkout-form #city {
+    width: 40%; }
+  .checkout-form #state {
+    width: 20%; }
+  .checkout-form .checkout-table-body-selectwrapper[data-fieldtype=address] {
+    width: 40%; } }
 
 @media only screen and (max-width: 41.1rem) {
   .checkout-container {
@@ -390,7 +430,15 @@ a {
   .checkout-table-body-item {
     width: 50%; }
   .checkout-table-body-price {
-    width: 25%; } }
+    width: 25%; }
+  .checkout-form #city {
+    width: 100%;
+    display: block; }
+  .checkout-form #state {
+    width: 50%;
+    border-left: 0; }
+  .checkout-form .checkout-table-body-selectwrapper[data-fieldtype=address] {
+    width: 50%; } }
 
 .embed-internal-contact {
   margin-top: 6rem; }
@@ -450,15 +498,15 @@ a {
       transition: 0.2s all; }
       .customize-table-body-field#city, .customize-table-body-select#city {
         display: inline-block;
-        width: 33.33333%; }
+        width: calc(100% / 3); }
       .customize-table-body-field#state, .customize-table-body-select#state {
         display: inline-block;
-        width: 33.33333%;
+        width: calc(100% / 3);
         border-left: 1px solid currentColor;
         border-right: 1px solid currentColor; }
       .customize-table-body-fieldwrapper, .customize-table-body-selectwrapper {
         display: inline-block;
-        width: 33.33333%; }
+        width: calc(100% / 3); }
     .customize-table-body-field[type=text]:read-only {
       cursor: not-allowed; }
       .customize-table-body-field[type=text]:read-only:hover, .customize-table-body-field[type=text]:read-only:focus {
@@ -643,7 +691,8 @@ svg {
     .menu-carousel-single div {
       width: 100%; }
 
-.embed-internal-storemenus {
+.embed-internal-storemenus, .embed-internal-labmenus,
+.embed-internal-deliverymenus, .embed-internal-merchmenus {
   width: 100%;
   padding-bottom: 1rem;
   display: flex;
@@ -652,35 +701,44 @@ svg {
   scroll-behavior: smooth;
   -ms-overflow-style: none;
   scrollbar-width: none; }
-  .embed-internal-storemenus::-webkit-scrollbar {
+  .embed-internal-storemenus::-webkit-scrollbar, .embed-internal-labmenus::-webkit-scrollbar,
+  .embed-internal-deliverymenus::-webkit-scrollbar, .embed-internal-merchmenus::-webkit-scrollbar {
     display: none; }
-  .embed-internal-storemenus div {
+  .embed-internal-storemenus div, .embed-internal-labmenus div,
+  .embed-internal-deliverymenus div, .embed-internal-merchmenus div {
     min-width: calc(100% / 3);
     padding: 0 6rem; }
-    .embed-internal-storemenus div h3 {
+    .embed-internal-storemenus div h3, .embed-internal-labmenus div h3,
+    .embed-internal-deliverymenus div h3, .embed-internal-merchmenus div h3 {
       margin-top: 2rem;
       margin-bottom: 0.2rem; }
-    .embed-internal-storemenus div p {
+    .embed-internal-storemenus div p, .embed-internal-labmenus div p,
+    .embed-internal-deliverymenus div p, .embed-internal-merchmenus div p {
       font-family: "Poppins", sans-serif;
       font-weight: 500;
       font-style: normal;
       font-size: 60%;
       line-height: 1.4;
       margin-top: 0.4rem; }
-      .embed-internal-storemenus div p img {
+      .embed-internal-storemenus div p img, .embed-internal-labmenus div p img,
+      .embed-internal-deliverymenus div p img, .embed-internal-merchmenus div p img {
         margin-top: 1rem;
         height: 20rem;
         transition: 0.2s all;
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden; }
-        .embed-internal-storemenus div p img:hover, .embed-internal-storemenus div p img:focus {
+        .embed-internal-storemenus div p img:hover, .embed-internal-storemenus div p img:focus, .embed-internal-labmenus div p img:hover, .embed-internal-labmenus div p img:focus,
+        .embed-internal-deliverymenus div p img:hover,
+        .embed-internal-deliverymenus div p img:focus, .embed-internal-merchmenus div p img:hover, .embed-internal-merchmenus div p img:focus {
           transform: translateY(0.5rem) scale(1.2) rotate(-3deg); }
-      .embed-internal-storemenus div p strong {
+      .embed-internal-storemenus div p strong, .embed-internal-labmenus div p strong,
+      .embed-internal-deliverymenus div p strong, .embed-internal-merchmenus div p strong {
         font-family: "Poppins", sans-serif;
         font-weight: 700;
         font-style: normal;
         font-size: 120%; }
-      .embed-internal-storemenus div p a {
+      .embed-internal-storemenus div p a, .embed-internal-labmenus div p a,
+      .embed-internal-deliverymenus div p a, .embed-internal-merchmenus div p a {
         font-family: acumin-pro-extra-condensed, sans-serif;
         font-weight: 600;
         font-style: normal;
@@ -752,8 +810,54 @@ svg {
     line-height: 4rem;
     width: 100%; }
 
-.sq-form {
-  border-top: 1px solid currentColor; }
+.sq-table-body-checkbox-container {
+  border: 1px solid currentColor;
+  border-top: 0;
+  padding: 1rem 4rem;
+  text-align: left; }
+  .sq-table-body-checkbox-container-optionblock {
+    position: relative;
+    padding-left: calc(3rem + 1rem);
+    cursor: pointer; }
+    .sq-table-body-checkbox-container-optionblock-custom {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 3rem;
+      width: 3rem;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      transform: translateY(-50%); }
+    .sq-table-body-checkbox-container-optionblock-option {
+      opacity: 0;
+      position: absolute;
+      left: 0; }
+      .sq-table-body-checkbox-container-optionblock-option:checked ~ span {
+        background: currentColor; }
+
+.sq-form #sq-card-number, .sq-form #sq-giftcard {
+  margin-top: 1rem;
+  border: 1px solid currentColor; }
+
+.sq-form #sq-expiration-date, .sq-form #sq-cvv, .sq-form #sq-postal-code {
+  display: inline-block;
+  width: calc(100% / 3);
+  border: 1px solid currentColor; }
+
+.sq-form #sq-cvv {
+  border-left: 0;
+  border-right: 0; }
+
+.sq-form-btn {
+  width: 100%;
+  padding: 2rem 4rem;
+  cursor: pointer;
+  transition: 0.2s all; }
+  .sq-form-btn:hover, .sq-form-btn:focus {
+    letter-spacing: 3px; }
+
+.sq-input {
+  transition: 0.2s all; }
 
 h1#normalreg {
   font-size: 9.9rem; }
@@ -1016,31 +1120,31 @@ main#order {
   main#order div.p-pickup, main#order div.p-shipping {
     display: none; }
 
-h2#soft-serve ~ h3, h2#drinks-drinks-drinks ~ h3, h2#pints ~ h3, h2#bars ~ h3, h2#sandos ~ h3, h2#composed-cones ~ h3, h2#pizza ~ h3, h2#choco-taco ~ h3, h2#norm-cores ~ h3, h2#ice-cream-cake ~ h3 {
+h2#soft-serve ~ h3, h2#drinks-drinks-drinks ~ h3, h2#pints ~ h3, h2#bars ~ h3, h2#sandos ~ h3, h2#composed-cones ~ h3, h2#pizza ~ h3, h2#choco-taco ~ h3, h2#specials ~ h3, h2#norm-cores ~ h3, h2#ice-cream-cake ~ h3, h2#gift-cards ~ h3, h2#tops ~ h3, h2#accessories ~ h3, h2#delivery-zips ~ h3 {
   margin-top: 2rem;
   margin-bottom: 0.2rem; }
 
-h2#soft-serve ~ p, h2#drinks-drinks-drinks ~ p, h2#pints ~ p, h2#bars ~ p, h2#sandos ~ p, h2#composed-cones ~ p, h2#pizza ~ p, h2#choco-taco ~ p, h2#norm-cores ~ p, h2#ice-cream-cake ~ p {
+h2#soft-serve ~ p, h2#drinks-drinks-drinks ~ p, h2#pints ~ p, h2#bars ~ p, h2#sandos ~ p, h2#composed-cones ~ p, h2#pizza ~ p, h2#choco-taco ~ p, h2#specials ~ p, h2#norm-cores ~ p, h2#ice-cream-cake ~ p, h2#gift-cards ~ p, h2#tops ~ p, h2#accessories ~ p, h2#delivery-zips ~ p {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   font-style: normal;
   font-size: 60%;
   line-height: 1.4;
   margin-top: 0.4rem; }
-  h2#soft-serve ~ p img, h2#drinks-drinks-drinks ~ p img, h2#pints ~ p img, h2#bars ~ p img, h2#sandos ~ p img, h2#composed-cones ~ p img, h2#pizza ~ p img, h2#choco-taco ~ p img, h2#norm-cores ~ p img, h2#ice-cream-cake ~ p img {
+  h2#soft-serve ~ p img, h2#drinks-drinks-drinks ~ p img, h2#pints ~ p img, h2#bars ~ p img, h2#sandos ~ p img, h2#composed-cones ~ p img, h2#pizza ~ p img, h2#choco-taco ~ p img, h2#specials ~ p img, h2#norm-cores ~ p img, h2#ice-cream-cake ~ p img, h2#gift-cards ~ p img, h2#tops ~ p img, h2#accessories ~ p img, h2#delivery-zips ~ p img {
     margin-top: 1rem;
     height: 20rem;
     transition: 0.2s all;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden; }
-    h2#soft-serve ~ p img:hover, h2#soft-serve ~ p img:focus, h2#drinks-drinks-drinks ~ p img:hover, h2#drinks-drinks-drinks ~ p img:focus, h2#pints ~ p img:hover, h2#pints ~ p img:focus, h2#bars ~ p img:hover, h2#bars ~ p img:focus, h2#sandos ~ p img:hover, h2#sandos ~ p img:focus, h2#composed-cones ~ p img:hover, h2#composed-cones ~ p img:focus, h2#pizza ~ p img:hover, h2#pizza ~ p img:focus, h2#choco-taco ~ p img:hover, h2#choco-taco ~ p img:focus, h2#norm-cores ~ p img:hover, h2#norm-cores ~ p img:focus, h2#ice-cream-cake ~ p img:hover, h2#ice-cream-cake ~ p img:focus {
+    h2#soft-serve ~ p img:hover, h2#soft-serve ~ p img:focus, h2#drinks-drinks-drinks ~ p img:hover, h2#drinks-drinks-drinks ~ p img:focus, h2#pints ~ p img:hover, h2#pints ~ p img:focus, h2#bars ~ p img:hover, h2#bars ~ p img:focus, h2#sandos ~ p img:hover, h2#sandos ~ p img:focus, h2#composed-cones ~ p img:hover, h2#composed-cones ~ p img:focus, h2#pizza ~ p img:hover, h2#pizza ~ p img:focus, h2#choco-taco ~ p img:hover, h2#choco-taco ~ p img:focus, h2#specials ~ p img:hover, h2#specials ~ p img:focus, h2#norm-cores ~ p img:hover, h2#norm-cores ~ p img:focus, h2#ice-cream-cake ~ p img:hover, h2#ice-cream-cake ~ p img:focus, h2#gift-cards ~ p img:hover, h2#gift-cards ~ p img:focus, h2#tops ~ p img:hover, h2#tops ~ p img:focus, h2#accessories ~ p img:hover, h2#accessories ~ p img:focus, h2#delivery-zips ~ p img:hover, h2#delivery-zips ~ p img:focus {
       transform: translateY(0.5rem) scale(1.2) rotate(-3deg); }
-  h2#soft-serve ~ p strong, h2#drinks-drinks-drinks ~ p strong, h2#pints ~ p strong, h2#bars ~ p strong, h2#sandos ~ p strong, h2#composed-cones ~ p strong, h2#pizza ~ p strong, h2#choco-taco ~ p strong, h2#norm-cores ~ p strong, h2#ice-cream-cake ~ p strong {
+  h2#soft-serve ~ p strong, h2#drinks-drinks-drinks ~ p strong, h2#pints ~ p strong, h2#bars ~ p strong, h2#sandos ~ p strong, h2#composed-cones ~ p strong, h2#pizza ~ p strong, h2#choco-taco ~ p strong, h2#specials ~ p strong, h2#norm-cores ~ p strong, h2#ice-cream-cake ~ p strong, h2#gift-cards ~ p strong, h2#tops ~ p strong, h2#accessories ~ p strong, h2#delivery-zips ~ p strong {
     font-family: "Poppins", sans-serif;
     font-weight: 700;
     font-style: normal;
     font-size: 120%; }
-  h2#soft-serve ~ p a, h2#drinks-drinks-drinks ~ p a, h2#pints ~ p a, h2#bars ~ p a, h2#sandos ~ p a, h2#composed-cones ~ p a, h2#pizza ~ p a, h2#choco-taco ~ p a, h2#norm-cores ~ p a, h2#ice-cream-cake ~ p a {
+  h2#soft-serve ~ p a, h2#drinks-drinks-drinks ~ p a, h2#pints ~ p a, h2#bars ~ p a, h2#sandos ~ p a, h2#composed-cones ~ p a, h2#pizza ~ p a, h2#choco-taco ~ p a, h2#specials ~ p a, h2#norm-cores ~ p a, h2#ice-cream-cake ~ p a, h2#gift-cards ~ p a, h2#tops ~ p a, h2#accessories ~ p a, h2#delivery-zips ~ p a {
     font-family: acumin-pro-extra-condensed, sans-serif;
     font-weight: 600;
     font-style: normal;
@@ -1054,6 +1158,8 @@ h2#soft-serve ~ h3 {
 .menu {
   margin-top: 4rem;
   padding: 2rem 0; }
+  .menu img {
+    height: 20rem; }
   .menu-filled > * {
     padding-left: 33%;
     padding-right: 33%; }
@@ -1153,6 +1259,11 @@ h3#lab {
   .embed-internal-team > div {
     width: 100%;
     padding: 2rem 3rem; } }
+
+#about .about-text {
+  font-family: acumin-pro-extra-condensed, sans-serif;
+  font-weight: 600;
+  font-style: normal; }
 
 #about .locations-container {
   margin-top: 4rem; }
@@ -1395,6 +1506,8 @@ h2#normal-pint-club-faq, h2#normal-pint-club-faqs {
     padding: 4rem 6rem; }
   #pintclub .p-options ul ul li {
     padding: 0; }
+  #pintclub .p-options .btn-rect {
+    margin-top: 2rem; }
 
 #pintclub .faq-container {
   display: flex;
@@ -1695,11 +1808,17 @@ main#icons .p-logos svg {
 .theme-white {
   background: #FFFCF3;
   color: #0D26F9; }
+  .theme-white .highlight {
+    background: #FBFF5C; }
   .theme-white input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 5rem #FFFCF3 inset;
     -webkit-text-fill-color: #0D26F9; }
     .theme-white input:-webkit-autofill:hover, .theme-white input:-webkit-autofill:focus {
       -webkit-box-shadow: 0 0 0px 5rem #FFD4CC inset; }
+  .theme-white input, .theme-white select {
+    transition: 0.2s all; }
+    .theme-white input:hover, .theme-white input:focus, .theme-white select:hover, .theme-white select:focus {
+      background: #FFD4CC; }
   .theme-white .header-cart {
     background: #FFFCF3; }
     .theme-white .header-cart-text {
@@ -1762,6 +1881,11 @@ main#icons .p-logos svg {
       background: #0D26F9; }
       .theme-white .menu-carousel-btn:hover svg.icon, .theme-white .menu-carousel-btn:focus svg.icon {
         color: #FFFCF3; }
+  .theme-white .sq-form-btn {
+    background: #0D26F9;
+    color: #FFFCF3; }
+  .theme-white .sq-input:hover, .theme-white .sq-input:focus {
+    background: #FFD4CC; }
   .theme-white #back-to-top {
     background: #FFFCF3; }
 

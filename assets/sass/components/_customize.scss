@@ -72,17 +72,17 @@
 
                 &#city {
                     display: inline-block;
-                    width: 33.33333%;
+                    width: calc(100% / 3);
                 }
                 &#state {
                     display: inline-block;
-                    width: 33.33333%;
+                    width: calc(100% / 3);
                     border-left: 1px solid currentColor;
                     border-right: 1px solid currentColor;
                 }
                 &wrapper {
                     display: inline-block;
-                    width: 33.33333%;
+                    width: calc(100% / 3);
                 }
             }
             &-field {

@@ -66,11 +66,16 @@ h1 {
 h2 {
     @include font-acumin-semibold;
     font-size: 6.6rem;
+    
 }
 
 h3 {
     @include font-acumin-semibold;
     font-size: 3.3rem;
+    & svg.icon-reg {
+        vertical-align: baseline;
+        margin-left: -3px;
+    }
 }
 
 h4 {
