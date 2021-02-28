@@ -792,6 +792,9 @@ svg {
   100% {
     transform: translateY(calc(100vh - 12rem)); } }
 
+.sq-container {
+  margin-bottom: 8rem; }
+
 .sq-table-body-selectwrapper {
   position: relative;
   border: 1px solid currentColor; }
@@ -1408,7 +1411,7 @@ h3#lab {
       .embed-internal-pintbanner > div p img:not(:last-child) {
         margin-right: 1rem; }
 
-h2#welcome-to-normal-pint-club {
+h2#welcome-to-normal-pint-club, h2#welcome-to-normalreg-pint-club {
   margin-top: calc(60rem + 4rem); }
 
 h2#how-it-works {
