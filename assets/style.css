@@ -1464,22 +1464,22 @@ h2#options {
           font-style: normal;
           font-size: 2rem; }
 
-h2#normal-pint-club-faq, h2#normal-pint-club-faqs {
+h2#normal-pint-club-faq, h2#normal-pint-club-faqs, h2#normalreg-pint-club-faq, h2#normalreg-pint-club-faqs {
   margin-top: 4rem; }
-  h2#normal-pint-club-faq ~ p, h2#normal-pint-club-faqs ~ p {
+  h2#normal-pint-club-faq ~ p, h2#normal-pint-club-faqs ~ p, h2#normalreg-pint-club-faq ~ p, h2#normalreg-pint-club-faqs ~ p {
     font-family: "Poppins", sans-serif;
     font-weight: 600;
     font-style: normal;
     font-size: 1.8rem;
     line-height: 1.4; }
-  h2#normal-pint-club-faq ~ h3, h2#normal-pint-club-faqs ~ h3 {
+  h2#normal-pint-club-faq ~ h3, h2#normal-pint-club-faqs ~ h3, h2#normalreg-pint-club-faq ~ h3, h2#normalreg-pint-club-faqs ~ h3 {
     margin-top: 2rem;
     text-align: left;
     transition: 0.2s all;
     cursor: pointer; }
-    h2#normal-pint-club-faq ~ h3:focus, h2#normal-pint-club-faq ~ h3:hover, h2#normal-pint-club-faqs ~ h3:focus, h2#normal-pint-club-faqs ~ h3:hover {
+    h2#normal-pint-club-faq ~ h3:focus, h2#normal-pint-club-faq ~ h3:hover, h2#normal-pint-club-faqs ~ h3:focus, h2#normal-pint-club-faqs ~ h3:hover, h2#normalreg-pint-club-faq ~ h3:focus, h2#normalreg-pint-club-faq ~ h3:hover, h2#normalreg-pint-club-faqs ~ h3:focus, h2#normalreg-pint-club-faqs ~ h3:hover {
       letter-spacing: 1.5px; }
-    h2#normal-pint-club-faq ~ h3 ~ p, h2#normal-pint-club-faqs ~ h3 ~ p {
+    h2#normal-pint-club-faq ~ h3 ~ p, h2#normal-pint-club-faqs ~ h3 ~ p, h2#normalreg-pint-club-faq ~ h3 ~ p, h2#normalreg-pint-club-faqs ~ h3 ~ p {
       font-family: "Poppins", sans-serif;
       font-weight: 500;
       font-style: normal;
