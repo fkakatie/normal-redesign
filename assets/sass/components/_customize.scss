@@ -198,7 +198,7 @@
     }
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     .customize {
         // border: 2px solid gold;
         &-table {
@@ -219,7 +219,7 @@
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     .customize {
         // border: 2px solid gold;
         &-close {

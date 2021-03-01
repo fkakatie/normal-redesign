@@ -56,7 +56,6 @@ const setPage = () => {
       fixCart();
       buildCustomizationTool();
       // drinksStarburst();
-      // setupCarousels();
       break;
     case "delivery":
       setCurrentStore();
@@ -66,11 +65,12 @@ const setPage = () => {
       fixCart();
       buildCustomizationTool();
       // drinksStarburst();
-      // setupCarousels();
       break;
     case "about":
       setAboutTextClass();
       buildLocationsGrid();
+      styleMenus();
+      setupCarousels();
       fetchProductLocations();
       setupDownAnchors();
       break;
@@ -435,7 +435,12 @@ const styleMenus = () => {
   const $divs = [ ...$main.querySelectorAll("div")];
   $divs.forEach((d) => {
     if (d.firstElementChild) {
-      if (d.firstElementChild.nodeName === "H2" && d.firstElementChild.id !== "contact-us") {
+      if (
+          d.firstElementChild.nodeName === "H2" && 
+          d.firstElementChild.id !== "contact-us" && 
+          d.firstElementChild.id !== "locations" &&
+          d.firstElementChild.id !== "where-can-i-find-normalreg"
+        ) {
         d.classList.add("menu");
         const $embed = d.querySelector(".embed");
         if ($embed) {
@@ -531,11 +536,11 @@ const customizeCheckoutForStorefront = async () => {
 
   // decide whether or not to show checkout form
   const labels = window.labels;
-  const currentStore = getCurrentStore() === "merch" ? "store" : getCurrentStore(); // merch hours are store hours
+  const currentStore = getCurrentStore();
   const storeOpen = labels[`${currentStore}_open`];
   let storeOpenByTime;
 
-  if (currentStore === "pint-club" || currentStore === "delivery") {
+  if (currentStore === "pint-club" || currentStore === "delivery" || currentStore === "merch") {
     storeOpenByTime = true; // pint club & delivery are always accepting orders
   } else {
     storeOpenByTime = checkIfStorefrontOpen(); 
@@ -622,6 +627,8 @@ const updateCart = () => {
   setCartTotal();
   getContactFromLocalStorage();
   customizeCheckoutForStorefront();
+  const $sqContainer = document.querySelector(".sq-container");
+    if ($sqContainer) { $sqContainer.remove() };
 
   const $checkoutTable = document.querySelector(".checkout-table-body");
     $checkoutTable.innerHTML = ""; // clear on each update
@@ -894,8 +901,8 @@ const getStorefrontCheckoutCred = (storefront) => {
     case "merch":
       return {
         name: storefront,
-        endpoint: "https://script.google.com/macros/s/AKfycbzPFOTS5HT-Vv1mAYv3ktpZfNhGtRPdHz00Qi9Alw/exec",
-        locationId: "6EXJXZ644ND0E"
+        endpoint: "https://script.google.com/macros/s/AKfycbwXsVa_i4JBUjyH7DyWVizeU3h5Rg5efYTtf4pcF4FXxy6zJOU/exec",
+        locationId: "WPBKJEG0HRQ9F"
       };
     default:
       console.error(`location ${storefront} is not configured`);
@@ -910,7 +917,7 @@ STOREFRONT CAROUSELS
 ==========================================================*/
 const resetCarousels = debounce(function() {
   const currentStore = getCurrentStore();
-  const $carousels = document.querySelectorAll(`.embed-internal-${currentStore}menus`);
+  const $carousels = document.querySelectorAll(`.embed-internal-${getPage()}menus`);
   if ($carousels) {
     $carousels.forEach((c) => {
       c.scrollLeft = 0;
@@ -1052,6 +1059,14 @@ const buildLocationsGrid = () => {
   });
   $locationsBlock.append($flexContainer);
 };
+
+const carouselizeTeam = () => {
+  console.log(`this is running`);
+  const $teamContainer = document.querySelector(".embed-internal-team").parentNode;
+  if ($teamContainer) {
+    $teamContainer.classList.add("menu-carousel")
+  }
+}
 
 // move to setup or utilities
 const setupDownAnchors = () => {
@@ -1221,7 +1236,7 @@ const setupPintSubOptions = () => {
         o.onclick = (e) => {
           const $el = e.target.closest("a");
           const target = $el.getAttribute("data-club-type");
-          populateCustomizationTool("customize your pint club subscription", [ "contact", "pint-club" ]);
+          populateCustomizationTool("select your subscription pack", [ "contact", "pint-club" ]);
           customizeToolforClub(target);
         }
       })
@@ -1274,16 +1289,16 @@ const customizeToolforClub = (target) => {
     }
   }
 
-  const $deliveryOpt = document.getElementById("delivery");
+  const $shippingOpt = document.getElementById("shipping");
   const $pickupOpt = document.getElementById("pickup");
 
-  // disable delivery for now
-  const $deliveryParent = $deliveryOpt.parentNode;
-    $deliveryParent.prepend("coming soon! - ");
-    $deliveryOpt.disabled = true;
+  // disable shipping for now
+  const $shippingParent = $shippingOpt.parentNode;
+    $shippingParent.prepend("coming soon! - ");
+    $shippingOpt.disabled = true;
   ///////////////////////////
 
-  $deliveryOpt.onclick = async (e) => {
+  $shippingOpt.onclick = async (e) => {
     const $customBody = document.querySelector(".customize-table-body");
     const $addrFields = $customBody.querySelectorAll("[data-fieldtype=address]");
 
@@ -1327,8 +1342,42 @@ const addClubToCart = (formData) => {
       return v;
     }
   })[0];
+
+  cart.clear();
   cart.add(clubItem.id);
   updateCart();
+}
+
+const findClubOption = () => {
+  const clubItem = cart.line_items[0];
+  const variation = catalog.byId[clubItem.variation];
+  const variationName = variation.item_variation_data.name; // for use with mods
+  const item = catalog.byId[variation.item_variation_data.item_id];
+
+  return {
+    fp: clubItem.fp,
+    variation: variation.id,
+    item: item.id,
+    term: variationName
+  }
+}
+
+const checkRecurringClubInCart = () => {
+  let clubInCart = false;
+  const recurringSub = catalog.byId["DONYA6SLBFMWSSJIPK5YRK32"].item_data.variations.filter((v) => {
+    if (v.item_variation_data.name === "1 month" || v.item_variation_data.name === "one month") {
+      return v;
+    }
+  })[0];
+  const recurringSubId = recurringSub.id;
+  const cartItems = cart.line_items;
+  cartItems.forEach((i) => {
+    if (i.fp.includes(recurringSubId)) {
+      clubInCart = true;
+      return clubInCart;
+    }
+  })
+  return clubInCart;
 }
 
 const buildClubFAQ = () => {
@@ -1459,11 +1508,10 @@ const populateCustomizationTool = (title, fields) => {
         buildScreensaver("sending in your subscription...");
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
-        console.log(`$btn.onclick= -> formData`, formData);
         await addClubToCart(formData);
         await clearCustomizationTool();
-        await showCheckoutTool();
         await hideCustomizationTool();
+        await showCheckoutTool();
         removeScreensaver();
       } else {
         console.error("please fill out all required fields!");
@@ -1513,7 +1561,11 @@ const populateCustomizationToolSquare = (title, item) => {
     };
 
     if (itemData.name.includes("soft serve")) {
-      $title.textContent = "flavor (select 1)"; 
+      if (itemVariations[0].item_variation_data.name.includes("size")) {
+        $title.textContent = "select your size"; 
+      } else {
+        $title.textContent = "flavor (select 1)"; 
+      }
     } else if (itemVariations[0].item_variation_data.name.includes("oz") || itemVariations[0].item_variation_data.name.includes("size")) {
       $title.textContent = "select your size";
     } else if (itemVariations[0].item_variation_data.name.includes("shot")) {
@@ -1911,7 +1963,7 @@ const getFields = (fields) => {
           { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
           { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ] },
           { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
-          { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "delivery" ], required: true }
+          { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "shipping" ], required: true }
         );
         break;
       case "prepay-months": 
@@ -2182,24 +2234,61 @@ const buildCheckoutTool = () => {
       const $form = document.querySelector(".checkout-form");
       const valid = validateSubmission($form);
       if (valid) {
-        buildScreensaver("submitting your order...");
+
+        const currentStore = getCurrentStore();
+        buildScreensaver(`submitting your ${currentStore.split("-").join(" ")} order...`);
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
-        const currentStore = getCurrentStore();
-        orderObj = await submitOrder(currentStore, formData);
-
-        if (orderObj) {
-          // await hideCheckoutTool();
-          await disableCartEdits();
-          await displayOrderObjInfo(orderObj, formData);
-          await hideCheckoutForm();
-          await buildSquarePaymentForm("creditcard", currentStore, orderObj);
-          // await initPaymentForm("creditcard", currentStore, orderObj);
-          removeScreensaver();
-        } else {
-          console.error("something went wrong and your order didn't go through. try again?");
-          makeScreensaverError("something went wrong and your order didn't go through. try again?")
+        let pintMonthlySub = false;
+        if (currentStore === "pint-club") {
+          const clubOption = await findClubOption();
+          if (clubOption.term.includes("1 month") || clubOption.term.includes("one month")) {
+            pintMonthlySub = true;
+          }
         }
+
+        if (!pintMonthlySub) { // store, lab, merch, prepay pint-club
+          //////////////////////////////////////////////////////
+          orderObj = await submitOrder(currentStore, formData);
+
+          if (orderObj) {
+            // await hideCheckoutTool();
+            await disableCartEdits();
+            await displayOrderObjInfo(orderObj, formData);
+            await hideCheckoutForm();
+            await buildSquarePaymentForm();
+            // await initPaymentForm("creditcard", currentStore, orderObj);
+            removeScreensaver();
+          } else {
+            console.error("something went wrong and your order didn't go through. try again?");
+            makeScreensaverError("something went wrong and your order didn't go through. try again?")
+          }
+          /////////////////////////////////////////////////////
+        } else if (pintMonthlySub) { // monthly pint-club
+
+          console.log(`submitting monthly pint club order`);
+          // create customer
+          const customerData = await createCustomer(formData);
+          console.log(customerData);
+
+          if (customerData.customer) {
+            // create card nonce
+            localStorage.setItem("normal-id", customerData.customer.id);
+            const $name = document.querySelector("#name");
+              $name.setAttribute("data-id", customerData.customer.id);
+            await disableCartEdits();
+            await hideCheckoutForm();
+            await buildSquarePaymentForm();
+            removeScreensaver();
+
+          } else {
+            console.error(customerData);
+            makeScreensaverError("something went wrong. try again?")
+          }
+
+        }
+
+        
       } else {
         console.error("please fill out all required fields!");
       }
@@ -2383,12 +2472,16 @@ const buildSquarePaymentForm = () => {
         if (payWithGiftcard && sqFormType === "sq-creditcard") {
           const $sqForm = document.querySelector(".sq-form");
             $sqForm.remove();
-            resetSqForm("giftcard", currentStore);
+            const currentStore = getCurrentStore();
+            const recurring = checkRecurringClubInCart();
+            resetSqForm("giftcard", currentStore, recurring);
         } else if (!payWithGiftcard && sqFormType === "sq-giftcard") {
           const $sqForm = document.querySelector(".sq-form");
             $sqForm.remove();
+            const currentStore = getCurrentStore();
+            const recurring = checkRecurringClubInCart();
             $sqForm.setAttribute("data-card-type", "sq-creditcard");
-            resetSqForm("creditcard", currentStore);
+            resetSqForm("creditcard", currentStore, recurring);
         } 
       }
 
@@ -2404,7 +2497,8 @@ const buildSquarePaymentForm = () => {
     $checkoutContainer.append($sqContainer);
 
     const currentStore = getCurrentStore();
-    initPaymentForm("creditcard", currentStore, orderObj)
+    const recurring = checkRecurringClubInCart();
+    initPaymentForm("creditcard", currentStore, recurring)
 
   }
 }
@@ -2455,11 +2549,11 @@ const buildSqForm = (type) => {
   return $sqForm;
 }
 
-const resetSqForm = (type, currentStore) => {
+const resetSqForm = (type, currentStore, recurring) => {
   const $sqContainer = document.querySelector(".sq-container");
   const $newSqForm = buildSqForm(type);
   $sqContainer.append($newSqForm);
-  initPaymentForm(type, currentStore)
+  initPaymentForm(type, currentStore, recurring)
 }
 
 const removeSqContainer = () => {
@@ -2541,6 +2635,20 @@ const successfulOrderConfirmation = async (orderInfo) => {
     makeScreensaverError("something went wrong and your payment was not submitted. try again?");
   }
 
+}
+
+const createCustomer = async (formData) => {
+  console.log(`create customer running`);
+  let params = "";
+  for (prop in formData) {
+    params += prop + "=" + encodeURIComponent(formData[prop]);
+    params += "&";
+  }
+  const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec?${params}`;
+  console.log(url);
+  let resp = await fetch(url);
+  let data = await resp.json();
+  return data;
 }
 
 const sendConfirmationEmail = async (store, name, email, address, comments, date, receipt) => {
@@ -2990,10 +3098,11 @@ function generateId() {
 let paymentForm; // TODO: find a way to NOT globalize these
 let orderObj; // TODO: find a way to NOT globalize these
 
-function initPaymentForm(type, currentStore) {
+function initPaymentForm(paymentType, currentStore, recurring) {
   const credentials = getStorefrontCheckoutCred(currentStore);
 
-  if (type === "creditcard") {
+  if (paymentType === "creditcard" && !recurring) { //submit order with credit card
+    console.log(`creating PAYMENT form for credit card`);
 
     // Create and initialize a payment form object for CREDITCARD
     paymentForm = new SqPaymentForm({
@@ -3111,7 +3220,9 @@ function initPaymentForm(type, currentStore) {
       }
     });
 
-  } else if (type === "giftcard") {
+  } else if (paymentType === "giftcard" && !recurring) { // submit order with gift card
+    console.log(`creating PAYMENT form for gift card`);
+
     // Create and initialize a payment form object for GIFTCARD
     paymentForm = new SqPaymentForm({
       // Initialize the payment form elements
@@ -3178,7 +3289,7 @@ function initPaymentForm(type, currentStore) {
               return resp.text().then((errorInfo) => { Promise.reject(errorInfo) });
             }
             return resp.text();
-            // TO DO: handle incomplete gift card payments, collect additional card info
+            // TODO: handle incomplete gift card payments, collect additional card info
           })
           .then((data) => {
             const obj = JSON.parse(data);
@@ -3198,6 +3309,214 @@ function initPaymentForm(type, currentStore) {
       }
     });
 
+  } else if (paymentType === "creditcard" && recurring) { // submit card to customer with credit card
+    console.log(`creating CARD NONCE form for credit card`);
+
+    // Create and initialize a payment form object for CREDITCARD
+    paymentForm = new SqPaymentForm({
+      // Initialize the payment form elements
+
+      applicationId: "sq0idp-q-NmavFwDX6MRLzzd5q-sg", // production
+      // applicationId: "sandbox-sq0idb-507QVzPRaOnfhedziBERcg", // sandbox
+      locationId: credentials.locationId,
+      inputClass: "sq-input",
+      autoBuild: false,
+      // Customize the CSS for SqPaymentForm iframe elements
+      inputStyles: [
+        {
+          fontFamily: "monospace",
+          fontSize: "20px",
+          lineHeight: "40px",
+          padding: "10px 40px",
+          placeholderColor: getComplementHex(),
+          color: getComplementHex(),
+          backgroundColor: "transparent",
+        },
+      ],
+      // Initialize the credit card placeholders
+      cardNumber: {
+        elementId: "sq-card-number",
+        placeholder: "card number",
+      },
+      cvv: {
+        elementId: "sq-cvv",
+        placeholder: "cvv",
+      },
+      expirationDate: {
+        elementId: "sq-expiration-date",
+        placeholder: "mm/yy",
+      },
+      postalCode: {
+        elementId: "sq-postal-code",
+        placeholder: "zip",
+      },
+      // SqPaymentForm callback functions
+      callbacks: {
+        /*
+        * callback function: cardNonceResponseReceived
+        * Triggered when: SqPaymentForm completes a card nonce request
+        */
+        cardNonceResponseReceived: function (errors, nonce, cardData) {
+
+          if (errors) {
+            // Log errors from nonce generation to the browser developer console.
+            console.error("Encountered errors:");
+            errors.forEach(function (error) {
+              alert(error.message);
+              console.error("> " + error.message);
+            });
+            // submittingPayment = false;
+            return;
+          }
+
+          const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec`
+          const customerId = document.querySelector("#name").getAttribute("data-id");
+
+          const qs = `nonce=${encodeURIComponent(nonce)}` + 
+            `&id=${encodeURIComponent(customerId)}`;
+
+          const thisFetch = fetch(url + "?" + qs, {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            return makeScreensaverError("something went wrong and your payment didn't go through. try again?")
+          })
+          .then((resp) => {
+            if (!resp.ok) {
+              return resp.text().then((errorInfo) => { Promise.reject(errorInfo) });
+            }
+            return resp.text();
+          })
+          .then((data) => {
+            const obj = JSON.parse(data);
+
+            if (typeof obj.errors != "undefined") { // failure of any kind
+              makeScreensaverError("payment declined");
+              console.error(obj.errors);
+              switch (obj.errors[0]) {
+                case "PAYMENT_METHOD_ERROR":
+                  alert("payment declined. please check your info.");
+                  break;
+                case "PAN_FAILURE":
+                  alert("payment declined. please check your card number.");
+                  break;
+                case "CVV_FAILURE":
+                  alert("payment declined. please check your cvv.");
+                  break;
+                case "VOICE_FAILURE":
+                  alert("payment declined because issuer requires voice authorization. please try a different card.");
+                  break;
+                case "TRANSACTION_LIMIT":
+                  alert("payment declined because issuer limit has been exceeded. please try a different card.");
+                  break;
+                default:
+                  alert("payment declined. please try a different card.");
+                  break;
+              }
+              removeScreensaver();
+            } else {
+              console.log(`success!`);
+              console.log(obj);
+            }
+          })
+        }
+      }
+    });
+    
+  } else if (paymentType === "giftcard" && recurring) {
+    console.log(`creating CARD NONCE form for gift card`);
+
+    // Create and initialize a payment form object for GIFTCARD
+    paymentForm = new SqPaymentForm({
+      // Initialize the payment form elements
+      applicationId: "sq0idp-q-NmavFwDX6MRLzzd5q-sg", // production
+      // applicationId: "sandbox-sq0idb-507QVzPRaOnfhedziBERcg", // sandbox
+      locationId: credentials.locationId,
+      inputClass: "sq-input",
+      // Initialize the gift card placeholders
+      giftCard: {
+        elementId: "sq-giftcard",
+        placeholder: "**** **** **** ****"
+      },
+      // Customize the CSS for SqPaymentForm iframe elements
+      inputStyles: [
+        {
+          fontFamily: "monospace",
+          fontSize: "20px",
+          lineHeight: "40px",
+          padding: "10px 40px",
+          placeholderColor: getComplementHex(),
+          color: getComplementHex(),
+          backgroundColor: "transparent",
+        },
+      ],
+      // SqPaymentForm callback functions
+      callbacks: {
+        /*
+        * callback function: cardNonceResponseReceived
+        * Triggered when: SqPaymentForm completes a card nonce request
+        */
+        cardNonceResponseReceived: function (errors, nonce, paymentData, contacts) {
+
+          if (errors) {
+            // Log errors from nonce generation to the browser developer console.
+            console.error("Encountered errors:");
+            errors.forEach(function (error) {
+              alert(error.message);
+              console.error("> " + error.message);
+            });
+            removeScreensaver();
+            return;
+          }
+
+          const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec`
+          const customerId = document.querySelector("#name").getAttribute("data-id");
+
+          const qs = `nonce=${encodeURIComponent(nonce)}` + 
+            `&id=${encodeURIComponent(customerId)}`;
+
+          console.log(url + "?" + qs);
+
+          const thisFetch = fetch(url + "?" + qs, {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            return makeScreensaverError("something went wrong and your payment didn't go through. try again?")
+          })
+          .then((resp) => {
+            if (!resp.ok) {
+              return resp.text().then((errorInfo) => { Promise.reject(errorInfo) });
+            }
+            return resp.text();
+            // TODO: handle incomplete gift card payments, collect additional card info
+          })
+          .then((data) => {
+            console.log(`.then -> data`, data);
+            const obj = JSON.parse(data);
+
+            if (typeof obj.errors != "undefined") { // failure of any kind
+              makeScreensaverError("payment declined");
+              console.error(obj.errors);
+              alert("gift card declined. please try a different card.");
+              removeScreensaver();
+            } else {
+              console.log(`success!`);
+              console.log(obj);
+            }
+          })
+
+
+        }
+      }
+    });
   }
 
   return paymentForm.build();
@@ -3215,7 +3534,7 @@ window.onload = async (e) => {
   // make page useable
   await classify();
   await codify();
-  await setPage();
+  setPage();
   buildCheckoutTool(); // needs to be on all the pages
   
   // setup header

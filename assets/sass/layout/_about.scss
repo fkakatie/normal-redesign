@@ -56,46 +56,46 @@ h3 {
     }
 }
 
-.embed-internal-team {
-    // border: 2px solid gold;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    & > div {
-        // border: 2px solid red;
-        width: calc(100% / 3);
-        padding: 4rem 6rem;
+// .embed-internal-team {
+//     // border: 2px solid gold;
+//     display: flex;
+//     flex-wrap: wrap;
+//     justify-content: center;
+//     & > div {
+//         // border: 2px solid red;
+//         width: calc(100% / 3);
+//         padding: 4rem 6rem;
 
-        & img {
-            object-fit: cover;
-            width: 100%;
-            border-radius: 50%;
-            margin-bottom: 2rem;
-            transition: 0.2s all;
-            @include bfv;
+//         & img {
+//             object-fit: cover;
+//             max-width: 80%;
+//             border-radius: 50%;
+//             margin-bottom: 2rem;
+//             transition: 0.2s all;
+//             @include bfv;
 
-            &:hover {
-                transform: scale(1.1) rotate(-3deg);
-            }
-        }
+//             &:hover {
+//                 transform: scale(1.1) rotate(-3deg);
+//             }
+//         }
 
-        & p {
-            @include font-poppins;
-            font-size: 55%;
+//         & p {
+//             @include font-poppins;
+//             font-size: 55%;
 
-            & strong {
-                @include font-poppins-ultrabold;
-            }
+//             & strong {
+//                 @include font-poppins-ultrabold;
+//             }
 
-            & em {
-                @include font-poppins;
-                font-style: italic;
-            }
-        }
-    }
-}
+//             & em {
+//                 @include font-poppins;
+//                 font-style: italic;
+//             }
+//         }
+//     }
+// }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     .embed-internal-team {
         // border: 2px solid gold;
         & > div {
@@ -104,7 +104,7 @@ h3 {
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     .embed-internal-team {
         // border: 2px solid gold;
         & > div {
@@ -256,7 +256,7 @@ h3 {
     }
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     .search-form {
         // border: 2px solid gold;
         & button {
@@ -304,7 +304,7 @@ h3 {
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     .search-form {
         // border: 2px solid gold;
         & input {

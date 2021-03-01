@@ -122,7 +122,7 @@ h2 {
     }
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     h2 {
         // border: 2px solid gold;
         &#how-it-works {
@@ -135,7 +135,7 @@ h2 {
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     h2 {
         // border: 2px solid gold;
         &#how-it-works {
@@ -215,7 +215,7 @@ h2 {
     }
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     #pintclub { 
         & h1#normalreg {
             // color: green;
@@ -230,7 +230,7 @@ h2 {
 
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     #pintclub {
         & .faq-container {
             & > .faq-item {

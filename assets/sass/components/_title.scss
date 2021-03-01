@@ -8,13 +8,13 @@ h1#normalreg {
     }
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     h1#normalreg {
         // font-size: 7.9rem;
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     h1#normalreg {
         font-size: 7.3rem;
     }

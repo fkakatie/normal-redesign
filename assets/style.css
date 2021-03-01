@@ -63,6 +63,7 @@ button,
 textarea {
   margin: 0;
   border: 0;
+  border-radius: 0;
   padding: 1rem;
   display: inline-block;
   vertical-align: middle;
@@ -165,7 +166,7 @@ h5 {
   font-weight: 600;
   font-style: normal; }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   h2 {
     font-size: 5.5rem; } }
 
@@ -244,7 +245,7 @@ a {
     height: 4rem;
     width: 4rem; }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .btn-back {
     left: 0;
     position: inherit;
@@ -405,7 +406,7 @@ a {
   .checkout-form .checkout-table-body-selectwrapper[data-fieldtype=address] {
     width: 40%; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .checkout-container {
     margin-top: 6rem; }
   .checkout-back {
@@ -593,7 +594,7 @@ a {
   .customize-table-body-fieldwrapper, .customize-table-body-selectwrapper {
     width: 40%; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .customize-close {
     top: 1.2rem;
     right: 1.5rem; }
@@ -644,7 +645,8 @@ svg {
     font-weight: 400;
     font-style: normal; }
   svg.icon-arrow-up, svg.icon-arrow-down, svg.icon-arrow-left, svg.icon-arrow-right {
-    margin: 4rem 1rem;
+    stroke-width: 10 !important;
+    margin: 12rem 1rem;
     width: 4.5rem;
     height: 4.5rem; }
 
@@ -684,15 +686,14 @@ svg {
   .menu-carousel-two div {
     width: calc(100% / 2);
     padding: 0 10rem; }
-  .menu-carousel-single {
-    background: purple; }
-    .menu-carousel-single .menu-carousel-btn {
-      display: none; }
-    .menu-carousel-single div {
-      width: 100%; }
+  .menu-carousel-one .menu-carousel-btn {
+    display: none; }
+  .menu-carousel-one div {
+    width: 100%; }
 
 .embed-internal-storemenus, .embed-internal-labmenus,
-.embed-internal-deliverymenus, .embed-internal-merchmenus {
+.embed-internal-deliverymenus, .embed-internal-merchmenus,
+.embed-internal-aboutmenus {
   width: 100%;
   padding-bottom: 1rem;
   display: flex;
@@ -702,18 +703,22 @@ svg {
   -ms-overflow-style: none;
   scrollbar-width: none; }
   .embed-internal-storemenus::-webkit-scrollbar, .embed-internal-labmenus::-webkit-scrollbar,
-  .embed-internal-deliverymenus::-webkit-scrollbar, .embed-internal-merchmenus::-webkit-scrollbar {
+  .embed-internal-deliverymenus::-webkit-scrollbar, .embed-internal-merchmenus::-webkit-scrollbar,
+  .embed-internal-aboutmenus::-webkit-scrollbar {
     display: none; }
   .embed-internal-storemenus div, .embed-internal-labmenus div,
-  .embed-internal-deliverymenus div, .embed-internal-merchmenus div {
+  .embed-internal-deliverymenus div, .embed-internal-merchmenus div,
+  .embed-internal-aboutmenus div {
     min-width: calc(100% / 3);
     padding: 0 6rem; }
     .embed-internal-storemenus div h3, .embed-internal-labmenus div h3,
-    .embed-internal-deliverymenus div h3, .embed-internal-merchmenus div h3 {
+    .embed-internal-deliverymenus div h3, .embed-internal-merchmenus div h3,
+    .embed-internal-aboutmenus div h3 {
       margin-top: 2rem;
       margin-bottom: 0.2rem; }
     .embed-internal-storemenus div p, .embed-internal-labmenus div p,
-    .embed-internal-deliverymenus div p, .embed-internal-merchmenus div p {
+    .embed-internal-deliverymenus div p, .embed-internal-merchmenus div p,
+    .embed-internal-aboutmenus div p {
       font-family: "Poppins", sans-serif;
       font-weight: 500;
       font-style: normal;
@@ -721,7 +726,8 @@ svg {
       line-height: 1.4;
       margin-top: 0.4rem; }
       .embed-internal-storemenus div p img, .embed-internal-labmenus div p img,
-      .embed-internal-deliverymenus div p img, .embed-internal-merchmenus div p img {
+      .embed-internal-deliverymenus div p img, .embed-internal-merchmenus div p img,
+      .embed-internal-aboutmenus div p img {
         margin-top: 1rem;
         height: 20rem;
         transition: 0.2s all;
@@ -729,16 +735,20 @@ svg {
         backface-visibility: hidden; }
         .embed-internal-storemenus div p img:hover, .embed-internal-storemenus div p img:focus, .embed-internal-labmenus div p img:hover, .embed-internal-labmenus div p img:focus,
         .embed-internal-deliverymenus div p img:hover,
-        .embed-internal-deliverymenus div p img:focus, .embed-internal-merchmenus div p img:hover, .embed-internal-merchmenus div p img:focus {
+        .embed-internal-deliverymenus div p img:focus, .embed-internal-merchmenus div p img:hover, .embed-internal-merchmenus div p img:focus,
+        .embed-internal-aboutmenus div p img:hover,
+        .embed-internal-aboutmenus div p img:focus {
           transform: translateY(0.5rem) scale(1.2) rotate(-3deg); }
       .embed-internal-storemenus div p strong, .embed-internal-labmenus div p strong,
-      .embed-internal-deliverymenus div p strong, .embed-internal-merchmenus div p strong {
+      .embed-internal-deliverymenus div p strong, .embed-internal-merchmenus div p strong,
+      .embed-internal-aboutmenus div p strong {
         font-family: "Poppins", sans-serif;
         font-weight: 700;
         font-style: normal;
         font-size: 120%; }
       .embed-internal-storemenus div p a, .embed-internal-labmenus div p a,
-      .embed-internal-deliverymenus div p a, .embed-internal-merchmenus div p a {
+      .embed-internal-deliverymenus div p a, .embed-internal-merchmenus div p a,
+      .embed-internal-aboutmenus div p a {
         font-family: acumin-pro-extra-condensed, sans-serif;
         font-weight: 600;
         font-style: normal;
@@ -753,7 +763,7 @@ svg {
   .menu-carousel-three .menu-carousel-btn {
     display: inline-block; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .menu-carousel-full div, .menu-carousel-two div, .menu-carousel-three div {
     min-width: 100%;
     padding: 0 6rem; }
@@ -869,7 +879,7 @@ h1#normalreg {
     font-size: 50%;
     margin-right: -3.9rem; }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   h1#normalreg {
     font-size: 7.3rem; } }
 
@@ -972,12 +982,12 @@ h2#nav + ul {
   font-style: normal; }
   h2#nav + ul li {
     position: relative;
-    border-bottom: 1.5px solid currentColor;
+    border-bottom: 2px solid currentColor;
     padding: 1.5rem 0 1.5rem 0;
     transition: 0.1s; }
     h2#nav + ul li:hover, h2#nav + ul li:focus {
       padding-bottom: calc(1.5rem - 2px);
-      border-width: 3px;
+      border-width: 4px;
       letter-spacing: 1.5px;
       cursor: pointer; }
     h2#nav + ul li a {
@@ -1005,7 +1015,7 @@ div.p-nav {
   div.p-nav {
     width: 50%; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   div.p-nav {
     width: 100%; } }
 
@@ -1021,16 +1031,16 @@ h2#carousel + div.embed {
   h2#carousel + div.embed div {
     display: flex; }
     h2#carousel + div.embed div p {
-      display: inline-block;
+      display: flex; }
+    h2#carousel + div.embed div img {
+      width: 45rem;
+      height: 60rem;
+      object-fit: cover;
       padding-right: 1.8rem; }
-      h2#carousel + div.embed div p:last-child {
+      h2#carousel + div.embed div img:last-child {
         padding-right: 0; }
-      h2#carousel + div.embed div p img {
-        width: 45rem;
-        height: 60rem;
-        object-fit: cover; }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   h2#carousel + div.embed div {
     flex-direction: column; }
     h2#carousel + div.embed div p {
@@ -1068,7 +1078,7 @@ div.p-carousel {
   div.p-carousel {
     width: 45%; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   div.p-carousel {
     position: static;
     width: 100%;
@@ -1137,6 +1147,8 @@ h2#soft-serve ~ p, h2#drinks-drinks-drinks ~ p, h2#pints ~ p, h2#bars ~ p, h2#sa
   h2#soft-serve ~ p img, h2#drinks-drinks-drinks ~ p img, h2#pints ~ p img, h2#bars ~ p img, h2#sandos ~ p img, h2#composed-cones ~ p img, h2#pizza ~ p img, h2#choco-taco ~ p img, h2#specials ~ p img, h2#norm-cores ~ p img, h2#ice-cream-cake ~ p img, h2#gift-cards ~ p img, h2#tops ~ p img, h2#accessories ~ p img, h2#delivery-zips ~ p img {
     margin-top: 1rem;
     height: 20rem;
+    max-width: 80%;
+    object-fit: contain;
     transition: 0.2s all;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden; }
@@ -1162,7 +1174,9 @@ h2#soft-serve ~ h3 {
   margin-top: 4rem;
   padding: 2rem 0; }
   .menu img {
-    height: 20rem; }
+    height: 20rem;
+    max-width: 80%;
+    object-fit: contain; }
   .menu-filled > * {
     padding-left: 33%;
     padding-right: 33%; }
@@ -1182,7 +1196,7 @@ h2#soft-serve ~ h3 {
     padding-left: 25%;
     padding-right: 25%; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .menu-filled > * {
     padding-left: 2rem;
     padding-right: 2rem; } }
@@ -1222,43 +1236,11 @@ h3#lab {
       width: 52.5rem;
       object-fit: cover; }
 
-.embed-internal-team {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; }
-  .embed-internal-team > div {
-    width: calc(100% / 3);
-    padding: 4rem 6rem; }
-    .embed-internal-team > div img {
-      object-fit: cover;
-      width: 100%;
-      border-radius: 50%;
-      margin-bottom: 2rem;
-      transition: 0.2s all;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden; }
-      .embed-internal-team > div img:hover {
-        transform: scale(1.1) rotate(-3deg); }
-    .embed-internal-team > div p {
-      font-family: "Poppins", sans-serif;
-      font-weight: 500;
-      font-style: normal;
-      font-size: 55%; }
-      .embed-internal-team > div p strong {
-        font-family: "Poppins", sans-serif;
-        font-weight: 800;
-        font-style: normal; }
-      .embed-internal-team > div p em {
-        font-family: "Poppins", sans-serif;
-        font-weight: 500;
-        font-style: normal;
-        font-style: italic; }
-
 @media only screen and (max-width: 76.8rem) {
   .embed-internal-team > div {
     width: calc(100% / 2); } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .embed-internal-team > div {
     width: 100%;
     padding: 2rem 3rem; } }
@@ -1368,7 +1350,7 @@ h3#lab {
     #about .locations-container .location-item.lab h3, #about .locations-container .location-item.lab p {
       margin-right: calc(32.5rem + 6rem); } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   .search-form input {
     text-overflow: ellipsis;
     overflow: hidden; }
@@ -1490,7 +1472,7 @@ h2#normal-pint-club-faq, h2#normal-pint-club-faqs, h2#normalreg-pint-club-faq, h
   h2#how-it-works + ol > li {
     padding: 2rem 3rem; } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   h2#how-it-works + ol > li {
     width: 100%; }
   h2#options ~ ul > li {
@@ -1537,7 +1519,7 @@ h2#normal-pint-club-faq, h2#normal-pint-club-faqs, h2#normalreg-pint-club-faq, h
   #pintclub h2.welcometonormalpintclub {
     margin-top: calc(60rem + 4rem + 10rem); } }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: 46.4rem) {
   #pintclub .faq-container > .faq-item {
     width: 100%;
     padding: 2rem 0; } }

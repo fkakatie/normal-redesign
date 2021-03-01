@@ -27,8 +27,8 @@ svg {
 
     &.icon-arrow-up, &.icon-arrow-down,
     &.icon-arrow-left, &.icon-arrow-right {
-        // color: red;
-        margin: 4rem 1rem;
+        stroke-width: 10 !important;
+        margin: 12rem 1rem;
         width: 4.5rem;
         height: 4.5rem;
     }

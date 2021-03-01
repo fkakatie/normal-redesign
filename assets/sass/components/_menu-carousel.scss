@@ -61,8 +61,8 @@
         }
     }
 
-    &-single {
-        background: purple;
+    &-one {
+        // background: purple;
         & .menu-carousel-btn {
             display: none;
         }
@@ -74,7 +74,8 @@
 }
 
 .embed-internal-storemenus, .embed-internal-labmenus, 
-.embed-internal-deliverymenus, .embed-internal-merchmenus {
+.embed-internal-deliverymenus, .embed-internal-merchmenus,
+.embed-internal-aboutmenus {
     // background: yellow;
     width: 100%;
     padding-bottom: 1rem;
@@ -127,7 +128,7 @@
     }
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     .menu-carousel {
         &-full, &-three {
             & div {
@@ -144,7 +145,7 @@
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     .menu-carousel {
         &-full, &-two, &-three {
             & div {

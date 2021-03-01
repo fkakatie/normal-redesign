@@ -9,14 +9,14 @@ h2#nav + ul {
 
     & li {
         position: relative;
-        border-bottom: 1.5px solid currentColor;
+        border-bottom: 2px solid currentColor;
         padding: 1.5rem 0 1.5rem 0;
         transition: 0.1s;
         // @include bfv;
 
         &:hover, &:focus {
             padding-bottom: calc(1.5rem - 2px);
-            border-width: 3px;
+            border-width: 4px;
             letter-spacing: 1.5px;
             cursor: pointer;
         }
@@ -53,13 +53,13 @@ div.p-nav {
     width: 33%;
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     div.p-nav {
         width: 50%;
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     div.p-nav {
         width: 100%;
     }
@@ -84,23 +84,22 @@ h2#carousel + div.embed {
         display: flex;
 
         p {
-            display: inline-block;
+            display: flex;
+        }
+        
+        img {
+            width: 45rem;
+            height: 60rem;
+            object-fit: cover;
             padding-right: 1.8rem;
-
             &:last-child {
                 padding-right: 0;
-            }
-
-            img {
-                width: 45rem;
-                height: 60rem;
-                object-fit: cover;
             }
         }
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     h2#carousel + div.embed  {
         & div {
             flex-direction: column;
@@ -151,13 +150,13 @@ div.p-carousel {
     width: 60%;
 }
 
-@media only screen and (max-width: 76.8rem) {
+@media only screen and (max-width: $tablet) {
     div.p-carousel {
         width: 45%;
     }
 }
 
-@media only screen and (max-width: 41.1rem) {
+@media only screen and (max-width: $mobile) {
     div.p-carousel {
         position: static;
         width: 100%;
