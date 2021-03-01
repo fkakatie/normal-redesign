@@ -76,6 +76,7 @@ const setPage = () => {
       break;
     case "pint-club":
       setCurrentStore();
+      cart.clear();
       floatPintLogo();
       buildPintBanner();
       setupPintSubOptions();
@@ -275,7 +276,7 @@ const getAddressFromLocalStorage = () => {
 FETCHING DATA
 ==========================================================*/
 const fetchLabels = async () => {
-  const resp = await fetch("/_data/labels.json");
+  const resp = await fetch("/_data/labels.json", { cache: "reload" });
   let json = await resp.json();
   if (json.data) {
     json = json.data; // helix quirk, difference between live and local
@@ -740,7 +741,7 @@ const getHoursOfOp = (store, type) => {
   }
 
   if (store === "merch") {
-    store = "store"; // use store hours for merch
+    return "merch"; // use store hours for merch
   }
 
   if (today.includes("sat") || today.includes("sun")) {
@@ -1348,6 +1349,42 @@ const addClubToCart = (formData) => {
   updateCart();
 }
 
+const addClubToCartDesc = (formData) => {
+  const clubOption = findClubOption();
+  const $clubRow = document.querySelector(`[data-id=${clubOption.fp}]`);
+  if ($clubRow) {
+    const $itemData = $clubRow.querySelector(".checkout-table-body-item");
+    let packInfo = "";
+    $clubRow.setAttribute("data-payment-option", formData["payment-option"]);
+    if (formData["payment-option"] === "monthly") {
+      packInfo += ` ${formData["payment-option"]}`;
+    } else if (formData["payment-option"] === "prepay") {
+      $clubRow.setAttribute("data-prepay-term", formData["prepay-months"]); // set this to num from formData
+      packInfo += ` ${formData["payment-option"]} ${clubOption.term}`;
+    }
+    if (formData["delivery-option"]) {
+      $clubRow.setAttribute("data-delivery", formData["delivery-option"]);
+      packInfo += `, ${formData["delivery-option"]}`;
+    }
+    if (formData["customize-pints"]) {
+      $clubRow.setAttribute("data-customizations", formData["customize-pints"].toString());
+      formData["customize-pints"].forEach((c) => {
+        packInfo += `, ${c}`;
+      })
+    } else {
+      $clubRow.setAttribute("data-customizations", "keep it normal");
+      packInfo += ", keep it normal®";
+    }
+    if (formData["allergies"]) {
+      $clubRow.setAttribute("data-allergies", formData["allergies"]);
+      packInfo += ` (allergies: ${formData["allergies"]})`;
+    }
+
+    $itemData.textContent += packInfo;
+
+  }
+}
+
 const findClubOption = () => {
   const clubItem = cart.line_items[0];
   const variation = catalog.byId[clubItem.variation];
@@ -1509,6 +1546,7 @@ const populateCustomizationTool = (title, fields) => {
         await saveToLocalStorage($form);
         const formData = await getSubmissionData($form);
         await addClubToCart(formData);
+        await addClubToCartDesc(formData);
         await clearCustomizationTool();
         await hideCustomizationTool();
         await showCheckoutTool();
@@ -1961,7 +1999,7 @@ const getFields = (fields) => {
       case "pint-club":
         allFields.push(
           { title: "payment-option", type: "radio", label: "select payment option", options: [ "prepay", "monthly" ], required: true },
-          { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "vegan", "half-vegan", "nut free", "gluten free" ] },
+          { title: "customize-pints", type: "checkbox", label: "customize your pints (select any that apply)", options: [ "keep it normal®", "vegan", "half-vegan", "nut free", "gluten free" ] },
           { title: "allergies", type: "text", placeholder: "any allergies? even shellfish, seriously! ya never know!" },
           { title: "delivery-option", type: "radio", label: "how do you want to get your pints?", options: [ "pickup", "shipping" ], required: true }
         );
@@ -2252,12 +2290,10 @@ const buildCheckoutTool = () => {
           orderObj = await submitOrder(currentStore, formData);
 
           if (orderObj) {
-            // await hideCheckoutTool();
             await disableCartEdits();
             await displayOrderObjInfo(orderObj, formData);
             await hideCheckoutForm();
             await buildSquarePaymentForm();
-            // await initPaymentForm("creditcard", currentStore, orderObj);
             removeScreensaver();
           } else {
             console.error("something went wrong and your order didn't go through. try again?");
@@ -2266,11 +2302,8 @@ const buildCheckoutTool = () => {
           /////////////////////////////////////////////////////
         } else if (pintMonthlySub) { // monthly pint-club
 
-          console.log(`submitting monthly pint club order`);
           // create customer
           const customerData = await createCustomer(formData);
-          console.log(customerData);
-
           if (customerData.customer) {
             // create card nonce
             localStorage.setItem("normal-id", customerData.customer.id);
@@ -2280,15 +2313,11 @@ const buildCheckoutTool = () => {
             await hideCheckoutForm();
             await buildSquarePaymentForm();
             removeScreensaver();
-
           } else {
             console.error(customerData);
             makeScreensaverError("something went wrong. try again?")
           }
-
         }
-
-        
       } else {
         console.error("please fill out all required fields!");
       }
@@ -2467,8 +2496,6 @@ const buildSquarePaymentForm = () => {
         const $sqForm = document.querySelector(".sq-form");
         const sqFormType = $sqForm.getAttribute("data-card-type");
 
-      const currentStore = getCurrentStore();
-
         if (payWithGiftcard && sqFormType === "sq-creditcard") {
           const $sqForm = document.querySelector(".sq-form");
             $sqForm.remove();
@@ -2575,11 +2602,16 @@ const successfulOrderConfirmation = async (orderInfo) => {
     const currentStore = getCurrentStore();
 
     if (currentStore === "pint-club") {
-      // TODO: pint club things
-      console.log('pint club things');
-      // create customer
-      // create invoice
-
+      // add to club sheet
+      await addClubToSheet();
+      await removeSqContainer();
+      await cart.clear();
+      // display thank you message
+      const $confirmationMsg = await createConfirmationMsg(currentStore, orderInfo.receipt_url);
+      const $checkoutContainer = document.querySelector(".checkout-container");
+      $checkoutContainer.append($confirmationMsg);
+      // remove screensaver
+      removeScreensaver();
 
     } else {
       // send confirmation email
@@ -2637,15 +2669,26 @@ const successfulOrderConfirmation = async (orderInfo) => {
 
 }
 
+const successfulClubSubscription = async () => {
+  // add to club sheet
+  await addClubToSheet();
+  await removeSqContainer();
+  await cart.clear();
+  // display thank you message
+  const $confirmationMsg = await createSubscriptionMsg();
+  const $checkoutContainer = document.querySelector(".checkout-container");
+  $checkoutContainer.append($confirmationMsg);
+  // remove screensaver
+  removeScreensaver();
+}
+
 const createCustomer = async (formData) => {
-  console.log(`create customer running`);
   let params = "";
   for (prop in formData) {
     params += prop + "=" + encodeURIComponent(formData[prop]);
     params += "&";
   }
   const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec?${params}`;
-  console.log(url);
   let resp = await fetch(url);
   let data = await resp.json();
   return data;
@@ -2661,6 +2704,32 @@ const sendConfirmationEmail = async (store, name, email, address, comments, date
     console.error(`Email confirmation was NOT sent`);  
   }
   return data.sent;
+}
+
+const addClubToSheet = async () => {
+  const $checkoutForm = document.querySelector(".checkout-form");
+  const formData = getSubmissionData($checkoutForm);
+  const clubOption = findClubOption();
+  const $clubRow = document.querySelector(`[data-id=${clubOption.fp}]`);
+  let packData = {}; 
+    packData.paymentOption = $clubRow.getAttribute("data-payment-option");
+    packData.prepayTerm = $clubRow.getAttribute("data-prepay-term");
+    packData.delivery = $clubRow.getAttribute("data-delivery");
+    packData.packType = $clubRow.getAttribute("data-customizations");
+    packData.allergies = $clubRow.getAttribute("data-allergies");
+
+  const allData = { ...formData, ...packData };
+  let params = "?";
+  for (prop in allData) {
+    if (allData[prop]) {
+      params += `${prop}=${encodeURIComponent(allData[prop])}&`;
+    }
+  }
+  const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec${params}`;
+  let resp = await fetch(url, { method: "POST", mode: "no-cors" });
+  // let data = await resp.json();
+  // console.log(data);
+  return resp;
 }
 
 const createConfirmationMsg = (store, receiptUrl) => {
@@ -2693,6 +2762,40 @@ const createConfirmationMsg = (store, receiptUrl) => {
 
   return $thankYouContainer;
 
+}
+
+const createSubscriptionMsg = () => {
+  const $thankYouContainer = document.createElement("div");
+    $thankYouContainer.classList.add("checkout-confirmed");
+
+  const $thankYouMsg = document.createElement("p");
+    $thankYouMsg.classList.add("checkout-confirmed-message");
+    $thankYouMsg.textContent = window.labels[`pint-club_thankyou`] || "thank you for placing an order! (:";
+
+  const $monthlyMsg = document.createElement("p");
+    $monthlyMsg.classList.add("checkout-confirmed-message");
+    $monthlyMsg.textContent = window.labels[`pint-club_monthlysub`] || 
+    "you'll also be receiving your first invoice via email! after you pay the first one, your card on file will be auto-charged monthly. let us know if you have questions!";
+
+  const $btnContainer = document.createElement("div");
+    $btnContainer.classList.add("checkout-confirmed-btnContainer");
+
+  const $phoneBtn = document.createElement("a");
+    $phoneBtn.id = "phone-btn";
+    $phoneBtn.classList.add("checkout-confirmed-btnContainer-btn", "btn-rect");
+    $phoneBtn.textContent = window.labels.phone || "(801)244-1991";
+    $phoneBtn.href = `sms://+1${cleanName(window.labels.phone)}/`;
+
+  const $emailBtn = document.createElement("a");
+    $emailBtn.id = "email-btn";
+    $emailBtn.classList.add("checkout-confirmed-btnContainer-btn", "btn-rect");
+    $emailBtn.textContent = window.labels.email || "hi@normal.club";
+    $emailBtn.href = `mailto:${window.labels.email}?subject=so about monthly pint club...` || "mailto:hi@normal.club?subject=so about monthly pint club...";
+
+  $btnContainer.append($phoneBtn, $emailBtn);
+  $thankYouContainer.append($thankYouMsg, $monthlyMsg, $btnContainer);
+
+  return $thankYouContainer;
 }
 
 /*==========================================================
@@ -3102,7 +3205,7 @@ function initPaymentForm(paymentType, currentStore, recurring) {
   const credentials = getStorefrontCheckoutCred(currentStore);
 
   if (paymentType === "creditcard" && !recurring) { //submit order with credit card
-    console.log(`creating PAYMENT form for credit card`);
+    // console.log(`creating PAYMENT form for credit card`);
 
     // Create and initialize a payment form object for CREDITCARD
     paymentForm = new SqPaymentForm({
@@ -3221,7 +3324,7 @@ function initPaymentForm(paymentType, currentStore, recurring) {
     });
 
   } else if (paymentType === "giftcard" && !recurring) { // submit order with gift card
-    console.log(`creating PAYMENT form for gift card`);
+    // console.log(`creating PAYMENT form for gift card`);
 
     // Create and initialize a payment form object for GIFTCARD
     paymentForm = new SqPaymentForm({
@@ -3310,7 +3413,7 @@ function initPaymentForm(paymentType, currentStore, recurring) {
     });
 
   } else if (paymentType === "creditcard" && recurring) { // submit card to customer with credit card
-    console.log(`creating CARD NONCE form for credit card`);
+    // console.log(`creating CARD NONCE form for credit card`);
 
     // Create and initialize a payment form object for CREDITCARD
     paymentForm = new SqPaymentForm({
@@ -3372,7 +3475,7 @@ function initPaymentForm(paymentType, currentStore, recurring) {
           const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec`
           const customerId = document.querySelector("#name").getAttribute("data-id");
 
-          const qs = `nonce=${encodeURIComponent(nonce)}` + 
+          const qs = `nonce=${nonce}` + 
             `&id=${encodeURIComponent(customerId)}`;
 
           const thisFetch = fetch(url + "?" + qs, {
@@ -3419,8 +3522,8 @@ function initPaymentForm(paymentType, currentStore, recurring) {
               }
               removeScreensaver();
             } else {
-              console.log(`success!`);
-              console.log(obj);
+              addClubToSheet();
+              successfulClubSubscription();
             }
           })
         }
@@ -3428,7 +3531,7 @@ function initPaymentForm(paymentType, currentStore, recurring) {
     });
     
   } else if (paymentType === "giftcard" && recurring) {
-    console.log(`creating CARD NONCE form for gift card`);
+    // console.log(`creating CARD NONCE form for gift card`);
 
     // Create and initialize a payment form object for GIFTCARD
     paymentForm = new SqPaymentForm({
@@ -3476,10 +3579,8 @@ function initPaymentForm(paymentType, currentStore, recurring) {
           const url = `https://script.google.com/macros/s/AKfycbzkPtpjiyo-AQcSTqSs1kj2kF83Pv5NdQvAZk4fd5g_hM2WSnlY3XFkXA/exec`
           const customerId = document.querySelector("#name").getAttribute("data-id");
 
-          const qs = `nonce=${encodeURIComponent(nonce)}` + 
+          const qs = `nonce=${nonce}` + 
             `&id=${encodeURIComponent(customerId)}`;
-
-          console.log(url + "?" + qs);
 
           const thisFetch = fetch(url + "?" + qs, {
             method: "GET",
@@ -3499,7 +3600,6 @@ function initPaymentForm(paymentType, currentStore, recurring) {
             // TODO: handle incomplete gift card payments, collect additional card info
           })
           .then((data) => {
-            console.log(`.then -> data`, data);
             const obj = JSON.parse(data);
 
             if (typeof obj.errors != "undefined") { // failure of any kind
@@ -3508,12 +3608,10 @@ function initPaymentForm(paymentType, currentStore, recurring) {
               alert("gift card declined. please try a different card.");
               removeScreensaver();
             } else {
-              console.log(`success!`);
-              console.log(obj);
+              addClubToSheet();
+              successfulClubSubscription();
             }
           })
-
-
         }
       }
     });

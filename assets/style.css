@@ -408,7 +408,8 @@ a {
 
 @media only screen and (max-width: 46.4rem) {
   .checkout-container {
-    margin-top: 6rem; }
+    margin-top: 6rem;
+    margin-bottom: 6rem; }
   .checkout-back {
     position: static;
     margin: 0 auto;
@@ -622,7 +623,9 @@ a {
     .customize-table-body-selectwrapper:after {
       right: 1.2rem; }
     .customize-table-body-selectwrapper-select {
-      padding: 1rem 4rem 1rem 2rem; } }
+      padding: 1rem 4rem 1rem 2rem; }
+  .customize-foot {
+    margin-bottom: 8rem; } }
 
 main svg {
   height: 0.8em;
@@ -1236,14 +1239,13 @@ h3#lab {
       width: 52.5rem;
       object-fit: cover; }
 
-@media only screen and (max-width: 76.8rem) {
-  .embed-internal-team > div {
-    width: calc(100% / 2); } }
-
-@media only screen and (max-width: 46.4rem) {
-  .embed-internal-team > div {
-    width: 100%;
-    padding: 2rem 3rem; } }
+div#meettheteam img {
+  border-radius: 50%;
+  height: 18rem !important;
+  width: 18rem !important;
+  object-fit: cover !important;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden; }
 
 #about .about-text {
   font-family: acumin-pro-extra-condensed, sans-serif;
